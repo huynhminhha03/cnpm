@@ -1,7 +1,115 @@
-{% extends 'layout/base.html' %} 
-{% block title %}Booking{% endblock %}
-{% block content %}
+{% extends 'layout/base.html' %} {% block title %}Booking{% endblock %} {% block
+content %}
 <div>
-    
+  <h1 class="text-center text-success">ĐĂNG KÝ LỊCH KHÁM</h1>
+
+  {% if check %}
+        <p>Đăng kí lịch khám thành công</p>
+  {% endif %}
+
+  <form method="post" action="/register-process">
+    <div class="form-floating mb-3 mt-3">
+      <input
+        type="text"
+        class="form-control"
+        required
+        placeholder="Nhập họ tên"
+        name="name_patients"
+      />
+      <label for="name">Họ tên</label>
+    </div>
+
+    <div class="form-floating mb-3 mt-3">
+      <input
+        type="date"
+        class="form-control"
+        required
+        id="birthday"
+        placeholder="Nhập năm sinh"
+        name="birthday"
+      />
+      <label for="username">Ngày sinh</label>
+    </div>
+
+    <div class="form-floating mt-3 mb-3">
+      <select required class="form-control" name="gender">
+        <option value="men">Nam</option>
+        <option value="woman">Nữ</option>
+        <option value="others">Khác</option>
+
+      </select>
+      <label for="gender">Giới tính</label>
+    </div>
+
+    <div class="form-floating mb-3 mt-3">
+      <input
+        type="text"
+        min='1918-01-01' max='2023-11-17'
+        class="form-control"
+        required
+        placeholder="Nhập số điện thoại"
+        name="phone"
+      />
+      <label for="phone">Số điện thoại</label>
+    </div>
+
+    <div class="form-floating mt-3 mb-3">
+      <input required type="date" class="form-control" id="avatar" name="booking" />
+      <label for="avatar">Ngày đặt lịch</label>
+    </div>
+
+
+
+    <div class="form-floating mt-3 mb-3">
+      <input
+        type="text"
+        class="form-control"
+        id="avatar"
+        name="address"
+        placeholder="Nhập địa chỉ"
+      />
+      <label for="avatar">Địa chỉ</label>
+    </div>
+
+      <div class="form-floating mb-3 mt-3">
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        placeholder="Nhập địa chỉ"
+        name="cccd"
+      />
+      <label for="name">CCCD</label>
+    </div>
+
+
+
+    <div class="form-floating mb-3 mt-3">
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        placeholder="Nhập BHYT"
+        name="bhyt"
+      />
+      <label for="name">Số BHYT</label>
+    </div>
+
+    <div class="form-floating mb-3 mt-3">
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        placeholder="Nhu cầu"
+        name="favor"
+      />
+      <label for="name">Favor : </label>
+    </div>
+
+
+    <div class="form-floating mt-3 mb-3">
+      <input type="submit" class="btn btn-danger" value="Đặt lịch" />
+    </div>
+  </form>
 </div>
 {% endblock %}
