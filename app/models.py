@@ -12,6 +12,8 @@ from datetime import datetime
 class UserRoleEnum(enum.Enum):
     USER = 1
     ADMIN = 2
+    BAC_SI = 3
+    Y_TA = 4
 
 
 class BenhNhan(db.Model, UserMixin):
