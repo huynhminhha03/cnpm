@@ -13,10 +13,9 @@ content %}
         type="text"
         class="form-control"
         required
-        placeholder="Nhập họ tên"
         name="name_patients"
       />
-      <label for="name">Họ tên</label>
+      <label>Họ tên<span class="required-icon">(*)</span></label>
     </div>
 
     <div class="form-floating mb-3 mt-3">
@@ -25,12 +24,18 @@ content %}
         class="form-control"
         required
         id="birthday"
-        placeholder="Nhập năm sinh"
         name="birthday"
       />
-      <label for="username">Ngày sinh</label>
+      <label>Ngày sinh<span class="required-icon">(*)</span></label>
     </div>
-
+    <div class="form-floating mt-3 mb-3">
+      <input
+        type="text"
+        class="form-control"
+        name="address"
+      />
+      <label >Số điện thoại</label>
+    </div>
     <div class="form-floating mt-3 mb-3">
       <select required class="form-control" name="gender">
         <option value="men">Nam</option>
@@ -38,7 +43,7 @@ content %}
         <option value="others">Khác</option>
 
       </select>
-      <label for="gender">Giới tính</label>
+      <label>Giới tính<span class="required-icon">(*)</span></label>
     </div>
 
     <div class="form-floating mb-3 mt-3">
@@ -54,8 +59,8 @@ content %}
     </div>
 
     <div class="form-floating mt-3 mb-3">
-      <input required type="date" class="form-control" id="avatar" name="booking" />
-      <label for="avatar">Ngày đặt lịch</label>
+      <input required type="date" class="form-control" name="booking" />
+      <label>Ngày đặt lịch<span class="required-icon">(*)</span></label>
     </div>
 
 
@@ -64,22 +69,18 @@ content %}
       <input
         type="text"
         class="form-control"
-        id="avatar"
         name="address"
-        placeholder="Nhập địa chỉ"
       />
-      <label for="avatar">Địa chỉ</label>
+      <label >Địa chỉ</label>
     </div>
 
       <div class="form-floating mb-3 mt-3">
       <input
         type="text"
         class="form-control"
-        id="name"
-        placeholder="Nhập địa chỉ"
         name="cccd"
       />
-      <label for="name">CCCD</label>
+      <label >CCCD</label>
     </div>
 
 
@@ -88,22 +89,18 @@ content %}
       <input
         type="text"
         class="form-control"
-        id="name"
-        placeholder="Nhập BHYT"
         name="bhyt"
       />
-      <label for="name">Số BHYT</label>
+      <label >Số BHYT</label>
     </div>
 
     <div class="form-floating mb-3 mt-3">
       <input
         type="text"
         class="form-control"
-        id="name"
-        placeholder="Nhu cầu"
         name="favor"
       />
-      <label for="name">Favor : </label>
+      <label >Favor : </label>
     </div>
 
 
