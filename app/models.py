@@ -23,8 +23,11 @@ class BenhNhan(db.Model):
     name_patients = Column(db.String(50), nullable=False)
     user_role = Column(Enum(UserRoleEnum), default=UserRoleEnum.BENH_NHAN)
     chitiet_benhnhan = relationship('ChiTietBenhNhan',backref="benhnhanBr")
+    danhsachkhambenh = relationship('DanhSachKhamBenh',backref="dskbBrbenhnhan")
+
     def __str__(self):  # Sử dụng __str__ để in ra tên khi sử dụng đối tượng BenhNhan
         return self.name
+
 
 class ChiTietBenhNhan(db.Model):
     __tablename__ = 'chitiet_benhnhan'
@@ -42,6 +45,27 @@ class ChiTietBenhNhan(db.Model):
 
     def __str__(self):
         return self.name
+
+class LichKham(db.Model):
+    __tablename__ = 'lichkham'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    ngaykham = Column(DateTime, nullable=False)
+    danhsachkhambenh = relationship('DanhSachKhamBenh',backref="dskbBrlichkham")
+
+    def __str__(self):
+        return self.name
+
+class DanhSachKhamBenh(db.Model):
+    __tablename__ = 'danhsachkhambenh'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(Integer, ForeignKey(BenhNhan.id))
+    lichkham_id = db.Column(Integer,ForeignKey(LichKham.id))
+
+    def __str__(self):
+        return self.name
+
 class Address(db.Model):
     __tablename__ = 'address'
 
@@ -83,6 +107,7 @@ class Favor(db.Model):
 
     def __str__(self):
         return self.name
+
 
 
 if __name__ == "__main__":

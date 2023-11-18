@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request , redirect , url_for
 from app import app, login, db
 import datetime
 from flask_login import login_user
 import dao
-from app.models import BenhNhan, ChiTietBenhNhan, Favor, Address, CMND, BHYT, UserRoleEnum
+from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh ,  Favor, Address, CMND, BHYT, UserRoleEnum
 
 
 @app.route("/dat-lich-kham")
@@ -47,6 +47,17 @@ def register_processing():
     db.session.add(bn_ct)
     db.session.commit()
 
+    l = dao.get_lichkham_by_ngaykham(booking)
+
+    if not l:
+        l = LichKham(ngaykham=booking)
+        db.session.add(l)
+        db.session.commit()
+
+    dskb = DanhSachKhamBenh(user_id=bn.id,lichkham_id=l.id)
+    db.session.add(dskb)
+    db.session.commit()
+
     address = request.form.get('address')
     if address:
         ad = Address(ten_diachi=address, chitiet_benhnhan_id=bn_ct.id)
@@ -71,9 +82,9 @@ def register_processing():
         db.session.add(fa)
         db.session.commit()
 
-    check = 'success'
+    checked = 'success'
 
-    return redirect('/dat-lich-kham')
+    return render_template('booking.html' , check = checked)
 
 
 if __name__ == '__main__':
