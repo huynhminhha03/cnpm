@@ -20,24 +20,24 @@ class BenhNhan(db.Model):
     __tablename__ = 'benhnhan'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name_patients = Column(db.String(50), nullable=False)
+    ten_benhnhan = Column(db.String(50), nullable=False)
+    sdt = Column(String(50), nullable=False)
     user_role = Column(Enum(UserRoleEnum), default=UserRoleEnum.BENH_NHAN)
     chitiet_benhnhan = relationship('ChiTietBenhNhan',backref="benhnhanBr")
     danhsachkhambenh = relationship('DanhSachKhamBenh',backref="dskbBrbenhnhan")
 
     def __str__(self):  # Sử dụng __str__ để in ra tên khi sử dụng đối tượng BenhNhan
-        return self.name
+        return f"BenhNhan(ten_benhnhan={self.ten_benhnhan}, sdt={self.sdt})"
 
 
 class ChiTietBenhNhan(db.Model):
     __tablename__ = 'chitiet_benhnhan'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    sdt = Column(String(50), nullable=False, unique=True)
     gioitinh = Column(String(50), nullable=False)
     ngaysinh = Column(DateTime, nullable=False)
-    user_id = db.Column(Integer, ForeignKey(BenhNhan.id), unique=True)
-    address = relationship('Address',backref="addressBr")
+    benhnhan_id = db.Column(Integer, ForeignKey(BenhNhan.id), unique=True)
+    diachi = relationship('Address',backref="addressBr")
     bhyt = relationship('BHYT',backref="bhytBr")
     cmnd = relationship('CMND',backref="cmndBr")
     favor = relationship('Favor',backref="favorBr")
@@ -70,8 +70,8 @@ class Address(db.Model):
     __tablename__ = 'address'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    ten_diachi = Column(String(200), nullable=False, unique=True)
-    chitiet_benhnhan_id = Column(Integer, ForeignKey(ChiTietBenhNhan.id), unique=True)
+    ten_diachi = Column(String(200), nullable=False)
+    chitiet_benhnhan_id = Column(Integer, ForeignKey(ChiTietBenhNhan.id))
 
     def __str__(self):
         return self.name
@@ -102,7 +102,7 @@ class Favor(db.Model):
     __tablename__ = 'favor'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    mongmuon = Column(String(200), nullable=False, unique=True)
+    mongmuon = Column(String(200), nullable=False)
     chitiet_benhnhan_id = Column(Integer, ForeignKey(ChiTietBenhNhan.id), unique=True)
 
     def __str__(self):
