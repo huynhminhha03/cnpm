@@ -1,7 +1,114 @@
-{% extends 'layout/base.html' %} 
-{% block title %}Booking{% endblock %}
-{% block content %}
+{% extends 'layout/base.html' %} {% block title %}Booking{% endblock %} {% block
+content %}
 <div>
-    
+  <h1 class="text-center text-success">ĐĂNG KÝ LỊCH KHÁM</h1>
+
+  {% if check == 'success' %}
+        <p>Đăng kí lịch khám thành công</p>
+  {% elif check == 'failed' %}
+      <p>Thời gian {{ lichkham.ngaykham.strftime("%d/%m/%Y") }} đã kín lịch , xin vui lòng chọn ngày khác !</p>
+  {% endif %}
+
+  <form method="post" action="/register-process">
+    <div class="form-floating mb-3 mt-3">
+      <input
+        type="text"
+        class="form-control"
+        required
+        name="name_patients"
+      />
+      <label>Họ tên<span class="required-icon">(*)</span></label>
+    </div>
+
+    <div class="form-floating mb-3 mt-3">
+      <input
+        type="date"
+        class="form-control"
+        required
+        id="birthday"
+        name="birthday"
+      />
+      <label>Ngày sinh<span class="required-icon">(*)</span></label>
+    </div>
+    <div class="form-floating mt-3 mb-3">
+      <input
+        type="text"
+        class="form-control"
+        name="address"
+      />
+      <label >Số điện thoại</label>
+    </div>
+    <div class="form-floating mt-3 mb-3">
+      <select required class="form-control" name="gender">
+        <option value="men">Nam</option>
+        <option value="woman">Nữ</option>
+        <option value="others">Khác</option>
+
+      </select>
+      <label>Giới tính<span class="required-icon">(*)</span></label>
+    </div>
+
+    <div class="form-floating mb-3 mt-3">
+      <input
+        type="number"
+        min='1918-01-01' max='2023-11-17'
+        class="form-control"
+        required
+        placeholder="Nhập số điện thoại"
+        name="phone"
+      />
+      <label for="phone">Số điện thoại</label>
+    </div>
+
+    <div class="form-floating mt-3 mb-3">
+      <input required type="date" class="form-control" name="booking" />
+      <label>Ngày đặt lịch<span class="required-icon">(*)</span></label>
+    </div>
+
+
+
+    <div class="form-floating mt-3 mb-3">
+      <input
+        type="text"
+        class="form-control"
+        name="address"
+      />
+      <label >Địa chỉ</label>
+    </div>
+
+      <div class="form-floating mb-3 mt-3">
+      <input
+         type="number"
+        class="form-control"
+        name="cccd"
+      />
+      <label >CCCD</label>
+    </div>
+
+
+
+    <div class="form-floating mb-3 mt-3">
+      <input
+        type="number"
+        class="form-control"
+        name="bhyt"
+      />
+      <label >Số BHYT</label>
+    </div>
+
+    <div class="form-floating mb-3 mt-3">
+      <input
+        type="text"
+        class="form-control"
+        name="favor"
+      />
+      <label >Favor : </label>
+    </div>
+
+
+    <div class="form-floating mt-3 mb-3">
+      <input type="submit" class="btn btn-danger" value="Đặt lịch" />
+    </div>
+  </form>
 </div>
 {% endblock %}

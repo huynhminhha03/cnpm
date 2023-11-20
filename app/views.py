@@ -3,7 +3,7 @@ from app import controllers , app
 import uuid
 import json, hmac, hashlib, requests
 from flask_login import LoginManager
-from app.models import BenhNhan,ChiTietBenhNhan,Email,CMND,BHYT
+from app.models import BenhNhan,ChiTietBenhNhan,CMND,BHYT
 
 
 login = LoginManager(app)

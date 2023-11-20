@@ -1,15 +1,16 @@
 from sqlalchemy.orm import relationship
 from app import db
+from flask_login import UserMixin
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum , DateTime
 import enum
 from datetime import datetime
 
-# Ten reference : ten bang chu ko phai ten cua entity
+# Ten reference : ten entity
 # backref : ten bien backref nam ben entity so huu , khi khai bao entity bi so huu , se dung backref
 
 
 class UserRoleEnum(enum.Enum):
-    USER = 1
+    BENH_NHAN = 1
     ADMIN = 2
     BAC_SI = 3
     Y_TA = 4
@@ -19,35 +20,58 @@ class BenhNhan(db.Model):
     __tablename__ = 'benhnhan'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String(50), nullable=False, unique=True)
-    password = Column(String(100), nullable=False)
-
-    user_role = Column(Enum(UserRoleEnum), default=UserRoleEnum.USER)
+    ten_benhnhan = Column(db.String(50), nullable=False)
+    sdt = Column(String(50), nullable=False)
+    user_role = Column(Enum(UserRoleEnum), default=UserRoleEnum.BENH_NHAN)
     chitiet_benhnhan = relationship('ChiTietBenhNhan',backref="benhnhanBr")
+    danhsachkhambenh = relationship('DanhSachKhamBenh',backref="dskbBrbenhnhan")
+
     def __str__(self):  # Sử dụng __str__ để in ra tên khi sử dụng đối tượng BenhNhan
-        return self.name
+        return f"BenhNhan(ten_benhnhan={self.ten_benhnhan}, sdt={self.sdt})"
+
 
 class ChiTietBenhNhan(db.Model):
     __tablename__ = 'chitiet_benhnhan'
+
     id = Column(Integer, primary_key=True, autoincrement=True)
-    ten = Column(String(50), nullable=False)
-    sdt = Column(String(50), nullable=False, unique=True)
     gioitinh = Column(String(50), nullable=False)
     ngaysinh = Column(DateTime, nullable=False)
-    user_id = db.Column(Integer, ForeignKey(BenhNhan.id), unique=True)
-    email = relationship('Email',backref="emailBr")
+    benhnhan_id = db.Column(Integer, ForeignKey(BenhNhan.id), unique=True)
+    diachi = relationship('Address',backref="addressBr")
     bhyt = relationship('BHYT',backref="bhytBr")
     cmnd = relationship('CMND',backref="cmndBr")
+    favor = relationship('Favor',backref="favorBr")
 
 
     def __str__(self):
         return self.name
-class Email(db.Model):
-    __tablename__ = 'email'
+
+class LichKham(db.Model):
+    __tablename__ = 'lichkham'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    ten_email = Column(String(20), nullable=False, unique=True)
-    chitiet_benhnhan_id = Column(Integer, ForeignKey(ChiTietBenhNhan.id), unique=True)
+    ngaykham = Column(DateTime, nullable=False)
+    danhsachkhambenh = relationship('DanhSachKhamBenh',backref="dskbBrlichkham")
+
+    def __str__(self):
+        return self.name
+
+class DanhSachKhamBenh(db.Model):
+    __tablename__ = 'danhsachkhambenh'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(Integer, ForeignKey(BenhNhan.id))
+    lichkham_id = db.Column(Integer,ForeignKey(LichKham.id))
+
+    def __str__(self):
+        return self.name
+
+class Address(db.Model):
+    __tablename__ = 'address'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    ten_diachi = Column(String(200), nullable=False)
+    chitiet_benhnhan_id = Column(Integer, ForeignKey(ChiTietBenhNhan.id))
 
     def __str__(self):
         return self.name
@@ -72,6 +96,18 @@ class CMND(db.Model):
 
     def __str__(self):
         return self.name
+
+
+class Favor(db.Model):
+    __tablename__ = 'favor'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    mongmuon = Column(String(200), nullable=False)
+    chitiet_benhnhan_id = Column(Integer, ForeignKey(ChiTietBenhNhan.id), unique=True)
+
+    def __str__(self):
+        return self.name
+
 
 class MomoPayment(db.Model):
     __tablename__ = 'momopayment'
