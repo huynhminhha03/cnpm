@@ -1,0 +1,19 @@
+{% extends "payment/base.html" %} {% block title %}Payment{% endblock %}
+{% block content %}
+<h1>This is Payment Page</h1>
+<form action="/online-checkout" method="POST">
+    <h3 align="center">MOMO PAYMENT</h3>
+    <div class="form-group">
+        <label for="product">Product</label>
+        <input type="text" class="form-control" id="product" name="product" required placeholder="Enter product" />
+    </div>
+    <div class="form-group">
+        <label for="price">Price</label>
+        <input type="number" class="form-control" id="price" name="price" required placeholder="Enter price" />
+    </div>
+    <br />
+    <button type="submit" name="payUrl" value="Momo" class="btn btn-primary">Momo</button>
+    <button type="submit" name="submit" value="VNPay" class="btn btn-primary">VNPay</button>
+    <button type="submit" name="submit" value="Card" class="btn btn-primary">Card</button>
+</form>
+{% endblock %}
