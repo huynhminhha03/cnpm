@@ -7,108 +7,129 @@ content %}
         <p>Đăng kí lịch khám thành công</p>
   {% elif check == 'failed' %}
       <p>Thời gian {{ lichkham.ngaykham.strftime("%d/%m/%Y") }} đã kín lịch , xin vui lòng chọn ngày khác !</p>
+   {% elif check == 'duplicate_phone_register' %}
+      <p>Số điện thoại {{ dsdkkb.sdt }} đã đăng kí ngày {{ lichkham.ngaykham.strftime("%d/%m/%Y") }}, vui lòng chọn ngày khác hoặc đổi số điện thoại !</p>
   {% endif %}
 
   <form method="post" action="/register-process">
-    <div class="form-floating mb-3 mt-3">
-      <input
-        type="text"
-        class="form-control"
-        required
-        name="name_patients"
-      />
-      <label>Họ tên<span class="required-icon">(*)</span></label>
-    </div>
+      <div class="container">
+        <div class="row justify-content-lg-center">
+          <div class="col col-lg-4">
+            <div class="form-floating mb-3 mt-3">
+              <input
+                id="name"
+                type="text"
+                class="form-control"
+                required
+                name="name_patients"
+                placeholder="Nhập họ tên"
+              />
+              <label for="name"
+                >Họ tên<span class="required-icon">(*)</span></label
+              >
+            </div>
+            <div class="form-floating mb-3 mt-3">
+              <input
+                id="date"
+                type="date"
+                class="form-control"
+                required
+                id="birthday"
+                name="birthday"
+                placeholder="Nhập ngày sinh"
+              />
+              <label for="date"
+                >Ngày sinh<span class="required-icon">(*)</span></label
+              >
+            </div>
 
-    <div class="form-floating mb-3 mt-3">
-      <input
-        type="date"
-        class="form-control"
-        required
-        id="birthday"
-        name="birthday"
-      />
-      <label>Ngày sinh<span class="required-icon">(*)</span></label>
-    </div>
-    <div class="form-floating mt-3 mb-3">
-      <input
-        type="text"
-        class="form-control"
-        name="address"
-      />
-      <label >Số điện thoại</label>
-    </div>
-    <div class="form-floating mt-3 mb-3">
-      <select required class="form-control" name="gender">
-        <option value="men">Nam</option>
-        <option value="woman">Nữ</option>
-        <option value="others">Khác</option>
+            <div class="form-floating mb-3 mt-3">
+              <input
+                type="text"
+                class="form-control"
+                name="cmnd"
+                id="cmnd"
+                placeholder="Nhập số CCCD"
+              />
+              <label for="cmnd">CMND</label>
+            </div>
 
-      </select>
-      <label>Giới tính<span class="required-icon">(*)</span></label>
-    </div>
+          </div>
+          <div class="col col-lg-4">
+            <div class="form-floating mt-3 mb-3">
+              <input
+                id="phone"
+                type="text"
+                class="form-control"
+                name="phone"
+                placeholder="Nhập số điện thoại"
+              />
+              <label for="phone"
+                >Số điện thoại<span class="required-icon">(*)</span></label
+              >
+            </div>
+            <div class="form-floating mt-3 mb-3">
+              <select required class="form-control" name="gender" id="gender" placeholder="Chon">
+                <option value="men">Nam</option>
+                <option value="woman">Nữ</option>
+                <option value="others">Khác</option>
+              </select>
+              <label for="gender"
+                >Giới tính<span class="required-icon">(*)</span></label
+              >
+            </div>
+            <div class="form-floating mb-3 mt-3">
+              <input
+                id="bhyt"
+                type="text"
+                class="form-control"
+                name="bhyt"
+                placeholder="Nhập số BHYT"
+              />
+              <label for="bhyt">Số BHYT</label>
+            </div>
+            <div class="form-floating mt-3 mb-3">
+              <input
+                id="address"
+                type="text"
+                class="form-control"
+                name="address"
+                placeholder="Nhập địa chỉ"
+              />
+              <label for="address">Địa chỉ</label>
+            </div>
+          </div>
+          <div class="col col-lg-8">
+            <div class="form-floating mt-3 mb-3">
+              <input
+                id="book-date"
+                required
+                type="date"
+                class="form-control"
+                name="booking"
+              />
+              <label for="book-date"
+                >Ngày đặt lịch<span class="required-icon">(*)</span></label
+              >
+            </div>
+          </div>
+          <div class="col col-lg-8">
+            <div class="form-group mb-3 mt-3">
+              <label for="favor">Nhu cầu khám của bạn là gì?</label>
+              <textarea
+                class="form-control"
+                id="favor"
+                rows="3"
+                name="favor"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <div class="form-floating mb-3 mt-3">
-      <input
-        type="number"
-        min='1918-01-01' max='2023-11-17'
-        class="form-control"
-        required
-        placeholder="Nhập số điện thoại"
-        name="phone"
-      />
-      <label for="phone">Số điện thoại</label>
-    </div>
-
-    <div class="form-floating mt-3 mb-3">
-      <input required type="date" class="form-control" name="booking" />
-      <label>Ngày đặt lịch<span class="required-icon">(*)</span></label>
-    </div>
-
-
-
-    <div class="form-floating mt-3 mb-3">
-      <input
-        type="text"
-        class="form-control"
-        name="address"
-      />
-      <label >Địa chỉ</label>
-    </div>
-
-      <div class="form-floating mb-3 mt-3">
-      <input
-         type="number"
-        class="form-control"
-        name="cccd"
-      />
-      <label >CCCD</label>
-    </div>
-
-
-
-    <div class="form-floating mb-3 mt-3">
-      <input
-        type="number"
-        class="form-control"
-        name="bhyt"
-      />
-      <label >Số BHYT</label>
-    </div>
-
-    <div class="form-floating mb-3 mt-3">
-      <input
-        type="text"
-        class="form-control"
-        name="favor"
-      />
-      <label >Favor : </label>
-    </div>
-
-
-    <div class="form-floating mt-3 mb-3">
-      <input type="submit" class="btn btn-danger" value="Đặt lịch" />
-    </div>
-  </form>
+      <div class="form-floating mt-3 mb-3 btn-wrapper">
+        <input type="submit" class="btn btn-danger btn-icon" value="Đặt lịch" />
+      </div>
+    </form>
 </div>
 {% endblock %}

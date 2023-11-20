@@ -1,3 +1,14 @@
 .required-icon {
-    color: red;
-  }
+  color: red;
+}
+
+.btn-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-icon {
+  width: 172px;
+  height: 42px;
+}

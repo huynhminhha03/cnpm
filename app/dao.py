@@ -1,4 +1,4 @@
-from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, Favor, CMND, BHYT, Address, UserRoleEnum
+from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, DanhSachDangKiKhamBenh, Favor, CMND, BHYT, Address, UserRoleEnum
 from app import app
 import hashlib
 
@@ -16,9 +16,21 @@ def get_lichkham_by_ngaykham(ngaykham):
     return lichkham
 
 
+def get_sdt_by_id_danhsachdangkikhambenh(sdt):
+    danhsachdangkikhambenh = DanhSachDangKiKhamBenh.query
+
+    if sdt:
+       danhsachdangkikhambenh = danhsachdangkikhambenh.filter_by(sdt=sdt).first()
+
+    return danhsachdangkikhambenh
+
+
 def count_danhsachkhambenh_theolichkham(id_lichkham):
     return DanhSachKhamBenh.query.filter_by(lichkham_id=id_lichkham).count()
 
+
+def count_danhsachdangkikhambenh_theolichkham(id_lichkham):
+    return DanhSachDangKiKhamBenh.query.filter_by(lichkham_id=id_lichkham).count()
 
 def get_lichkham_by_id(id_lichkham):
     return LichKham.query.get(id_lichkham)

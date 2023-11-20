@@ -3,7 +3,7 @@ from app import app, login, db
 from datetime import datetime
 from flask_login import login_user
 import dao
-from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh ,  Favor, Address, CMND, BHYT, UserRoleEnum
+from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, DanhSachDangKiKhamBenh ,  Favor, Address, Address_temp , Favor_temp , CMND_temp , BHYT_temp ,  CMND, BHYT, UserRoleEnum
 
 
 @app.route("/dat-lich-kham")
@@ -38,71 +38,68 @@ def register_processing():
     birthday = request.form.get('birthday')
     gender = request.form.get('gender')
     phone = request.form.get('phone')
-    booking = request.form.get('booking')
+    cmnd_temp = request.form.get('cmnd')
+    bhyt_temp = request.form.get('bhyt')
+    address_temp = request.form.get('address')
+    date_booking = request.form.get('booking')
+    favor_temp = request.form.get('favor')
 
-    bn = dao.get_duplicate_benhnhan_name_by_sdt(name, phone)
-    l = dao.get_lichkham_by_ngaykham(booking)
 
+#check lich kham da ton tai chua :
 
+    l = dao.get_lichkham_by_ngaykham(date_booking)
     if l:
-        count = dao.count_danhsachkhambenh_theolichkham(l.id)
+        count = dao.count_danhsachdangkikhambenh_theolichkham(l.id)
         l1 = dao.get_lichkham_by_id(l.id)
         if count > 39:
             checked = 'failed'
-            return render_template('booking.html', check=checked , lichkham=l1)
+            return render_template('booking.html', check=checked, lichkham=l1)
     elif not l:
-        l = LichKham(ngaykham=booking)
+        l = LichKham(ngaykham=date_booking)
         db.session.add(l)
         db.session.commit()
 
+#check benh nhan dang ki 1 so dien thoai nhieu lan hay ko :
 
-    if not bn:
-        bn = BenhNhan(ten_benhnhan=name, sdt=phone,user_role=UserRoleEnum.BENH_NHAN)
-        db.session.add(bn)
+    dsdkkb_dup = dao.get_sdt_by_id_danhsachdangkikhambenh(phone)
+    if dsdkkb_dup:
+        l1 = dao.get_lichkham_by_id(l.id)
+        checked = 'duplicate_phone_register'
+        return render_template('booking.html', check=checked, lichkham=l1, dsdkkb=dsdkkb_dup)
+
+#tao danh sach dang ki kham benh
+
+    dsdkkb = DanhSachDangKiKhamBenh(hoten=name, sdt=phone, gioitinh=gender, ngaysinh=birthday, lichkham_id=l.id)
+    db.session.add(dsdkkb)
+    db.session.commit()
+
+    #tao address tam :
+    if address_temp:
+        at = Address_temp(ten_diachi=address_temp,danhsachdangkikhambenh_id=dsdkkb.id)
+        db.session.add(at)
         db.session.commit()
 
-        bn_ct = ChiTietBenhNhan(gioitinh=gender, ngaysinh=birthday, benhnhan_id=bn.id)
-        db.session.add(bn_ct)
-        db.session.commit()
-    else:
-        bn_ct = dao.get_chitietbenhnhan_by_benhnhan_id(bn.id)
-
-    address = request.form.get('address')
-    address_check = dao.get_chitietbenhnhan_by_address(bn_ct.id,address)
-    if address and not address_check:
-        ad = Address(ten_diachi=address, chitiet_benhnhan_id=bn_ct.id)
-        db.session.add(ad)
+    #tao cmnd tam :
+    if cmnd_temp:
+        ct = CMND_temp(so_cmnd=cmnd_temp,danhsachdangkikhambenh_id=dsdkkb.id)
+        db.session.add(ct)
         db.session.commit()
 
-    # cmnd = request.form.get('cccd')
-    # cmnd_check = dao.get_cmnd_by_soCMND(cmnd)
-    # if cmnd and not cmnd_check:
-    #     cc = CMND(so_cmnd=cmnd, chitiet_benhnhan_id=bn_ct.id)
-    #     db.session.add(cc)
-    #     db.session.commit()
-    #
-    #
-    # bhyt = request.form.get('bhyt')
-    # bhyt_check = dao.get_bhyt_by_soBHYT(bhyt)
-    # if bhyt and not bhyt_check:
-    #     bh = BHYT(so_bhyt=bhyt, chitiet_benhnhan_id=bn_ct.id)
-    #     db.session.add(bh)
-    #     db.session.commit()
-    #
-    #
-    #
-    # favor = request.form.get('favor')
-    # if favor:
-    #     fa = Favor(mongmuon=favor, chitiet_benhnhan_id=bn_ct.id)
-    #     db.session.add(fa)
-    #     db.session.commit()
-    #
-    # dskb = DanhSachKhamBenh(user_id=bn.id, lichkham_id=l.id)
-    # db.session.add(dskb)
-    # db.session.commit()
-    # checked = 'success'
+    #tao bhyt tam :
+    if bhyt_temp:
+        bt = BHYT_temp(so_bhyt=bhyt_temp,danhsachdangkikhambenh_id=dsdkkb.id)
+        db.session.add(bt)
+        db.session.commit()
 
-    return render_template('booking.html', check = checked)
+    #tao nhu cau tam :
+    if favor_temp:
+        ft = Favor_temp(mongmuon=favor_temp,danhsachdangkikhambenh_id=dsdkkb.id)
+        db.session.add(ft)
+        db.session.commit()
+
+
+    checked = 'success'
+    return render_template('booking.html', check=checked)
 
 
 if __name__ == '__main__':
