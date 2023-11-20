@@ -1,6 +1,5 @@
 from sqlalchemy.orm import relationship
 from app import db
-from flask_login import UserMixin
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum , DateTime
 import enum
 from datetime import datetime
@@ -16,7 +15,7 @@ class UserRoleEnum(enum.Enum):
     Y_TA = 4
 
 
-class BenhNhan(db.Model, UserMixin):
+class BenhNhan(db.Model):
     __tablename__ = 'benhnhan'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -70,6 +69,23 @@ class CMND(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     so_cmnd = Column(String(20), nullable=False, unique=True)
     chitiet_benhnhan_id = Column(Integer, ForeignKey(ChiTietBenhNhan.id), unique=True)
+
+    def __str__(self):
+        return self.name
+
+class MomoPayment(db.Model):
+    __tablename__ = 'momopayment'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    partnerCode = Column(String(50), nullable=False)
+    orderId = Column(String(50), nullable=False, unique=True)
+    requestId = Column(String(50), nullable=False)
+    amount = Column(String(50), nullable=False)
+    orderInfo = Column(String(50), nullable=False)
+    orderType = Column(String(50), nullable=False)
+    transId = Column(String(50), nullable=False)
+    payType = Column(String(50), nullable=False)
+    signature = Column(String(150), nullable=False)
 
     def __str__(self):
         return self.name
