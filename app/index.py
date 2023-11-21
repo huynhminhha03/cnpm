@@ -1,14 +1,151 @@
-from flask import Flask, render_template, request , redirect , url_for
+from flask import Flask, render_template, request, redirect, url_for
 from app import app, login, db
 from datetime import datetime
 from flask_login import login_user
 import dao
-from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, DanhSachDangKiKhamBenh ,  Favor, Address, Address_temp , Favor_temp , CMND_temp , BHYT_temp ,  CMND, BHYT, UserRoleEnum
+from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, Favor, Address, CMND, BHYT, UserRoleEnum
 
+MAX_VALUE = 40
 
-@app.route("/dat-lich-kham")
+@app.route("/dat-lich-kham", methods=['GET', 'POST'])
 def booking():
-    return render_template("booking.html")
+    user_checked = request.form.get('user_checked')
+    first_checked = request.form.get('first_checked')
+    print(user_checked)
+    print(first_checked)
+
+    checked = None
+    if request.method == "GET":
+        user_checked = 'False'
+        first_checked = 'False'
+
+        return render_template("Authentication/authenUser.html"
+                               , user_checked=user_checked, first_checked=first_checked
+                               )
+    elif request.method == "POST" and first_checked == 'False' and user_checked == 'False':
+
+        first_checked = 'True'
+        name_auth = request.form.get('name_patients_auth')
+        phone_auth = request.form.get('phone_auth')
+
+        ctbn = dao.get_chitietbenhnhan_by_sdt(phone_auth)
+        bn = None
+        if phone_auth and not ctbn:
+            return render_template("User/registerUserForm.html"
+                                   , first_checked=first_checked, user_checked=user_checked, phone=phone_auth,
+                                   name=name_auth)
+        elif phone_auth and ctbn:
+            bn = dao.get_benhnhan_by_id(ctbn.id)
+            if bn.ten_benhnhan == name_auth and ctbn.sdt == phone_auth:
+                user_checked = 'True'
+                return render_template("User/booking.html",
+                                       first_checked=first_checked, user_checked=user_checked, id_benhnhan=bn.id, bn=bn)
+            else:
+                first_checked = 'False'
+                user_checked = 'False'
+                error = 'name_phone_is_not_matched'
+                return render_template("Authentication/authenUser.html"
+                                       , user_checked=user_checked, first_checked=first_checked , error=error
+                                       )
+
+    elif request.method == "POST" and first_checked == 'True' and user_checked == 'False':
+
+        name = request.form.get('name_patients')
+        birthday = request.form.get('birthday')
+        gender = request.form.get('gender')
+        phone = request.form.get('phone')
+        cmnd = request.form.get('cmnd')
+        bhyt = request.form.get('bhyt')
+        address = request.form.get('address')
+
+        if cmnd and dao.get_cmnd_by_soCMND(cmnd):
+            user_checked = 'False'
+            error = 'dup_cmnd'
+            return render_template("User/registerUserForm.html"
+                                   , first_checked=first_checked, user_checked=user_checked, phone=phone, name=name,
+                                   birthday=birthday, error=error, cmnd=cmnd)
+
+        if bhyt and dao.get_bhyt_by_soBHYT(bhyt):
+            user_checked = 'False'
+            error = 'dup_bhyt'
+            return render_template("User/registerUserForm.html"
+                                   , first_checked=first_checked, user_checked=user_checked, phone=phone, name=name,
+                                   birthday=birthday, error=error, bhyt=bhyt)
+
+        bn = BenhNhan(ten_benhnhan=name, user_role=UserRoleEnum.BENH_NHAN)
+        db.session.add(bn)
+        db.session.commit()
+
+        ctbn = ChiTietBenhNhan(gioitinh=gender, sdt=phone, ngaysinh=birthday,benhnhan_id=bn.id)
+        db.session.add(ctbn)
+
+        if cmnd and not dao.get_cmnd_by_soCMND(cmnd):
+            c = CMND(so_cmnd=cmnd, chitiet_benhnhan_id=ctbn.id)
+            db.session.add(c)
+
+
+        if bhyt and not dao.get_bhyt_by_soBHYT(bhyt):
+            bhyt = BHYT(so_bhyt=bhyt, chitiet_benhnhan_id=ctbn.id)
+            db.session.add(bhyt)
+
+
+        if address:
+            a = Address(ten_diachi=address, chitiet_benhnhan_id=ctbn.id)
+            db.session.add(a)
+
+        db.session.commit()
+
+        user_checked = 'True'
+        return render_template("User/Booking.html"
+                               , first_checked=first_checked, user_checked=user_checked, id_benhnhan=bn.id , bn=bn)
+
+    elif request.method == "POST" and first_checked == 'True' and user_checked == 'True':
+
+        favor = request.form.get('favor')
+        date_booking = request.form.get('booking')
+        id_bn = int(request.form.get('id_benhnhan'))
+
+        bn = dao.get_benhnhan_by_id(id_bn)
+        list = dao.get_lichkham_by_ngaykham(date_booking)
+        ctbn = dao.get_chitietbenhnhan_by_benhnhan_id(id_bn)
+
+        if list:
+            count = dao.count_danhsachkhambenh_theo_lichkham(list.id)
+            l1 = dao.get_lichkham_by_id(list.id)
+            if count > MAX_VALUE:
+                checked = 'failed'
+                return render_template('User/booking.html', check=checked, lichkham=l1
+                                       , first_checked=first_checked, user_checked=user_checked, id_benhnhan=bn.id)
+        elif not list:
+            list = LichKham(ngaykham=date_booking)
+            db.session.add(list)
+
+        dskb = dao.get_duplicate_dangkikhambenh_by_2id(bn.id, list.id)
+        if not dskb:
+            dskb = DanhSachKhamBenh(benhnhan_id=bn.id, lichkham_id=list.id)
+            db.session.add(dskb)
+        else:
+            checked = 'duplicate_phone_register'
+            return render_template('User/booking.html', check=checked, lichkham=list
+                                   , first_checked=first_checked, user_checked=user_checked, sdt=ctbn.sdt,
+                                   id_benhnhan=bn.id, bn=bn, dskb=dskb)
+
+        if favor:
+            f = Favor(mongmuon=favor, chitiet_benhnhan_id=ctbn.id)
+            db.session.add(f)
+
+        db.session.commit()
+
+        checked = 'success'
+        return render_template('User/booking.html', check=checked, lichkham=list
+                               , first_checked=first_checked, user_checked=user_checked, sdt=ctbn.sdt,
+                               id_benhnhan=bn.id, bn=bn, dskb=dskb)
+
+    checked = 'failed'
+    user_checked = 'False'
+    first_checked = 'False'
+    return render_template('User/booking.html', check=checked
+                           , first_checked=first_checked, user_checked=user_checked)
 
 
 @login.user_loader
@@ -23,83 +160,12 @@ def home():
 
 @app.route("/register")
 def register():
-    return render_template("register.html")
+    return render_template("Authentication/register.html")
 
 
 @app.route("/login")
 def login():
-    return render_template("login.html")
-
-
-@app.route('/register-process', methods=['post'])
-def register_processing():
-    checked = ""
-    name = request.form.get('name_patients')
-    birthday = request.form.get('birthday')
-    gender = request.form.get('gender')
-    phone = request.form.get('phone')
-    cmnd_temp = request.form.get('cmnd')
-    bhyt_temp = request.form.get('bhyt')
-    address_temp = request.form.get('address')
-    date_booking = request.form.get('booking')
-    favor_temp = request.form.get('favor')
-
-
-#check lich kham da ton tai chua :
-
-    l = dao.get_lichkham_by_ngaykham(date_booking)
-    if l:
-        count = dao.count_danhsachdangkikhambenh_theolichkham(l.id)
-        l1 = dao.get_lichkham_by_id(l.id)
-        if count > 39:
-            checked = 'failed'
-            return render_template('booking.html', check=checked, lichkham=l1)
-    elif not l:
-        l = LichKham(ngaykham=date_booking)
-        db.session.add(l)
-        db.session.commit()
-
-#check benh nhan dang ki 1 so dien thoai nhieu lan hay ko :
-
-    dsdkkb_dup = dao.get_sdt_by_id_danhsachdangkikhambenh(phone)
-    if dsdkkb_dup:
-        l1 = dao.get_lichkham_by_id(l.id)
-        checked = 'duplicate_phone_register'
-        return render_template('booking.html', check=checked, lichkham=l1, dsdkkb=dsdkkb_dup)
-
-#tao danh sach dang ki kham benh
-
-    dsdkkb = DanhSachDangKiKhamBenh(hoten=name, sdt=phone, gioitinh=gender, ngaysinh=birthday, lichkham_id=l.id)
-    db.session.add(dsdkkb)
-    db.session.commit()
-
-    #tao address tam :
-    if address_temp:
-        at = Address_temp(ten_diachi=address_temp,danhsachdangkikhambenh_id=dsdkkb.id)
-        db.session.add(at)
-        db.session.commit()
-
-    #tao cmnd tam :
-    if cmnd_temp:
-        ct = CMND_temp(so_cmnd=cmnd_temp,danhsachdangkikhambenh_id=dsdkkb.id)
-        db.session.add(ct)
-        db.session.commit()
-
-    #tao bhyt tam :
-    if bhyt_temp:
-        bt = BHYT_temp(so_bhyt=bhyt_temp,danhsachdangkikhambenh_id=dsdkkb.id)
-        db.session.add(bt)
-        db.session.commit()
-
-    #tao nhu cau tam :
-    if favor_temp:
-        ft = Favor_temp(mongmuon=favor_temp,danhsachdangkikhambenh_id=dsdkkb.id)
-        db.session.add(ft)
-        db.session.commit()
-
-
-    checked = 'success'
-    return render_template('booking.html', check=checked)
+    return render_template("Authentication/login.html")
 
 
 if __name__ == '__main__':

@@ -5,22 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e493e799-0e1b-4072-b275-6dbb540f19c8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/static/js/text.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/templates/info.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/templates/online-checkout.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/templates/payment/base.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/templates/thanks.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/views.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/cnpm.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/cnpm.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/templates/Authentication/authenUser.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/templates/User/registerUserForm.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/dao.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/index.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/index.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/booking.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/User/booking.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/info.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/payment/info.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/Authentication/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/online-checkout.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/payment/online-checkout.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/Authentication/register.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/thanks.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/payment/thanks.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +28,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -57,21 +55,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "Merging main",
-    "last_opened_file_path": "C:/Users/Lenovo/Desktop/Layout/cnpm",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Lenovo/Desktop/Layout/cnpm&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\ADMIN\Desktop\Clone app\cnpm\app\templates\payment" />
+      <recent name="C:\Users\ADMIN\Desktop\Clone app\cnpm\app\templates\Authentication" />
+      <recent name="C:\Users\ADMIN\Desktop\Clone app\cnpm\app\templates\User" />
+    </key>
+  </component>
   <component name="RunManager" selected="Python.index">
     <configuration name="cnpm" type="PythonConfigurationType" factoryName="Python">
       <module name="cnpm" />
@@ -183,6 +189,9 @@
       <workItem from="1700447323950" duration="4868000" />
       <workItem from="1700484710202" duration="1258000" />
       <workItem from="1700485989596" duration="2623000" />
+      <workItem from="1700496161302" duration="648000" />
+      <workItem from="1700544567406" duration="17426000" />
+      <workItem from="1700577792768" duration="12661000" />
     </task>
     <servers />
   </component>
@@ -190,9 +199,9 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/cnpm$index.coverage" NAME="index Coverage Results" MODIFIED="1700494281986" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
+    <SUITE FILE_PATH="coverage/cnpm$index.coverage" NAME="index Coverage Results" MODIFIED="1700590787524" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
     <SUITE FILE_PATH="coverage/cnpm$dao.coverage" NAME="dao Coverage Results" MODIFIED="1700307815095" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
     <SUITE FILE_PATH="coverage/cnpm$views.coverage" NAME="views Coverage Results" MODIFIED="1700488611650" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
-    <SUITE FILE_PATH="coverage/cnpm$models.coverage" NAME="models Coverage Results" MODIFIED="1700494254829" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
+    <SUITE FILE_PATH="coverage/cnpm$models.coverage" NAME="models Coverage Results" MODIFIED="1700590778739" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
   </component>
 </project>

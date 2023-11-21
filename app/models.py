@@ -20,22 +20,22 @@ class BenhNhan(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     ten_benhnhan = Column(db.String(50), nullable=False)
-    sdt = Column(String(50), nullable=False)
     user_role = Column(Enum(UserRoleEnum), default=UserRoleEnum.BENH_NHAN)
-    chitiet_benhnhan = relationship('ChiTietBenhNhan',backref="benhnhanBr")
+    chitietbenhnhan = relationship('ChiTietBenhNhan',backref="chitietbenhnhanBrbenhnhan")
     danhsachkhambenh = relationship('DanhSachKhamBenh',backref="dskbBrbenhnhan")
 
     def __str__(self):  # Sử dụng __str__ để in ra tên khi sử dụng đối tượng BenhNhan
-        return f"BenhNhan(ten_benhnhan={self.ten_benhnhan}, sdt={self.sdt})"
+        return f"BenhNhan(ten_benhnhan={self.ten_benhnhan})"
 
 
 class ChiTietBenhNhan(db.Model):
-    __tablename__ = 'chitiet_benhnhan'
+    __tablename__ = 'chitietbenhnhan'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     gioitinh = Column(String(50), nullable=False)
+    sdt = Column(String(50), nullable=False,unique=True)
     ngaysinh = Column(DateTime, nullable=False)
-    benhnhan_id = db.Column(Integer, ForeignKey(BenhNhan.id), unique=True)
+    benhnhan_id = db.Column(Integer, ForeignKey(BenhNhan.id),unique=True,nullable=False)
     diachi = relationship('Address',backref="addressBr")
     bhyt = relationship('BHYT',backref="bhytBr")
     cmnd = relationship('CMND',backref="cmndBr")
@@ -43,7 +43,7 @@ class ChiTietBenhNhan(db.Model):
 
 
     def __str__(self):
-        return self.name
+        return f"ChiTietBenhNhan(id={self.id} , benhnhan_id={self.benhnhan_id})"
 
 class LichKham(db.Model):
     __tablename__ = 'lichkham'
@@ -51,21 +51,20 @@ class LichKham(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     ngaykham = Column(DateTime, nullable=False)
     danhsachkhambenh = relationship('DanhSachKhamBenh',backref="dskbBrlichkham")
-    danhsachdangkikhambenh = relationship('DanhSachDangKiKhamBenh',backref="dsdkkbBrlichkham")
 
 
     def __str__(self):
-        return self.name
+        return f"LichKham(id={self.id}, benhnhan_id={self.ngaykham} , lichkham_id={self.danhsachkhambenh.id})"
 
 class DanhSachKhamBenh(db.Model):
     __tablename__ = 'danhsachkhambenh'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(Integer, ForeignKey(BenhNhan.id))
+    benhnhan_id = db.Column(Integer, ForeignKey(BenhNhan.id))
     lichkham_id = db.Column(Integer,ForeignKey(LichKham.id))
 
     def __str__(self):
-        return self.name
+        return f"DanhSachKhamBenh(id={self.id}, benhnhan_id={self.benhnhan_id} , lichkham_id={self.lichkham_id})"
 
 
 class Address(db.Model):
@@ -111,61 +110,7 @@ class Favor(db.Model):
         return self.name
 
 
-class DanhSachDangKiKhamBenh(db.Model):
-    __tablename__ = 'danhsachdangkikhambenh'
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    hoten = Column(db.String(50), nullable=False)
-    sdt = Column(db.String(20), nullable=False)
-    gioitinh = Column(db.String(5), nullable=False)
-    ngaysinh = Column(DateTime, nullable=False)
-
-    diachi_temp = relationship('Address_temp', backref="addressBr_temp")
-    bhyt_temp = relationship('BHYT_temp', backref="bhytBr_temp")
-    cmnd_temp = relationship('CMND_temp', backref="cmndBr_temp")
-    favor_temp = relationship('Favor_temp', backref="favorBr_temp")
-    lichkham_id = db.Column(Integer,ForeignKey(LichKham.id))
-
-
-class Address_temp(db.Model):
-        __tablename__ = 'address_temp'
-
-        id = Column(Integer, primary_key=True, autoincrement=True)
-        ten_diachi = Column(String(200), nullable=False)
-        danhsachdangkikhambenh_id = Column(Integer, ForeignKey(DanhSachDangKiKhamBenh.id))
-
-        def __str__(self):
-            return self.name
-
-class BHYT_temp(db.Model):
-        __tablename__ = 'bhyt_temp'
-
-        id = Column(Integer, primary_key=True, autoincrement=True)
-        so_bhyt = Column(String(20), nullable=False)
-        danhsachdangkikhambenh_id = Column(Integer, ForeignKey(DanhSachDangKiKhamBenh.id))
-
-        def __str__(self):
-            return self.name
-
-class CMND_temp(db.Model):
-        __tablename__ = 'cmnd_temp'
-
-        id = Column(Integer, primary_key=True, autoincrement=True)
-        so_cmnd = Column(String(20), nullable=False)
-        danhsachdangkikhambenh_id = Column(Integer, ForeignKey(DanhSachDangKiKhamBenh.id))
-
-        def __str__(self):
-            return self.name
-
-class Favor_temp(db.Model):
-        __tablename__ = 'favor_temp'
-
-        id = Column(Integer, primary_key=True, autoincrement=True)
-        mongmuon = Column(String(200),nullable=True)
-        danhsachdangkikhambenh_id = Column(Integer, ForeignKey(DanhSachDangKiKhamBenh.id))
-
-        def __str__(self):
-            return self.name
 
 class MomoPayment(db.Model):
     __tablename__ = 'momopayment'

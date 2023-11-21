@@ -1,0 +1,57 @@
+{% extends 'layout/base.html' %} {% block title %}Booking{% endblock %} {% block
+content %}
+<div>
+  <h1 class="text-center text-success">ĐĂNG KÝ LỊCH KHÁM</h1>
+
+    {% if error == 'name_phone_is_not_matched' %}
+      <p>Số điện thoại và tên người đăng kí khám trước đây không trùng khớp !</p>
+    {% endif %}
+
+  <form method="POST" action="/dat-lich-kham">
+
+{#      xóa 2 dòng hidden bố đánh cho hỏng người nhé #}
+
+      <input type="hidden" name="user_checked" value="{{ user_checked }}">
+      <input type="hidden" name="first_checked" value="{{ first_checked }}">
+
+      <div class="container">
+        <div class="row justify-content-lg-center">
+          <div class="col col-lg-4">
+            <div class="form-floating mb-3 mt-3">
+              <input
+                id="name"
+                type="text"
+                class="form-control"
+                required
+                name="name_patients_auth"
+                placeholder="Nhập họ tên"
+              />
+              <label for="name"
+                >Họ tên<span class="required-icon">(*)</span></label
+              >
+            </div>
+          </div>
+
+          <div class="col col-lg-4">
+            <div class="form-floating mt-3 mb-3">
+              <input
+                id="phone"
+                type="text"
+                class="form-control"
+                name="phone_auth"
+                placeholder="Nhập số điện thoại"
+              />
+              <label for="phone"
+                >Số điện thoại<span class="required-icon">(*)</span></label
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-floating mt-3 mb-3 btn-wrapper">
+        <input type="submit" class="btn btn-danger btn-icon" value="Kiểm tra thông tin" />
+      </div>
+    </form>
+</div>
+{% endblock %}

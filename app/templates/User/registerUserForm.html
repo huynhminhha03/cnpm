@@ -1,28 +1,33 @@
 {% extends 'layout/base.html' %} {% block title %}Booking{% endblock %} {% block
 content %}
 <div>
-  <h1 class="text-center text-success">ĐĂNG KÝ LỊCH KHÁM</h1>
+  <h1 class="text-center text-success">ĐĂNG KÝ BỆNH NHÂN</h1>
+    <p> Đối với các khách hàng lần đầu đến khám và sử dụng dịch vụ tại Hệ thống Bệnh viện Đa khoa Tâm Anh, xin vui lòng cung cấp đầy đủ các thông tin của người đến khám theo mẫu bên dưới. Việc cung cấp đầy đủ thông tin sẽ giúp Quý khách tiết kiệm được thời gian làm hồ sơ khách hàng tại bệnh viện.</p>
+    <p> Quý khách hãy kiểm tra kĩ thông tin trước khi đăng kí</p>
 
-  {% if check == 'success' %}
-        <p>Đăng kí lịch khám thành công</p>
-  {% elif check == 'failed' %}
-      <p>Thời gian {{ lichkham.ngaykham.strftime("%d/%m/%Y") }} đã kín lịch , xin vui lòng chọn ngày khác !</p>
-   {% elif check == 'duplicate_phone_register' %}
-      <p>Số điện thoại {{ dsdkkb.sdt }} đã đăng kí ngày {{ lichkham.ngaykham.strftime("%d/%m/%Y") }}, vui lòng chọn ngày khác hoặc đổi số điện thoại !</p>
+  {% if error == 'dup_cmnd' %}
+        <p>Số CMND : {{ cmnd }} này đã được đăng kí !</p>
+  {% elif check == 'dup_bhyt' %}
+     <p>Số Bhyt : {{ bhyt }} này đã được đăng kí !</p>
   {% endif %}
 
-  <form method="post" action="/register-process">
+<form method="POST" action="/dat-lich-kham">
       <div class="container">
         <div class="row justify-content-lg-center">
           <div class="col col-lg-4">
             <div class="form-floating mb-3 mt-3">
+
+           {#      xóa những dòng hidden bố đánh cho hỏng người nhé #}
+                <input type="hidden" name="user_checked" value="{{ user_checked }}">
+                <input type="hidden" name="first_checked" value="{{ first_checked }}">
+
+
               <input
+                readonly
                 id="name"
-                type="text"
                 class="form-control"
-                required
                 name="name_patients"
-                placeholder="Nhập họ tên"
+                value="{{ name }}"
               />
               <label for="name"
                 >Họ tên<span class="required-icon">(*)</span></label
@@ -30,18 +35,17 @@ content %}
             </div>
             <div class="form-floating mb-3 mt-3">
               <input
-                id="date"
-                type="date"
-                class="form-control"
                 required
-                id="birthday"
+                type="date"
+                id="date"
+                class="form-control"
                 name="birthday"
-                placeholder="Nhập ngày sinh"
               />
               <label for="date"
                 >Ngày sinh<span class="required-icon">(*)</span></label
               >
             </div>
+
 
             <div class="form-floating mb-3 mt-3">
               <input
@@ -55,14 +59,15 @@ content %}
             </div>
 
           </div>
+
           <div class="col col-lg-4">
             <div class="form-floating mt-3 mb-3">
               <input
                 id="phone"
-                type="text"
+                readonly
                 class="form-control"
                 name="phone"
-                placeholder="Nhập số điện thoại"
+                value="{{ phone }}"
               />
               <label for="phone"
                 >Số điện thoại<span class="required-icon">(*)</span></label
@@ -88,7 +93,8 @@ content %}
               />
               <label for="bhyt">Số BHYT</label>
             </div>
-            <div class="form-floating mt-3 mb-3">
+
+              <div class="form-floating mt-3 mb-3">
               <input
                 id="address"
                 type="text"
@@ -98,38 +104,18 @@ content %}
               />
               <label for="address">Địa chỉ</label>
             </div>
+
           </div>
-          <div class="col col-lg-8">
-            <div class="form-floating mt-3 mb-3">
-              <input
-                id="book-date"
-                required
-                type="date"
-                class="form-control"
-                name="booking"
-              />
-              <label for="book-date"
-                >Ngày đặt lịch<span class="required-icon">(*)</span></label
-              >
-            </div>
+
+
+
           </div>
-          <div class="col col-lg-8">
-            <div class="form-group mb-3 mt-3">
-              <label for="favor">Nhu cầu khám của bạn là gì?</label>
-              <textarea
-                class="form-control"
-                id="favor"
-                rows="3"
-                name="favor"
-              ></textarea>
-            </div>
           </div>
-        </div>
-      </div>
 
       <div class="form-floating mt-3 mb-3 btn-wrapper">
         <input type="submit" class="btn btn-danger btn-icon" value="Đặt lịch" />
       </div>
     </form>
+
 </div>
 {% endblock %}

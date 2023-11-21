@@ -1,0 +1,62 @@
+{% extends 'layout/base.html' %} {% block title %}Booking{% endblock %} {% block
+content %}
+<div>
+  <h1 class="text-center text-success">ĐĂNG KÝ LỊCH KHÁM</h1>
+
+  {% if check == 'success' %}
+        <p>Đăng kí lịch khám thành công !</p>
+  {% elif check == 'failed' %}
+      <p>Thời gian {{ lichkham.ngaykham.strftime("%d/%m/%Y") }} đã kín lịch , xin vui lòng chọn ngày khác !</p>
+   {% elif check == 'duplicate_phone_register' %}
+      <p>Số điện thoại {{ dskb.sdt }} đã đăng kí ngày {{ lichkham.ngaykham.strftime("%d/%m/%Y") }}, vui lòng chọn ngày khác hoặc đổi số điện thoại !</p>
+  {% endif %}
+
+<p>Chào {{ bn.ten_benhnhan }}</p>
+
+  <form method="POST" action="/dat-lich-kham">
+      <div class="container">
+        <div class="row justify-content-lg-center">
+
+          <div class="col col-lg-8">
+            <div class="form-floating mt-3 mb-3">
+
+                {#      xóa những dòng hidden bố đánh cho hỏng người nhé #}
+
+                 <input type="hidden" name="user_checked" value="{{ user_checked }}">
+                 <input type="hidden" name="first_checked" value="{{ first_checked }}">
+                 <input type="hidden" name="id_benhnhan" value="{{ id_benhnhan }}">
+
+
+              <input
+                id="book-date"
+                required
+                type="date"
+                class="form-control"
+                name="booking"
+              />
+              <label for="book-date"
+                >Ngày đặt lịch<span class="required-icon">(*)</span></label
+              >
+            </div>
+          </div>
+          <div class="col col-lg-8">
+            <div class="form-group mb-3 mt-3">
+              <label for="favor">Nhu cầu khám của bạn là gì?</label>
+              <textarea
+                class="form-control"
+                id="favor"
+                rows="3"
+                name="favor"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+        </div>
+
+
+      <div class="form-floating mt-3 mb-3 btn-wrapper">
+        <input type="submit" class="btn btn-danger btn-icon" value="Đặt lịch" />
+      </div>
+    </form>
+</div>
+{% endblock %}

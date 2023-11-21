@@ -1,4 +1,4 @@
-from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, DanhSachDangKiKhamBenh, Favor, CMND, BHYT, Address, UserRoleEnum
+from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, Favor, CMND, BHYT, Address, UserRoleEnum
 from app import app
 import hashlib
 
@@ -6,43 +6,21 @@ import hashlib
 def get_benhnhan_by_id(id):
     return BenhNhan.query.get(id)
 
+def get_chitietbenhnhan_by_benhnhan_id(benhnhan_id):
+    chitietbenhnhan = None
 
-def get_lichkham_by_ngaykham(ngaykham):
-    lichkham = LichKham.query
+    if benhnhan_id:
+        chitietbenhnhan = ChiTietBenhNhan.query.filter_by(benhnhan_id=benhnhan_id).first()
 
-    if ngaykham:
-        lichkham = lichkham.filter_by(ngaykham=ngaykham).first()
+    return chitietbenhnhan
 
-    return lichkham
-
-
-def get_sdt_by_id_danhsachdangkikhambenh(sdt):
-    danhsachdangkikhambenh = DanhSachDangKiKhamBenh.query
+def get_chitietbenhnhan_by_sdt(sdt):
+    chitietbenhnhan = None
 
     if sdt:
-       danhsachdangkikhambenh = danhsachdangkikhambenh.filter_by(sdt=sdt).first()
+        chitietbenhnhan = ChiTietBenhNhan.query.filter_by(sdt=sdt).first()
 
-    return danhsachdangkikhambenh
-
-
-def count_danhsachkhambenh_theolichkham(id_lichkham):
-    return DanhSachKhamBenh.query.filter_by(lichkham_id=id_lichkham).count()
-
-
-def count_danhsachdangkikhambenh_theolichkham(id_lichkham):
-    return DanhSachDangKiKhamBenh.query.filter_by(lichkham_id=id_lichkham).count()
-
-def get_lichkham_by_id(id_lichkham):
-    return LichKham.query.get(id_lichkham)
-
-
-def get_duplicate_benhnhan_name_by_sdt(name , sdt):
-    benhnhan = None
-
-    benhnhan = BenhNhan.query.filter_by(sdt=sdt,ten_benhnhan = name).first()
-
-    return benhnhan
-
+    return chitietbenhnhan
 
 def get_cmnd_by_soCMND(soCMND):
     cmnd = CMND.query
@@ -60,19 +38,34 @@ def get_bhyt_by_soBHYT(soBHYT):
 
     return bhyt
 
+def get_lichkham_by_ngaykham(ngaykham):
+    lichkham = LichKham.query
 
-def get_chitietbenhnhan_by_address(chitietbn_id, newAddress):
-    address = None
-    address = Address.query.filter_by(chitiet_benhnhan_id=chitietbn_id , ten_diachi = newAddress).first()
+    if ngaykham:
+        lichkham = lichkham.filter_by(ngaykham=ngaykham).first()
 
-    return address
-
+    return lichkham
 
 
-def get_chitietbenhnhan_by_benhnhan_id(benhnhan_id):
-    chitietbenhnhan = None
 
-    if benhnhan_id:
-        chitietbenhnhan = ChiTietBenhNhan.query.filter_by(benhnhan_id=benhnhan_id).first()
+def count_danhsachkhambenh_theo_lichkham(id_lichkham):
+    return DanhSachKhamBenh.query.filter_by(lichkham_id=id_lichkham).count()
 
-    return chitietbenhnhan
+
+
+def get_lichkham_by_id(id_lichkham):
+    return LichKham.query.get(id_lichkham)
+
+
+def get_duplicate_dangkikhambenh_by_2id(id_bn , id_lk):
+    dangkikhambenh= None
+
+    dangkikhambenh = DanhSachKhamBenh.query.filter_by(benhnhan_id=id_bn,lichkham_id = id_lk).first()
+
+    return dangkikhambenh
+
+
+
+
+
+

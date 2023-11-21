@@ -14,14 +14,14 @@ def load_user(id):
 
 @app.route('/')
 def home():
-    return render_template('info.html')
+    return render_template('payment/info.html')
 
 
 @app.route('/payment-success', methods=['GET'])
 def payment_success():
     present_url = request.url
     controllers.momopayment(presentUrl=present_url)
-    return render_template("thanks.html")
+    return render_template("payment/thanks.html")
 
 
 @app.route('/online-checkout', methods=['GET', 'POST'])
@@ -85,7 +85,7 @@ def online_checkout():
         # choice_content = f'Product has price is {price}'
         presentUrl = request.url
         choice_content = f'The present Url is {presentUrl}'
-        return render_template('online-checkout.html', choice_content=choice_content)
+        return render_template('payment/online-checkout.html', choice_content=choice_content)
 
 
 if __name__ == '__main__':
