@@ -8,7 +8,7 @@ content %}
   {% elif check == 'failed' %}
       <p>Thời gian {{ lichkham.ngaykham.strftime("%d/%m/%Y") }} đã kín lịch , xin vui lòng chọn ngày khác !</p>
    {% elif check == 'duplicate_phone_register' %}
-      <p>Số điện thoại {{ dskb.sdt }} đã đăng kí ngày {{ lichkham.ngaykham.strftime("%d/%m/%Y") }}, vui lòng chọn ngày khác hoặc đổi số điện thoại !</p>
+      <p>Số điện thoại {{ dskb.sdt }} đã đăng kí ngày {{ lichkham.ngaykham.strftime("%d/%m/%Y") }}, vui lòng chọn ngày khác !</p>
   {% endif %}
 
 <p>Chào {{ bn.ten_benhnhan }}</p>

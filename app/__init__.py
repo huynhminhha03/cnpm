@@ -10,5 +10,8 @@ app.config["SQLALCHEMY_DATABASE_URI"] = (
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config["SQLALCHEMY_RECORD_QUERIES"] = True
 
+app.config['TWILIO_ACCOUNT_SID'] = 'ACe3829a5417371c7f1e17904b68f3f123'
+app.config['TWILIO_AUTH_TOKEN'] = 'a094b61d17ea7458ff64739a35bc1411'
+
 login = LoginManager(app=app)
 db = SQLAlchemy(app=app)
