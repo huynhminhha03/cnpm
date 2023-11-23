@@ -2,13 +2,13 @@
 content %}
 <div>
   <h1 class="text-center text-success">ĐĂNG KÝ BỆNH NHÂN</h1>
-    <p> Đối với các khách hàng lần đầu đến khám và sử dụng dịch vụ tại Hệ thống Bệnh viện Đa khoa Tâm Anh, xin vui lòng cung cấp đầy đủ các thông tin của người đến khám theo mẫu bên dưới. Việc cung cấp đầy đủ thông tin sẽ giúp Quý khách tiết kiệm được thời gian làm hồ sơ khách hàng tại bệnh viện.</p>
-    <p> Quý khách hãy kiểm tra kĩ thông tin trước khi đăng kí</p>
-
+    <div class="alert alert-info" role="alert"> Đối với các khách hàng lần đầu đến khám và sử dụng dịch vụ tại Hệ thống Bệnh viện Đa khoa Tâm Anh, xin vui lòng cung cấp đầy đủ các thông tin của người đến khám theo mẫu bên dưới. Việc cung cấp đầy đủ thông tin sẽ giúp Quý khách tiết kiệm được thời gian làm hồ sơ khách hàng tại bệnh viện.</div>
+    <div class="alert alert-info" role="alert"> Quý khách hãy kiểm tra kĩ thông tin trước khi đăng kí</div>
+v 
   {% if error == 'dup_cmnd' %}
-        <p>Số CMND : {{ cmnd }} này đã được đăng kí !</p>
+        <div class="alert alert-danger" role="alert" >Số CMND : {{ cmnd }} này đã được đăng kí !</div>
   {% elif check == 'dup_bhyt' %}
-     <p>Số Bhyt : {{ bhyt }} này đã được đăng kí !</p>
+     <pdiv class="alert alert-danger" role="alert" >Số Bhyt : {{ bhyt }} này đã được đăng kí !</pdiv>
   {% endif %}
 
 <form method="POST" action="/dat-lich-kham">
