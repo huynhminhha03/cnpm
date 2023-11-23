@@ -171,6 +171,11 @@ def home():
     return render_template("index.html")
 
 
+@app.route("/admin")
+def admin():
+    return render_template("/admin/index.html")
+
+
 @app.route("/admin/login", methods=['GET', 'POST'])
 def login_admin_process():
     if request.method == 'POST':
