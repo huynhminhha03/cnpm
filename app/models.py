@@ -37,7 +37,6 @@ class Manager(db.Model, UserMixin):
         return self.name
 
 
-
 class BenhNhan(db.Model):
     __tablename__ = 'benhnhan'
 
@@ -83,6 +82,7 @@ class DanhSachKhamBenh(db.Model):
     __tablename__ = 'danhsachkhambenh'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
+
     benhnhan_id = db.Column(Integer, ForeignKey(BenhNhan.id))
     lichkham_id = db.Column(Integer, ForeignKey(LichKham.id))
 
@@ -134,6 +134,13 @@ class Favor(db.Model):
         return self.name
 
 
+class Config(db.Model):
+    __tablename__ = 'config'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    key = Column(String(30), nullable=False, unique=True)
+    value = Column(String(30), nullable=False)
+
+
 class MomoPayment(db.Model):
     __tablename__ = 'momopayment'
 
@@ -158,10 +165,16 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
         import hashlib
+
         superadmin = Manager(ten_quantri='superadmin'
-                        ,username='superadmin'
-                        ,password=str(hashlib.md5('Abc@123'.encode('utf-8')).hexdigest())
-                        ,gioitinh='other',cmnd="000000000000",sdt='0000000000',ngaysinh=datetime.strptime('2023-11-22 00:00:00',"%Y-%m-%d %H:%M:%S")
-                        ,hinhanh=None,diachi='diachi',user_role=UserRoleEnum.ADMIN)
-        db.session.add(superadmin)
+                             , username='superadmin'
+                             , password=str(hashlib.md5('Abc@123'.encode('utf-8')).hexdigest())
+                             , gioitinh='other', cmnd="000000000000", sdt='0000000000',
+                             ngaysinh=datetime.strptime('2023-11-22 00:00:00', "%Y-%m-%d %H:%M:%S")
+                             , hinhanh=None, diachi='diachi', user_role=UserRoleEnum.ADMIN)
+
+        patients_per_day_config = Config(key='patients_per_day', value='40')
+        medical_expenses = Config(key='medical_expenses', value='100000')
+
+        db.session.add_all([superadmin, medical_expenses , patients_per_day_config])
         db.session.commit()

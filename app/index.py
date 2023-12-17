@@ -14,7 +14,9 @@ cloudinary.config(
     api_secret="QBGsplvCUjvxqZFWkpQBWKFT91I"
 )
 
-MAX_VALUE = 40
+# key config
+patients_per_day_key = 'patients_per_day'
+medical_expenses_key = 'medical_expenses'
 
 
 @app.route("/dat-lich-kham", methods=['GET', 'POST'])
@@ -118,10 +120,13 @@ def booking():
         if list:
             count = dao.count_danhsachkhambenh_theo_lichkham(list.id)
             l1 = dao.get_lichkham_by_id(list.id)
-            if count > MAX_VALUE:
+            config_max_patient = dao.get_value_by_key(patients_per_day_key)
+            print(count)
+            print(int(config_max_patient.value))
+            if count > int(config_max_patient.value):
                 checked = 'failed'
                 return render_template('User/booking.html', check=checked, lichkham=l1
-                                       , first_checked=first_checked, user_checked=user_checked, id_benhnhan=bn.id)
+                                       , first_checked=first_checked, user_checked=user_checked, id_benhnhan=bn.id, bn=bn)
         elif not list:
             list = LichKham(ngaykham=date_booking)
             db.session.add(list)
@@ -170,7 +175,6 @@ def load_manager(manager_id):
 @app.route("/")
 def home():
     return render_template("index.html")
-
 
 
 @app.route('/admin/login', methods=['post'])

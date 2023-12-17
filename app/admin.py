@@ -5,7 +5,7 @@ from app import app, db, admin, dao
 from flask_login import logout_user, current_user
 from flask import redirect, request
 from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, Favor, Address, CMND, BHYT, UserRoleEnum, \
-    Manager
+    Manager, Config
 import os
 from datetime import datetime
 import cloudinary
@@ -32,13 +32,13 @@ class AuthenticatedYTa(ModelView):
         return current_user.is_authenticated and current_user.user_role == UserRoleEnum.Y_TA
 
 
-class CustomManagerModelView(ModelView):
+class CustomAdminManagerModelView(ModelView):
     form_create_rules = [
         'ten_quantri', 'username', 'password', 'gioitinh', 'cmnd', 'sdt', 'ngaysinh', 'hinhanh', 'diachi', 'user_role'
     ]
 
     column_labels = {'ten_quantri': 'Họ và tên', 'username': 'Tên người dùng', 'password': 'Mật khẩu',
-                     'gioitinh': 'Giới tính','hinhanh': 'Hình ảnh',
+                     'gioitinh': 'Giới tính', 'hinhanh': 'Hình ảnh',
                      'cmnd': 'Số chứng minh nhân dân', 'sdt': 'Số điện thoại',
                      'ngaysinh': 'Ngày sinh', 'diachi': 'Địa chỉ', 'user_role': 'Chức vụ'}  # Đổi tên trường
 
@@ -81,12 +81,17 @@ class CustomManagerModelView(ModelView):
         return True
 
 
-class AuthenticatedAdmin(CustomManagerModelView):
+class AuthenticatedAdminManager(CustomAdminManagerModelView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.user_role == UserRoleEnum.ADMIN
 
 
-class MyManagerView(AuthenticatedAdmin):
+class AuthenticatedAdminConfig(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.ADMIN
+
+
+class MyManagerView(AuthenticatedAdminManager):
     column_list = ['id', 'username', 'ten_quantri', 'gioitinh', 'cmnd', 'sdt', 'ngaysinh', 'hinhanh', 'diachi',
                    'user_role']
     column_searchable_list = ['id', 'ten_quantri', 'gioitinh', 'cmnd', 'sdt', 'ngaysinh', 'hinhanh', 'diachi',
@@ -94,6 +99,14 @@ class MyManagerView(AuthenticatedAdmin):
     can_create = True
     can_delete = True
     can_edit = True
+
+
+class MyConfigView(AuthenticatedAdminConfig):
+    column_list = ['id', 'key', 'value']
+    column_searchable_list = ['key', 'value']
+    can_edit = True
+    can_create = True
+
 
 
 class MyDanhSachKhamBenhView(AuthenticatedYTa):
@@ -166,4 +179,6 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 
 admin.add_view(MyDanhSachKhamBenhView(DanhSachKhamBenh, db.session))
 admin.add_view(MyManagerView(Manager, db.session))
+admin.add_view(MyConfigView(Config, db.session))
+
 admin.add_view(MyLogoutView(name='Đăng xuất'))
