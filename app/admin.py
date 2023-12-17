@@ -1,5 +1,6 @@
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import Admin, BaseView, expose
+from flask_admin.contrib.sqla.filters import BaseSQLAFilter
 from flask_admin.form.upload import ImageUploadField
 from app import app, db, admin, dao
 from flask_login import logout_user, current_user
@@ -10,8 +11,9 @@ import os
 from datetime import datetime
 import cloudinary
 from cloudinary.uploader import upload
-from wtforms.validators import InputRequired
-from wtforms import SelectField, PasswordField, validators
+from wtforms.validators import InputRequired, DataRequired
+from wtforms import SelectField, PasswordField, validators, SearchField, DateField
+from flask_admin.model import filters
 
 cloudinary.config(
     cloud_name="diwxda8bi",
@@ -23,11 +25,6 @@ cloudinary.config(
 class AuthenticatedUser(BaseView):
     def is_accessible(self):
         return current_user.is_authenticated
-
-
-class AuthenticatedYTa(ModelView):
-    def is_accessible(self):
-        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.Y_TA
 
 
 class CustomAdminManagerModelView(ModelView):
@@ -106,15 +103,33 @@ class MyConfigView(AuthenticatedAdminConfig):
     can_create = True
 
 
-class MyDanhSachKhamBenhView(AuthenticatedYTa):
+class CustomYTaDSKBModelView(ModelView):
+    column_searchable_list = ('lichkham.ngaykham',)
+    column_filters = ['lichkham.ngaykham']
+
+# 2 hàm ghi đè này chưa đè đc ?
+    def _search_placeholder(self):
+        return "Tim kiếm ngày theo định dạng năm-tháng-ngày"
+
+    def search(self, query, search_term):
+        # Ghi đè hàm search để tùy chỉnh quá trình tìm kiếm
+        search_term = datetime.strptime(search_term, "%Y-%m-%d")
+        lichkham = dao.get_lichkham_by_ngaykham(search_term)
+        return DanhSachKhamBenh.query.filter_by(lichkham_id=lichkham.id).all()
+
+
+class AuthenticatedYTaDSKB(CustomYTaDSKBModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.Y_TA
+
+
+class MyDanhSachKhamBenhView(AuthenticatedYTaDSKB):
     column_list = ['stt', 'dskb_lichkham', 'benhnhan_name', 'chitietbenhnhan_gioitinh',
                    'chitietbenhnhan_ngaysinh',
                    'chitietbenhnhan_diachi']
     column_labels = {'stt': 'Số thứ tự', 'dskb_lichkham': 'Lịch khám', 'benhnhan_name': 'Họ tên',
                      'chitietbenhnhan_gioitinh': 'Giới tính'
         , 'chitietbenhnhan_ngaysinh': 'Năm sinh', 'chitietbenhnhan_diachi': 'Địa chỉ'}  # Đổi tên trường
-
-    column_searchable_list = ['lichkham_id']
 
     def _dskb_lichkham_formatter(self, context, model, name):
         lk = dao.get_lichkham_by_id(model.lichkham_id)
@@ -150,6 +165,15 @@ class MyDanhSachKhamBenhView(AuthenticatedYTa):
     can_view_details = True
 
 
+class AuthenticatedYTaDangKiLichKham(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.Y_TA
+
+
+class MyDangKiLichKhamView(AuthenticatedYTaDangKiLichKham):
+    pass
+
+
 class MyLogoutView(AuthenticatedUser):
     @expose("/")
     def index(self):
@@ -161,7 +185,9 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
 admin.add_view(MyDanhSachKhamBenhView(DanhSachKhamBenh, db.session))
+admin.add_view(MyDangKiLichKhamView(BenhNhan, db.session))
+
+
 admin.add_view(MyManagerView(Manager, db.session))
 admin.add_view(MyConfigView(Config, db.session))
-
 admin.add_view(MyLogoutView(name='Đăng xuất'))

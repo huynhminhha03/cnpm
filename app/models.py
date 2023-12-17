@@ -44,7 +44,7 @@ class BenhNhan(db.Model):
     ten_benhnhan = Column(db.String(50), nullable=False)
     user_role = Column(Enum(UserRoleEnum), default=UserRoleEnum.BENH_NHAN)
     chitietbenhnhan = relationship('ChiTietBenhNhan', backref="chitietbenhnhanBrbenhnhan")
-    danhsachkhambenh = relationship('DanhSachKhamBenh', backref="dskbBrbenhnhan")
+#    danhsachkhambenh = relationship('DanhSachKhamBenh', backref="dskbBrbenhnhan")
 
     def __str__(self):  # Sử dụng __str__ để in ra tên khi sử dụng đối tượng BenhNhan
         return f"BenhNhan(ten_benhnhan={self.ten_benhnhan})"
@@ -72,7 +72,7 @@ class LichKham(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     ngaykham = Column(DateTime, nullable=False)
-    danhsachkhambenhs = relationship('DanhSachKhamBenh', backref="lickkham", lazy=True)
+#    danhsachkhambenh = relationship('DanhSachKhamBenh', backref="lickkham", lazy=True)
 
     def __str__(self):
         return f"LichKham(id={self.id}, benhnhan_id={self.ngaykham} , lichkham_id={self.danhsachkhambenh.id})"
@@ -85,6 +85,8 @@ class DanhSachKhamBenh(db.Model):
     stt = db.Column(Integer, nullable=False)
     benhnhan_id = db.Column(Integer, ForeignKey(BenhNhan.id))
     lichkham_id = db.Column(Integer, ForeignKey(LichKham.id))
+    lichkham = db.relationship('LichKham', backref='lichKhamBackrefDanhSachKhamBenhs')
+    benhnhan = db.relationship('BenhNhan', backref='benhnhanBackrefDanhSachKhamBenhs')
 
     def __str__(self):
         return f"DanhSachKhamBenh(id={self.id}, benhnhan_id={self.benhnhan_id} , lichkham_id={self.lichkham_id})"
