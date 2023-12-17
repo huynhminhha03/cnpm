@@ -13,8 +13,6 @@ from cloudinary.uploader import upload
 from wtforms.validators import InputRequired
 from wtforms import SelectField, PasswordField, validators
 
-auto_increment_number = 0
-
 cloudinary.config(
     cloud_name="diwxda8bi",
     api_key="358748635141677",
@@ -108,29 +106,15 @@ class MyConfigView(AuthenticatedAdminConfig):
     can_create = True
 
 
-
 class MyDanhSachKhamBenhView(AuthenticatedYTa):
-    column_list = ['STT', 'dskb_lichkham', 'benhnhan_name', 'chitietbenhnhan_gioitinh',
+    column_list = ['stt', 'dskb_lichkham', 'benhnhan_name', 'chitietbenhnhan_gioitinh',
                    'chitietbenhnhan_ngaysinh',
                    'chitietbenhnhan_diachi']
-    column_labels = {'dskb_lichkham': 'Lịch khám', 'benhnhan_name': 'Họ tên', 'chitietbenhnhan_gioitinh': 'Giới tính'
+    column_labels = {'stt': 'Số thứ tự', 'dskb_lichkham': 'Lịch khám', 'benhnhan_name': 'Họ tên',
+                     'chitietbenhnhan_gioitinh': 'Giới tính'
         , 'chitietbenhnhan_ngaysinh': 'Năm sinh', 'chitietbenhnhan_diachi': 'Địa chỉ'}  # Đổi tên trường
 
     column_searchable_list = ['lichkham_id']
-
-    def _stt_formatter(self, context, model, name):
-        global auto_increment_number
-
-        # Sử dụng số tự tăng và sau đó tăng giá trị cho lần nạp tiếp theo
-        current_number = auto_increment_number
-
-        auto_increment_number += 1
-        sl = dao.count_danhsachkhambenh_theo_lichkham(model.lichkham_id)
-        str_num = str(auto_increment_number)
-        if auto_increment_number == sl:
-            auto_increment_number = 0
-
-        return str_num
 
     def _dskb_lichkham_formatter(self, context, model, name):
         lk = dao.get_lichkham_by_id(model.lichkham_id)
@@ -154,7 +138,6 @@ class MyDanhSachKhamBenhView(AuthenticatedYTa):
         return diachi.ten_diachi if diachi else 'Chưa cập nhật'
 
     column_formatters = {
-        'STT': _stt_formatter,
         'dskb_lichkham': _dskb_lichkham_formatter,
         'benhnhan_name': _benhnhan_ten_formatter,
         'chitietbenhnhan_gioitinh': _chitietbenhnhan_gioiTinh_formatter,

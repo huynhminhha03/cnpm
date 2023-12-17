@@ -132,8 +132,11 @@ def booking():
             db.session.add(list)
 
         dskb = dao.get_duplicate_dangkikhambenh_by_2id(bn.id, list.id)
+        count = dao.count_danhsachkhambenh_theo_lichkham(list.id)
+
         if not dskb:
-            dskb = DanhSachKhamBenh(benhnhan_id=bn.id, lichkham_id=list.id)
+            stt = count + 1
+            dskb = DanhSachKhamBenh(stt=stt, benhnhan_id=bn.id, lichkham_id=list.id)
             db.session.add(dskb)
         else:
             checked = 'duplicate_phone_register'

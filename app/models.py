@@ -82,7 +82,7 @@ class DanhSachKhamBenh(db.Model):
     __tablename__ = 'danhsachkhambenh'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-
+    stt = db.Column(Integer, nullable=False)
     benhnhan_id = db.Column(Integer, ForeignKey(BenhNhan.id))
     lichkham_id = db.Column(Integer, ForeignKey(LichKham.id))
 
@@ -176,5 +176,5 @@ if __name__ == "__main__":
         patients_per_day_config = Config(key='patients_per_day', value='40')
         medical_expenses = Config(key='medical_expenses', value='100000')
 
-        db.session.add_all([superadmin, medical_expenses , patients_per_day_config])
+        db.session.add_all([superadmin, medical_expenses, patients_per_day_config])
         db.session.commit()
