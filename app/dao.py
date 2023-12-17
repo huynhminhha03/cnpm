@@ -26,6 +26,14 @@ def get_chitietbenhnhan_by_sdt(sdt):
     return chitietbenhnhan
 
 
+def get_diachi_by_ctbn_id(ctbn_id):
+    diachi = Address.query
+    if ctbn_id:
+        diachi = diachi.filter_by(chitiet_benhnhan_id=ctbn_id).first()
+
+    return diachi
+
+
 def get_cmnd_by_soCMND(soCMND):
     cmnd = CMND.query
     if soCMND:
@@ -51,6 +59,9 @@ def get_lichkham_by_ngaykham(ngaykham):
 
     return lichkham
 
+def get_danhsachkhambenh_theo_lichkham(ngaykham):
+    lk = get_lichkham_by_ngaykham(ngaykham)
+    return DanhSachKhamBenh.query.filter_by(lichkham_id=lk.id).all()
 
 def count_danhsachkhambenh_theo_lichkham(id_lichkham):
     return DanhSachKhamBenh.query.filter_by(lichkham_id=id_lichkham).count()
@@ -77,5 +88,4 @@ def get_manager_by_id(id):
 def auth_manager(username, password):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
     return Manager.query.filter(Manager.username.__eq__(username.strip()),
-                                Manager.password.__eq__(password),
-                                Manager.user_role.__eq__(UserRoleEnum.ADMIN)).first()
+                                Manager.password.__eq__(password)).first()

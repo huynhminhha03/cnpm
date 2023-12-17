@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for
-from app import app, login, db
+from app import app, login_manager, db
 from twilio.rest import Client
 import dao
 from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, Favor, Address, CMND, BHYT, UserRoleEnum
-from flask_login import login_user
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import cloudinary
 import cloudinary.uploader
+from admin import *
 
 cloudinary.config(
     cloud_name="diwxda8bi",
@@ -144,11 +145,11 @@ def booking():
         checked = 'success'
         client = Client(app.config['TWILIO_ACCOUNT_SID'], app.config['TWILIO_AUTH_TOKEN'])
 
-        message = client.messages.create(
-            body=f'Số điện thoại {ctbn.sdt} đã đặt lịch vào ngày {list.ngaykham.strftime("%d/%m/%Y")} thành công ! ',
-            from_='+13302997281',
-            to=f'+84{ctbn.sdt[1:]}'
-        )
+        # message = client.messages.create(
+        #     body=f'Số điện thoại {ctbn.sdt} đã đặt lịch vào ngày {list.ngaykham.strftime("%d/%m/%Y")} thành công ! ',
+        #     from_='+13302997281',
+        #     to=f'+84{ctbn.sdt[1:]}'
+        # )
 
         return render_template('User/booking.html', check=checked, lichkham=list
                                , first_checked=first_checked, user_checked=user_checked, sdt=ctbn.sdt,
@@ -161,7 +162,7 @@ def booking():
                            , first_checked=first_checked, user_checked=user_checked)
 
 
-@login.user_loader
+@login_manager.user_loader
 def load_manager(manager_id):
     return dao.get_manager_by_id(manager_id)
 
@@ -171,26 +172,22 @@ def home():
     return render_template("index.html")
 
 
-@app.route("/admin")
-def admin():
-    return render_template("/admin/index.html")
 
-
-@app.route("/admin/login", methods=['GET', 'POST'])
+@app.route('/admin/login', methods=['post'])
 def login_admin_process():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
+    username = request.form.get('username')
+    password = request.form.get('password')
 
-        manager = dao.auth_manager(username=username, password=password)
-        if manager:
-            login_user(user=manager)
-            return redirect('/admin')
-        else:
-            err_msg = 'Sai tên người dùng hoặc mật khẩu !'
-            return render_template("Authentication/login.html", err_msg=err_msg)
-    else:
-        return render_template("Authentication/login.html")
+    user = dao.auth_manager(username=username, password=password)
+    if user:
+        login_user(user=user)
+
+    return redirect('/admin')
+
+
+@app.errorhandler(401)
+def unauthorized(e):
+    return render_template('Authentication/authenDeny.html'), 401
 
 
 @app.route("/upload", methods=['GET', 'POST'])

@@ -5,7 +5,7 @@ content %}
 
   {% if check == 'success' %}
   <div class="alert alert-success" role="alert">
-    Đăng kí lịch khám thành công !
+    Đăng kí lịch khám thành công ! (Chúng tôi đã gửi thông báo qua số điện thoại của bạn, vui lòng kiểm tra)
   </div>
   {% elif check == 'failed' %}
   <div class="alert alert-warning" role="alert">
@@ -22,9 +22,7 @@ content %}
   {% endif %}
 
   <p>
-    Chào<span class="text-uppercase font-weight-bold text-primary">
-      HUỲNH MINH HÀ</span
-    >,
+    Chào<span class="text-uppercase font-weight-bold text-primary"> {{ bn.ten_benhnhan }} </span>
   </p>
 
   <form method="POST" action="/dat-lich-kham">

@@ -73,7 +73,7 @@ class LichKham(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     ngaykham = Column(DateTime, nullable=False)
-    danhsachkhambenh = relationship('DanhSachKhamBenh', backref="dskbBrlichkham")
+    danhsachkhambenhs = relationship('DanhSachKhamBenh', backref="lickkham", lazy=True)
 
     def __str__(self):
         return f"LichKham(id={self.id}, benhnhan_id={self.ngaykham} , lichkham_id={self.danhsachkhambenh.id})"
