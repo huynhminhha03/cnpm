@@ -33,6 +33,28 @@ def get_diachi_by_ctbn_id(ctbn_id):
 
     return diachi
 
+def get_diachi_by_ten_diachi(ten_diachi):
+    diachi = Address.query
+    if ten_diachi:
+        diachi = diachi.filter_by(ten_diachi=ten_diachi).first()
+
+    return diachi
+
+def get_cmnd_by_ctbn_id(ctbn_id):
+    cmnd = CMND.query
+    if ctbn_id:
+        cmnd = cmnd.filter_by(chitiet_benhnhan_id=ctbn_id).first()
+
+    return cmnd
+
+
+def get_bhyt_by_ctbn_id(ctbn_id):
+    bhyt = BHYT.query
+    if ctbn_id:
+        bhyt = bhyt.filter_by(chitiet_benhnhan_id=ctbn_id).first()
+
+    return bhyt
+
 
 def get_value_by_key(key):
     value = Config.query

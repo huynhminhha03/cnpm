@@ -44,7 +44,7 @@ class BenhNhan(db.Model):
     ten_benhnhan = Column(db.String(50), nullable=False)
     user_role = Column(Enum(UserRoleEnum), default=UserRoleEnum.BENH_NHAN)
     chitietbenhnhan = relationship('ChiTietBenhNhan', backref="chitietbenhnhanBrbenhnhan")
-#    danhsachkhambenh = relationship('DanhSachKhamBenh', backref="dskbBrbenhnhan")
+#   danhsachkhambenh = relationship('DanhSachKhamBenh', backref="dskbBrbenhnhan")
 
     def __str__(self):  # Sử dụng __str__ để in ra tên khi sử dụng đối tượng BenhNhan
         return f"BenhNhan(ten_benhnhan={self.ten_benhnhan})"
