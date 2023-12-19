@@ -5,8 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e493e799-0e1b-4072-b275-6dbb540f19c8" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/app/templates/admin/medical_examination.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/index.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/index.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/static/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/static/css/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/Authentication/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/Authentication/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/admin/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/admin/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,10 +68,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\ADMIN\Desktop\Clone app\cnpm\app\templates\admin" />
+      <recent name="C:\Users\ADMIN\Desktop\Clone app\cnpm\app\templates" />
       <recent name="C:\Users\ADMIN\Desktop\Clone app\cnpm\app\templates\Manager\Yta" />
       <recent name="C:\Users\ADMIN\Desktop\Clone app\cnpm\app\templates\payment" />
       <recent name="C:\Users\ADMIN\Desktop\Clone app\cnpm\app\templates\Authentication" />
-      <recent name="C:\Users\ADMIN\Desktop\Clone app\cnpm\app\templates\User" />
     </key>
   </component>
   <component name="RunManager" selected="Python.index">
@@ -333,14 +339,27 @@
       <workItem from="1702810356321" duration="13163000" />
       <workItem from="1702896055436" duration="18088000" />
       <workItem from="1702946993512" duration="2703000" />
+      <workItem from="1702949840312" duration="6037000" />
+      <workItem from="1702955931929" duration="4763000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/cnpm$index.coverage" NAME="index Coverage Results" MODIFIED="1702948738076" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
+    <SUITE FILE_PATH="coverage/cnpm$index.coverage" NAME="index Coverage Results" MODIFIED="1702960686541" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
     <SUITE FILE_PATH="coverage/cnpm$dao.coverage" NAME="dao Coverage Results" MODIFIED="1700307815095" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
     <SUITE FILE_PATH="coverage/cnpm$admin.coverage" NAME="admin Coverage Results" MODIFIED="1700797135228" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
     <SUITE FILE_PATH="coverage/cnpm$views.coverage" NAME="views Coverage Results" MODIFIED="1700488611650" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />

@@ -389,7 +389,7 @@ class CustomYTaBenhNhanModelView(ModelView):
         if diachi:
             diachi.ten_diachi = form['chitietbenhnhan.diachi'].data
         elif not diachi:
-            diachi = Address(ten_diachi=form['chitietbenhnhan.diachi'].data,chitiet_benhnhan_id=ctbn.id)
+            diachi = Address(ten_diachi=form['chitietbenhnhan.diachi'].data, chitiet_benhnhan_id=ctbn.id)
             self.session.add(diachi)
             self.session.commit()
 
@@ -397,7 +397,7 @@ class CustomYTaBenhNhanModelView(ModelView):
         if cmnd:
             cmnd.so_cmnd = form['chitietbenhnhan.cmnd'].data
         elif not cmnd:
-            cmnd = CMND(so_cmnd=form['chitietbenhnhan.cmnd'].data,chitiet_benhnhan_id=ctbn.id)
+            cmnd = CMND(so_cmnd=form['chitietbenhnhan.cmnd'].data, chitiet_benhnhan_id=ctbn.id)
             self.session.add(cmnd)
             self.session.commit()
 
@@ -426,6 +426,21 @@ class MyBenhNhanView(AuthenticatedYTaBenhNhan):
     can_delete = False
 
 
+class CustomYTaDKKBModelView(BaseView):
+    @expose('/')
+    def index(self):
+        return self.render('admin/medical_examination.html')
+
+
+class AuthenticatedYTaDKKB(CustomYTaDKKBModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.Y_TA
+
+
+class MyDKKBView(AuthenticatedYTaDKKB):
+    pass
+
+
 class MyLogoutView(AuthenticatedUser):
     @expose("/")
     def index(self):
@@ -438,6 +453,7 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 
 admin.add_view(MyDanhSachKhamBenhView(DanhSachKhamBenh, db.session))
 admin.add_view(MyBenhNhanView(BenhNhan, db.session))
+admin.add_view(MyDKKBView(name='Đăng kí lịch khám', endpoint='dkkb'))
 
 admin.add_view(MyManagerView(Manager, db.session))
 admin.add_view(MyConfigView(Config, db.session))
