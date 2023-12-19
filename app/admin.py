@@ -358,17 +358,58 @@ class CustomYTaBenhNhanModelView(ModelView):
         sdt = getattr(model, 'chitietbenhnhan.sdt')
         so_cmnd = getattr(model, 'chitietbenhnhan.cmnd')
         so_bhyt = getattr(model, 'chitietbenhnhan.bhyt')
+        existing_cmnd = None
+        existing_bhyt = None
 
         existing_sdt = dao.get_chitietbenhnhan_by_sdt(sdt)
-        existing_cmnd = dao.get_cmnd_by_soCMND(so_cmnd)
-        existing_bhyt = dao.get_bhyt_by_soBHYT(so_bhyt)
+        if so_cmnd:
+            existing_cmnd = dao.get_cmnd_by_soCMND(so_cmnd)
+        if so_bhyt:
+            existing_bhyt = dao.get_bhyt_by_soBHYT(so_bhyt)
 
         if existing_sdt:
             db.session.rollback()
             form['chitietbenhnhan.sdt'].errors.append('Số điện thoại này đã được đăng kí !')
 
+        if existing_cmnd:
+            db.session.rollback()
+            form['chitietbenhnhan.cmnd'].errors.append('Số CMND này đã được đăng kí !')
+
+        if existing_bhyt:
+            db.session.rollback()
+            form['chitietbenhnhan.bhyt'].errors.append('Số BHYT này đã được đăng kí !')
+
         # Thực hiện xử lý sau khi mô hình được thay đổi
+        bn.ten_benhnhan = form['ten_benhnhan'].data
+        ctbn.ngaysinh = form['chitietbenhnhan.ngaysinh'].data
+        ctbn.gioitinh = form['chitietbenhnhan.gioitinh'].data
         ctbn.sdt = form['chitietbenhnhan.sdt'].data
+
+        diachi = dao.get_diachi_by_ctbn_id(ctbn.id)
+        if diachi:
+            diachi.ten_diachi = form['chitietbenhnhan.diachi'].data
+        elif not diachi:
+            diachi = Address(ten_diachi=form['chitietbenhnhan.diachi'].data,chitiet_benhnhan_id=ctbn.id)
+            self.session.add(diachi)
+            self.session.commit()
+
+        cmnd = dao.get_cmnd_by_ctbn_id(ctbn.id)
+        if cmnd:
+            cmnd.so_cmnd = form['chitietbenhnhan.cmnd'].data
+        elif not cmnd:
+            cmnd = CMND(so_cmnd=form['chitietbenhnhan.cmnd'].data,chitiet_benhnhan_id=ctbn.id)
+            self.session.add(cmnd)
+            self.session.commit()
+
+        bhyt = dao.get_bhyt_by_ctbn_id(ctbn.id)
+        if bhyt:
+            bhyt.so_bhyt = form['chitietbenhnhan.bhyt'].data
+        elif not bhyt:
+            bhyt = BHYT(so_bhyt=form['chitietbenhnhan.bhyt'].data, chitiet_benhnhan_id=ctbn.id)
+            self.session.add(bhyt)
+            self.session.commit()
+
+        self.session.add(bn)
         self.session.add(ctbn)
         self.session.commit()
 
