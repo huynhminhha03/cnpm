@@ -1,5 +1,5 @@
 from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, Manager, Favor, CMND, BHYT, Address, \
-    UserRoleEnum, Config
+    UserRoleEnum, Config, LoaiThuoc, DonViThuoc
 from app import app
 import hashlib
 
@@ -33,12 +33,14 @@ def get_diachi_by_ctbn_id(ctbn_id):
 
     return diachi
 
+
 def get_diachi_by_ten_diachi(ten_diachi):
     diachi = Address.query
     if ten_diachi:
         diachi = diachi.filter_by(ten_diachi=ten_diachi).first()
 
     return diachi
+
 
 def get_cmnd_by_ctbn_id(ctbn_id):
     cmnd = CMND.query
@@ -111,12 +113,27 @@ def get_duplicate_dangkikhambenh_by_2id(id_bn, id_lk):
     return dangkikhambenh
 
 
+def get_loaithuoc_by_id(id):
+    return LoaiThuoc.query.get(id)
+
+
+def get_loaithuoc_by_tenloaithuoc(ten_loaithuoc):
+    loaithuoc = LoaiThuoc.query
+
+    if ten_loaithuoc:
+        loaithuoc = loaithuoc.filter_by(ten_loaithuoc=ten_loaithuoc).first()
+
+    return loaithuoc
+
+
+def get_donvithuoc_by_id(id):
+    return DonViThuoc.query.get(id)
+
+
 # Authenticate Manager :
 
 def get_manager_by_id(id):
     return Manager.query.get(id)
-
-
 
 
 def auth_manager(username, password):

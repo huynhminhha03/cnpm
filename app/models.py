@@ -44,7 +44,8 @@ class BenhNhan(db.Model):
     ten_benhnhan = Column(db.String(50), nullable=False)
     user_role = Column(Enum(UserRoleEnum), default=UserRoleEnum.BENH_NHAN)
     chitietbenhnhan = relationship('ChiTietBenhNhan', backref="chitietbenhnhanBrbenhnhan")
-#   danhsachkhambenh = relationship('DanhSachKhamBenh', backref="dskbBrbenhnhan")
+
+    #   danhsachkhambenh = relationship('DanhSachKhamBenh', backref="dskbBrbenhnhan")
 
     def __str__(self):  # Sử dụng __str__ để in ra tên khi sử dụng đối tượng BenhNhan
         return f"BenhNhan(ten_benhnhan={self.ten_benhnhan})"
@@ -72,7 +73,8 @@ class LichKham(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     ngaykham = Column(DateTime, nullable=False)
-#    danhsachkhambenh = relationship('DanhSachKhamBenh', backref="lickkham", lazy=True)
+
+    #    danhsachkhambenh = relationship('DanhSachKhamBenh', backref="lickkham", lazy=True)
 
     def __str__(self):
         return f"LichKham(id={self.id}, benhnhan_id={self.ngaykham} , lichkham_id={self.danhsachkhambenh.id})"
@@ -139,8 +141,23 @@ class Favor(db.Model):
 class Config(db.Model):
     __tablename__ = 'config'
     id = Column(Integer, primary_key=True, autoincrement=True)
+    ten_config = Column(String(40), nullable=False, unique=True)
     key = Column(String(30), nullable=False, unique=True)
     value = Column(String(30), nullable=False)
+
+
+class DonViThuoc(db.Model):
+    __tablename__ = 'donvithuoc'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    ten_donvithuoc = Column(String(10), nullable=False, unique=True)
+    loaithuoc = db.relationship('LoaiThuoc', backref='loaithuocBackrefDonViThuoc')
+
+
+class LoaiThuoc(db.Model):
+    __tablename__ = 'loaithuoc'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    ten_loaithuoc = Column(String(100), nullable=False, unique=True)
+    donvithuoc_id = Column(Integer, ForeignKey(DonViThuoc.id))
 
 
 class MomoPayment(db.Model):
@@ -175,8 +192,9 @@ if __name__ == "__main__":
                              ngaysinh=datetime.strptime('2023-11-22 00:00:00', "%Y-%m-%d %H:%M:%S")
                              , hinhanh=None, diachi='diachi', user_role=UserRoleEnum.ADMIN)
 
-        patients_per_day_config = Config(key='patients_per_day', value='40')
-        medical_expenses = Config(key='medical_expenses', value='100000')
+        patients_per_day_config = Config(ten_config="Số lượng bệnh nhân tối đa trong 1 ngày", key='patients_per_day',
+                                         value='40')
+        medical_expenses = Config(ten_config="Tiền khám bệnh trong 1 lần khám", key='medical_expenses', value='100000')
 
         db.session.add_all([superadmin, medical_expenses, patients_per_day_config])
         db.session.commit()

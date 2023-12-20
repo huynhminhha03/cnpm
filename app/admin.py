@@ -5,7 +5,7 @@ from app import app, db, admin, dao
 from flask_login import logout_user, current_user
 from flask import redirect
 from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, Favor, Address, CMND, BHYT, UserRoleEnum, \
-    Manager, Config
+    Manager, Config, LoaiThuoc, DonViThuoc
 import os
 from datetime import datetime
 import cloudinary
@@ -37,23 +37,26 @@ class CustomAdminManagerModelView(ModelView):
                      'ngaysinh': 'Ngày sinh', 'diachi': 'Địa chỉ', 'user_role': 'Chức vụ'}  # Đổi tên trường
 
     form_extra_fields = {
-        'hinhanh': ImageUploadField('Hình ảnh', base_path=app.config['UPLOAD_FOLDER'],
-                                    thumbnail_size=(100, 100, True), validators=[InputRequired()]),
+
+        'ten_quantri': StringField('Họ và tên', [validators.DataRequired(),
+                                                 validators.Regexp(r'^[a-zA-Z]+$',
+                                                                   message='Phải là những kí tự chữ !')]),
+
+        'sdt': StringField('Số điện thoại', [validators.DataRequired(),
+                                             validators.Regexp(r'^\d+$', message='Phải là những kí tự số !')]),
+
         'gioitinh': SelectField('Giới tính', choices=[('Nam', 'Nam'), ('Nữ', 'Nữ'), ('Khác', 'Khác')],
                                 validators=[InputRequired()]),
-        'password': PasswordField('Mật khẩu', validators=[validators.DataRequired()])
+        'password': PasswordField('Mật khẩu', validators=[validators.DataRequired()]),
+
+        'hinhanh': ImageUploadField('Hình ảnh', base_path=app.config['UPLOAD_FOLDER'],
+                                    thumbnail_size=(100, 100, True), validators=[InputRequired()]),
+
+        'cmnd': StringField('Số chứng minh nhân dân', [validators.DataRequired(),
+                                                       validators.Regexp(r'^\d+$',
+                                                                         message='Phải là những kí tự số !')]),
+
     }
-
-    def on_model_change(self, form, model, is_created):
-        super().on_model_change(form, model, is_created)
-        image_path = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'], model.hinhanh)
-
-        # Tải lên hình ảnh lên Cloudinary
-        response = upload(image_path)
-        model.hinhanh = response['secure_url']
-
-        # Xóa hình ảnh cục bộ sau khi tải lên Cloudinary
-        os.remove(image_path)
 
     def create_model(self, form):
         model = self.model()
@@ -74,6 +77,34 @@ class CustomAdminManagerModelView(ModelView):
         self.session.commit()
         return True
 
+    def on_form_prefill(self, form, id):
+        # Lấy mô hình từ cơ sở dữ liệu
+        model = self.get_one(id)
+        manager = dao.get_manager_by_id(id)
+        if model:
+            form.hinhanh.data = manager.hinhanh
+
+    def on_model_change(self, form, model, is_created):
+        super().on_model_change(form, model, is_created)
+        image_path = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'], model.hinhanh)
+
+        # Tải lên hình ảnh lên Cloudinary
+
+        response = upload(image_path)
+        model.hinhanh = response['secure_url']
+
+        # Xóa hình ảnh cục bộ sau khi tải lên Cloudinary
+        os.remove(image_path)
+
+        # custom edit manager
+        import hashlib
+
+        manager = dao.get_manager_by_id(model.id)
+        if manager:
+            manager.password = str(hashlib.md5(model.password.encode('utf-8')).hexdigest())
+            self.session.add(manager)
+            self.session.commit()
+
 
 class AuthenticatedAdminManager(CustomAdminManagerModelView):
     def is_accessible(self):
@@ -91,15 +122,16 @@ class MyManagerView(AuthenticatedAdminManager):
     column_searchable_list = ['id', 'ten_quantri', 'gioitinh', 'cmnd', 'sdt', 'ngaysinh', 'hinhanh', 'diachi',
                               'user_role']
     can_create = True
-    can_delete = True
+    can_delete = False
     can_edit = True
 
 
 class MyConfigView(AuthenticatedAdminConfig):
-    column_list = ['id', 'key', 'value']
-    column_searchable_list = ['key', 'value']
+    column_list = ['id', 'ten_config', 'value']
+    column_searchable_list = ['ten_config', 'value']
     can_edit = True
     can_create = True
+    can_delete = False
 
 
 class CustomYTaDSKBModelView(ModelView):
@@ -238,7 +270,8 @@ class CustomYTaBenhNhanModelView(ModelView):
         'chitietbenhnhan.gioitinh': SelectField('Giới tính', choices=[('Nam', 'Nam'), ('Nữ', 'Nữ'), ('Khác', 'Khác')],
                                                 validators=[InputRequired()]),
         'chitietbenhnhan.sdt': StringField('Số điện thoại', [validators.DataRequired(),
-                                                             validators.Regexp(r'^\d+$', message='Must be a number')]),
+                                                             validators.Regexp(r'^\d+$',
+                                                                               message='Phải là những kí tự số !')]),
         'chitietbenhnhan.ngaysinh': DateField('Ngày sinh', validators=[InputRequired()]),
         'chitietbenhnhan.diachi': StringField('Địa chỉ'),
         'chitietbenhnhan.cmnd': StringField('Số chứng minh nhân dân'),
@@ -441,6 +474,34 @@ class MyDKKBView(AuthenticatedYTaDKKB):
     pass
 
 
+class CustomBacSiLoaiThuocView(ModelView):
+    column_list = ['ten_loaithuoc', 'donvithuoc.ten_donvithuoc']
+
+    column_labels = {'ten_loaithuoc': 'Tên loại thuốc', 'donvithuoc.ten_donvithuoc': 'Đơn vị thuốc'}  # Đổi tên trường
+
+    column_searchable_list = ('ten_loaithuoc',)
+
+    def _donvithuoc_tendonvithuoc_formatter(self, context, model, name):
+        loaithuoc = dao.get_loaithuoc_by_id(model.id)
+        donvithuoc = dao.get_donvithuoc_by_id(loaithuoc.donvithuoc_id)
+        return donvithuoc.ten_donvithuoc if donvithuoc else 'Chưa cập nhật'
+
+    column_formatters = {
+        'donvithuoc.ten_donvithuoc': _donvithuoc_tendonvithuoc_formatter,
+    }
+
+
+class AuthenticatedBacSiLoaiThuoc(CustomBacSiLoaiThuocView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.BAC_SI
+
+
+class MyThuocView(AuthenticatedBacSiLoaiThuoc):
+    can_create = False
+    can_delete = False
+    can_edit = False
+
+
 class MyLogoutView(AuthenticatedUser):
     @expose("/")
     def index(self):
@@ -451,10 +512,14 @@ class MyLogoutView(AuthenticatedUser):
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
+# Yta
 admin.add_view(MyDanhSachKhamBenhView(DanhSachKhamBenh, db.session))
 admin.add_view(MyBenhNhanView(BenhNhan, db.session))
 admin.add_view(MyDKKBView(name='Đăng kí lịch khám', endpoint='dkkb'))
-
+# Admin
 admin.add_view(MyManagerView(Manager, db.session))
 admin.add_view(MyConfigView(Config, db.session))
+# Bac si
+admin.add_view(MyThuocView(LoaiThuoc, db.session))
+# general
 admin.add_view(MyLogoutView(name='Đăng xuất'))

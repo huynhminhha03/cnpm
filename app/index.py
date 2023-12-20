@@ -123,7 +123,7 @@ def booking():
             config_max_patient = dao.get_value_by_key(patients_per_day_key)
             print(count)
             print(int(config_max_patient.value))
-            if count > int(config_max_patient.value):
+            if count >= int(config_max_patient.value):
                 checked = 'failed'
                 return render_template('User/booking.html', check=checked, lichkham=l1
                                        , first_checked=first_checked, user_checked=user_checked, id_benhnhan=bn.id,
@@ -225,7 +225,7 @@ def yta_examination():
         config_max_patient = dao.get_value_by_key(patients_per_day_key)
         print(count)
         print(int(config_max_patient.value))
-        if count > int(config_max_patient.value):
+        if count >= int(config_max_patient.value):
             check = 'failed'
             return render_template('admin/medical_examination.html', check=check, lichkham=l1
                                    , id_benhnhan=bn.id, bn=bn)

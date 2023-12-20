@@ -7,8 +7,8 @@ content %}
 
   {% if error == 'dup_cmnd' %}
         <div class="alert alert-danger" role="alert" >Số CMND : {{ cmnd }} này đã được đăng kí !</div>
-  {% elif check == 'dup_bhyt' %}
-     <pdiv class="alert alert-danger" role="alert" >Số Bhyt : {{ bhyt }} này đã được đăng kí !</pdiv>
+  {% elif error == 'dup_bhyt' %}
+     <div class="alert alert-danger" role="alert" >Số Bhyt : {{ bhyt }} này đã được đăng kí !</div>
   {% endif %}
 
 <form method="POST" action="/dat-lich-kham">
