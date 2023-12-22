@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Đăng kí lịch khám</title>
+
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+            integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+            integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+            crossorigin="anonymous"></script>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"/>
+    <script src="{{ url_for('static', filename='css/style.css') }}"></script>
+    {% block js %}{% endblock %}
+
+</head>
+<body>
+
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<a class="nav-link" href="/admin">QUẢN TRỊ DANH SÁCH KHÁM BỆNH</a>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/admin"
+          >Home</a
+        >
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/loaithuoc">Loại thuốc</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled" href="#">Lập phiếu khám</a>
+      </li>
+        <li class="nav-item">
+        <a class="nav-link" methods="POST" href="/logout_manager">Đăng xuất</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+</div>
+
+<div class="container">
+  <h1 class="text-center text-success mt-4 mb-4">LẬP PHIẾU KHÁM</h1>
+  <form method="post" action="/register-process">
+    <div class="form-floating mb-3 mt-3">
+      <input
+        id="name"
+        type="text"
+        class="form-control"
+        required
+        name="name_patients"
+        placeholder="Nhập họ tên"
+        autocomplete="on"
+      />
+      <label for="name">Họ tên</label>
+    </div>
+
+      <div class="form-floating mb-3 mt-3">
+      <input
+        id="name"
+        type="text"
+        class="form-control"
+        required
+        name="name_patients"
+        placeholder="Nhập họ tên"
+        autocomplete="on"
+      />
+      <label for="name">Số điện thoại</label>
+    </div>
+
+    <div class="form-floating mt-3 mb-3">
+      <input
+        id="book-date"
+        required
+        type="date"
+        class="form-control"
+        name="booking"
+        autocomplete="on"
+      />
+      <label for="book-date">Ngày khám</label>
+    </div>
+
+    <div class="form-group mb-3 mt-3">
+      <label for="symptom">Triệu chứng</label>
+      <textarea
+        class="form-control"
+        id="symptom"
+        rows="3"
+        name="symptom"
+      ></textarea>
+    </div>
+
+    <div class="form-group mb-3 mt-3">
+      <label for="predict-disease-type">Dự đoán loại bệnh</label>
+      <textarea
+        class="form-control"
+        id="predict-disease-type"
+        rows="3"
+        name="predict-disease-type"
+      ></textarea>
+    </div>
+
+    <div class="container-fluid mt-5 border">
+      <div class="row justify-content-lg-center">
+        <div class="col col-lg-3">
+          <div class="form-group mt-3 mb-3">
+            <label for="medicine">Thuốc</label>
+            <select required class="form-control" name="medicine" id="medicine">
+              <option value="option1">Paracetamol</option>
+              <option value="option2">Ampicillin</option>
+              <option value="option3">Cephalexin</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col col-lg-2">
+          <div class="form-group mt-3 mb-3">
+            <label for="medicine">Đơn vị</label>
+            <select required class="form-control" name="medicine" id="medicine">
+              <option value="option1">Lọ</option>
+              <option value="option2">Viên</option>
+              <option value="option3">Chai</option>
+            </select>
+          </div>
+        </div>
+        <div class="col col-lg-2">
+          <div class="form-group mb-3 mt-3">
+            <label for="quanlity">Số lượng</label>
+            <input
+              id="quanlity"
+              type="text"
+              class="form-control"
+              required
+              name="quanlity"
+              placeholder="Nhập số lượng"
+            />
+          </div>
+        </div>
+        <div class="col col-lg-3">
+          <div class="form-group mb-3 mt-3">
+            <label for="using">Cách dùng</label>
+            <textarea
+              class="form-control"
+              id="using"
+              rows="1"
+              name="using"
+            ></textarea>
+          </div>
+        </div>
+        <div class="btn-wrapper mb-3">
+          <button type="button" class="btn btn-info btn-lg">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="form-floating mb-5 mt-4 btn-wrapper">
+      <input type="submit" class="btn btn-danger btn-icon" value="Lập phiếu" />
+    </div>
+  </form>
+</div>
+
+</body>
+</html>

@@ -256,6 +256,8 @@ def yta_examination():
     return render_template('admin/medical_examination.html', check=checked, id_benhnhan=bn.id)
 
 
+
+
 @app.route('/logout_manager')
 @login_required
 def logout_manager():

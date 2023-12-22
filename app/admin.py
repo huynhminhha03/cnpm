@@ -475,20 +475,11 @@ class MyDKKBView(AuthenticatedYTaDKKB):
 
 
 class CustomBacSiLoaiThuocView(ModelView):
-    column_list = ['ten_loaithuoc', 'donvithuoc.ten_donvithuoc']
+    column_list = ['ten_loaithuoc']
 
-    column_labels = {'ten_loaithuoc': 'Tên loại thuốc', 'donvithuoc.ten_donvithuoc': 'Đơn vị thuốc'}  # Đổi tên trường
+    column_labels = {'ten_loaithuoc': 'Tên loại thuốc'}  # Đổi tên trường
 
     column_searchable_list = ('ten_loaithuoc',)
-
-    def _donvithuoc_tendonvithuoc_formatter(self, context, model, name):
-        loaithuoc = dao.get_loaithuoc_by_id(model.id)
-        donvithuoc = dao.get_donvithuoc_by_id(loaithuoc.donvithuoc_id)
-        return donvithuoc.ten_donvithuoc if donvithuoc else 'Chưa cập nhật'
-
-    column_formatters = {
-        'donvithuoc.ten_donvithuoc': _donvithuoc_tendonvithuoc_formatter,
-    }
 
 
 class AuthenticatedBacSiLoaiThuoc(CustomBacSiLoaiThuocView):
@@ -500,6 +491,21 @@ class MyThuocView(AuthenticatedBacSiLoaiThuoc):
     can_create = False
     can_delete = False
     can_edit = False
+
+
+class CustomBacSiLPKModelView(BaseView):
+    @expose('/')
+    def index(self):
+        return self.render('admin/medical_report.html')
+
+
+class AuthenticatedBacSiLPK(CustomBacSiLPKModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.BAC_SI
+
+
+class MyLPKView(AuthenticatedBacSiLPK):
+    pass
 
 
 class MyLogoutView(AuthenticatedUser):
@@ -521,5 +527,6 @@ admin.add_view(MyManagerView(Manager, db.session))
 admin.add_view(MyConfigView(Config, db.session))
 # Bac si
 admin.add_view(MyThuocView(LoaiThuoc, db.session))
+admin.add_view(MyLPKView(name='Lập phiếu khám', endpoint='lpk'))
 # general
 admin.add_view(MyLogoutView(name='Đăng xuất'))

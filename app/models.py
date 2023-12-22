@@ -150,14 +150,43 @@ class DonViThuoc(db.Model):
     __tablename__ = 'donvithuoc'
     id = Column(Integer, primary_key=True, autoincrement=True)
     ten_donvithuoc = Column(String(10), nullable=False, unique=True)
-    loaithuoc = db.relationship('LoaiThuoc', backref='loaithuocBackrefDonViThuoc')
+    loaithuoc_donvithuoc = db.relationship('LoaiThuoc_DonViThuoc', backref='loaithuoc_donvithuocBackrefDonViThuoc')
 
 
 class LoaiThuoc(db.Model):
     __tablename__ = 'loaithuoc'
     id = Column(Integer, primary_key=True, autoincrement=True)
     ten_loaithuoc = Column(String(100), nullable=False, unique=True)
-    donvithuoc_id = Column(Integer, ForeignKey(DonViThuoc.id))
+    loaithuoc_donvithuoc = db.relationship('LoaiThuoc_DonViThuoc', backref='loaithuoc_donvithuocBackrefLoaiThuoc')
+
+
+# Bảng liên kết (association table) cho mối quan hệ many-to-many
+class LoaiThuoc_DonViThuoc(db.Model):
+    __tablename__ = 'loaithuoc_donvithuoc'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    donvithuoc_id = db.Column(db.Integer, db.ForeignKey(DonViThuoc.id))
+    loaithuoc_id = db.Column(db.Integer, db.ForeignKey(LoaiThuoc.id))
+    dslieuluong = db.relationship('DsLieuLuongThuoc', backref='dsLieuLuongBackrefloaithuoc_donvithuoc')
+
+
+class PhieuKhamBenh(db.Model):
+    __tablename__ = 'phieukhambenh'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    ten_nguoikham = Column(String(100), nullable=False)
+    sdt = Column(String(100), nullable=False)
+    lichkham_id = db.Column(Integer, ForeignKey(LichKham.id))
+    lichkham = db.relationship('LichKham', backref='lichKhamBackrefPhieuKhamBenh')
+    trieuchung = Column(String(255), nullable=False)
+    dudoanbenh = Column(String(255), nullable=False)
+    dslieuluongthuoc = db.relationship('DsLieuLuongThuoc', backref='dsLieuLuongThuocBackrefPhieuKhamBenh', lazy=True)
+
+
+class DsLieuLuongThuoc(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    loaithuoc_donvithuoc_id = Column(db.Integer, db.ForeignKey(LoaiThuoc_DonViThuoc.id), nullable=False)
+    phieukhambenh_id = db.Column(db.Integer, db.ForeignKey(PhieuKhamBenh.id), nullable=False)
+    soluong = db.Column(db.Integer, nullable=False)
+    cachdung = Column(String(255), nullable=False)
 
 
 class MomoPayment(db.Model):
