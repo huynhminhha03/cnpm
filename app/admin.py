@@ -3,7 +3,7 @@ from flask_admin import BaseView, expose
 from flask_admin.form.upload import ImageUploadField
 from app import app, db, admin, dao
 from flask_login import logout_user, current_user
-from flask import redirect
+from flask import redirect, flash
 from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, Favor, Address, CMND, BHYT, UserRoleEnum, \
     Manager, Config, LoaiThuoc, DonViThuoc
 import os
@@ -31,79 +31,169 @@ class CustomAdminManagerModelView(ModelView):
         'ten_quantri', 'username', 'password', 'gioitinh', 'cmnd', 'sdt', 'ngaysinh', 'hinhanh', 'diachi', 'user_role'
     ]
 
+    form_edit_rules = [
+        'ten_quantri', 'username', 'gioitinh', 'cmnd', 'sdt', 'ngaysinh', 'hinhanh', 'diachi', 'user_role'
+    ]
+
     column_labels = {'ten_quantri': 'Họ và tên', 'username': 'Tên người dùng', 'password': 'Mật khẩu',
                      'gioitinh': 'Giới tính', 'hinhanh': 'Hình ảnh',
                      'cmnd': 'Số chứng minh nhân dân', 'sdt': 'Số điện thoại',
                      'ngaysinh': 'Ngày sinh', 'diachi': 'Địa chỉ', 'user_role': 'Chức vụ'}  # Đổi tên trường
 
     form_extra_fields = {
+        'username': StringField('Tên người dùng', [validators.DataRequired(),
+                                                   validators.Regexp(r'^[a-zA-Z0-9_-]{3,20}$',
+                                                                     message='Chỉ chứa ký tự chữ cái (thường và in '
+                                                                             'hoa), số, gạch dưới, dấu gạch ngang và '
+                                                                             'độ dài từ 3 đến 20 ký tự.')]),
 
         'ten_quantri': StringField('Họ và tên', [validators.DataRequired(),
-                                                 validators.Regexp(r'^[a-zA-Z]+$',
-                                                                   message='Phải là những kí tự chữ !')]),
+                                                 validators.Regexp(
+                                                     r'^[^\d!@#$%^&*()_+={}\[\]:;<>,.?~\\/-]+\s+[^\d!@#$%^&*()_+={}\['
+                                                     r'\]:;<>,.?~\\/-]+(\s+[^\d!@#$%^&*()_+={}\[\]:;<>,.?~\\/-]+)?$',
+                                                     message='Ex: David de Gea, Nguyễn Văn A, ...')]),
 
         'sdt': StringField('Số điện thoại', [validators.DataRequired(),
                                              validators.Regexp(r'^\d+$', message='Phải là những kí tự số !')]),
 
+        'ngaysinh': DateField('Ngày sinh', validators=[InputRequired()], format="%Y-%m-%d"),
+
         'gioitinh': SelectField('Giới tính', choices=[('Nam', 'Nam'), ('Nữ', 'Nữ'), ('Khác', 'Khác')],
                                 validators=[InputRequired()]),
-        'password': PasswordField('Mật khẩu', validators=[validators.DataRequired()]),
 
         'hinhanh': ImageUploadField('Hình ảnh', base_path=app.config['UPLOAD_FOLDER'],
-                                    thumbnail_size=(100, 100, True), validators=[InputRequired()]),
+                                    thumbnail_size=(100, 100, True)),
+
+        'diachi': StringField('Địa chỉ', validators=[InputRequired()]),
 
         'cmnd': StringField('Số chứng minh nhân dân', [validators.DataRequired(),
                                                        validators.Regexp(r'^\d+$',
                                                                          message='Phải là những kí tự số !')]),
+        'user_role': SelectField('Chức vụ',
+                                 choices=[('ADMIN', 'Người quản trị'), ('BAC_SI', 'Bác sĩ'), ('Y_TA', 'Y tá')],
+                                 validators=[InputRequired()]),
+
+        'password': PasswordField('Mật khẩu : ', validators=[InputRequired()]),
 
     }
 
     def create_model(self, form):
-        model = self.model()
-        form.populate_obj(model)
+        username_existed = self.session.query(Manager).filter(Manager.username == form.username.data).first()
+        cmnd_existed = self.session.query(Manager).filter(Manager.cmnd == form.cmnd.data).first()
+        sdt_existed = self.session.query(Manager).filter(Manager.sdt == form.sdt.data).first()
 
-        # Tùy chỉnh xử lý trước khi lưu vào cơ sở dữ liệu
-        import hashlib
-        manager = Manager(ten_quantri=model.ten_quantri
-                          , username=model.username
-                          , password=str(hashlib.md5(model.password.encode('utf-8')).hexdigest())
-                          , gioitinh=model.gioitinh, cmnd=model.cmnd, sdt=model.sdt,
-                          ngaysinh=datetime.strptime(str(model.ngaysinh), "%Y-%m-%d %H:%M:%S")
-                          , hinhanh=model.hinhanh, diachi=model.diachi, user_role=model.user_role)
+        if not (username_existed or cmnd_existed or sdt_existed):
+            model = self.model()
+            form.populate_obj(model)
+            # Tùy chỉnh xử lý trước khi lưu vào cơ sở dữ liệu
+            if not model.hinhanh:
+                hinhanh = ('https://res.cloudinary.com/diwxda8bi/image/upload/v1703312060/Adorable-animal-cat'
+                           '-20787_ebmgss.jpg')
+            else:
+                hinhanh = model.hinhanh
 
-        self.session.add(manager)
-        self._on_model_change(form, manager, True)
+            import hashlib
+            manager = Manager(ten_quantri=model.ten_quantri
+                              , username=model.username
+                              , password=str(hashlib.md5(model.password.encode('utf-8')).hexdigest())
+                              , gioitinh=model.gioitinh, cmnd=model.cmnd, sdt=model.sdt,
+                              ngaysinh=datetime.strptime(str(model.ngaysinh), "%Y-%m-%d")
+                              , hinhanh=hinhanh, diachi=model.diachi, user_role=model.user_role)
 
-        self.session.commit()
-        return True
+            self.session.add(manager)
+            self._on_model_change(form, manager, True)
+            self.session.commit()
+            return True
+
+        if username_existed:
+            flash('Tên người dùng đã tồn tại', category='error')
+        if cmnd_existed:
+            flash('Số CMND đã tồn tại', category='error')
+        if sdt_existed:
+            flash('Số điện thoại đã tồn tại', category='error')
+        self.session.rollback()
+        return False
 
     def on_form_prefill(self, form, id):
         # Lấy mô hình từ cơ sở dữ liệu
+        import hashlib
         model = self.get_one(id)
         manager = dao.get_manager_by_id(id)
-        if model:
-            form.hinhanh.data = manager.hinhanh
 
     def on_model_change(self, form, model, is_created):
         super().on_model_change(form, model, is_created)
         image_path = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'], model.hinhanh)
+        # Hiển thị đường dẫn của hình đã lưu vào thư mục cục bộ
+        print(image_path)
 
-        # Tải lên hình ảnh lên Cloudinary
+        # Kiểm tra xem có hình ảnh mới được tải lên hay không
+        if form.hinhanh.data:
+            # Tải hình ảnh lên Cloudinary
+            response = upload(image_path)
+            model.hinhanh = response['secure_url']
 
-        response = upload(image_path)
-        model.hinhanh = response['secure_url']
+            # Xóa hình ảnh cục bộ sau khi tải lên Cloudinary
+            delete_images_in_folder(app.config['UPLOAD_FOLDER'])
+        else:
+            # Nếu không có hình mới, giữ nguyên URL hiện tại của model
+            model.hinhanh = form.hinhanh.object_data['secure_url'] if form.hinhanh.object_data else None
 
-        # Xóa hình ảnh cục bộ sau khi tải lên Cloudinary
-        os.remove(image_path)
-
-        # custom edit manager
+    def update_model(self, form, model):
         import hashlib
 
         manager = dao.get_manager_by_id(model.id)
-        if manager:
-            manager.password = str(hashlib.md5(model.password.encode('utf-8')).hexdigest())
-            self.session.add(manager)
-            self.session.commit()
+
+        username_existed = self.session.query(Manager).filter(Manager.username == form.username.data).first()
+        cmnd_existed = self.session.query(Manager).filter(Manager.cmnd == form.cmnd.data).first()
+        sdt_existed = self.session.query(Manager).filter(Manager.sdt == form.sdt.data).first()
+
+        if username_existed and manager.username != form.username.data:
+            flash('Tên người dùng đã tồn tại', category='error')
+            self.session.rollback()
+            return False
+        if cmnd_existed and manager.cmnd != form.cmnd.data:
+            flash('Số CMND đã tồn tại', category='error')
+            self.session.rollback()
+            return False
+        if sdt_existed and manager.sdt != form.sdt.data:
+            flash('Số điện thoại đã tồn tại', category='error')
+            self.session.rollback()
+            return False
+
+        # Tùy chỉnh xử lý trước khi lưu vào cơ sở dữ liệu
+        manager.ten_quantri = form.ten_quantri.data
+        manager.username = form.username.data
+        manager.gioitinh = form.gioitinh.data
+        manager.cmnd = form.cmnd.data
+        manager.sdt = form.sdt.data
+        manager.ngaysinh = form.ngaysinh.data
+        manager.diachi = form.diachi.data
+        manager.user_role = form.user_role.data
+
+        #        self._on_model_change(form, manager, True)  # error chua fix
+        self.session.add(manager)
+        self.session.commit()
+        return True
+
+
+def delete_images_in_folder(folder_path):
+    # Kiểm tra xem thư mục tồn tại hay không
+    if not os.path.exists(folder_path):
+        print(f"Thư mục {folder_path} không tồn tại.")
+        return
+
+    # Duyệt qua tất cả các tệp trong thư mục
+    for file_name in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, file_name)
+
+        # Kiểm tra xem tệp có phải là 'png' hoặc 'jpg' không
+        if file_name.lower().endswith(('.png', '.jpg')):
+            try:
+                # Xóa tệp nếu có đuôi là 'png' hoặc 'jpg'
+                os.remove(file_path)
+                print(f"Đã xóa tệp {file_name}")
+            except Exception as e:
+                print(f"Lỗi khi xóa tệp {file_name}: {e}")
 
 
 class AuthenticatedAdminManager(CustomAdminManagerModelView):
@@ -379,18 +469,16 @@ class CustomYTaBenhNhanModelView(ModelView):
                 form['chitietbenhnhan.bhyt'].data = bhyt.so_bhyt
 
     # custom edit
-    # def edit_model(self, form, model):
-    #     pass
-
-    def on_model_change(self, form, model, is_created):
-        super().on_model_change(form, model, is_created)
+    def update_model(self, form, model):
 
         bn = dao.get_benhnhan_by_id(model.id)
-        ctbn = dao.get_chitietbenhnhan_by_benhnhan_id(bn.id)
+        if bn:
+            ctbn = dao.get_chitietbenhnhan_by_benhnhan_id(bn.id)
 
-        sdt = getattr(model, 'chitietbenhnhan.sdt')
-        so_cmnd = getattr(model, 'chitietbenhnhan.cmnd')
-        so_bhyt = getattr(model, 'chitietbenhnhan.bhyt')
+        sdt = form['chitietbenhnhan.sdt'].data
+        so_cmnd = form['chitietbenhnhan.cmnd'].data
+        so_bhyt = form['chitietbenhnhan.bhyt'].data
+        ten_diachi = form['chitietbenhnhan.diachi'].data
         existing_cmnd = None
         existing_bhyt = None
 
@@ -400,17 +488,20 @@ class CustomYTaBenhNhanModelView(ModelView):
         if so_bhyt:
             existing_bhyt = dao.get_bhyt_by_soBHYT(so_bhyt)
 
-        if existing_sdt:
+        if existing_sdt and ctbn.sdt != sdt:
             db.session.rollback()
             form['chitietbenhnhan.sdt'].errors.append('Số điện thoại này đã được đăng kí !')
+            return False
 
-        if existing_cmnd:
+        if existing_cmnd and existing_cmnd.so_cmnd != dao.get_cmnd_by_ctbn_id(ctbn.id).so_cmnd:
             db.session.rollback()
             form['chitietbenhnhan.cmnd'].errors.append('Số CMND này đã được đăng kí !')
+            return False
 
-        if existing_bhyt:
+        if existing_bhyt and existing_bhyt.so_bhyt != dao.get_bhyt_by_ctbn_id(ctbn.id).so_bhyt:
             db.session.rollback()
             form['chitietbenhnhan.bhyt'].errors.append('Số BHYT này đã được đăng kí !')
+            return False
 
         # Thực hiện xử lý sau khi mô hình được thay đổi
         bn.ten_benhnhan = form['ten_benhnhan'].data
@@ -419,25 +510,25 @@ class CustomYTaBenhNhanModelView(ModelView):
         ctbn.sdt = form['chitietbenhnhan.sdt'].data
 
         diachi = dao.get_diachi_by_ctbn_id(ctbn.id)
-        if diachi:
+        if diachi and diachi.ten_diachi != ten_diachi:
             diachi.ten_diachi = form['chitietbenhnhan.diachi'].data
-        elif not diachi:
+        elif not diachi and form['chitietbenhnhan.diachi'].data != '':
             diachi = Address(ten_diachi=form['chitietbenhnhan.diachi'].data, chitiet_benhnhan_id=ctbn.id)
             self.session.add(diachi)
             self.session.commit()
 
         cmnd = dao.get_cmnd_by_ctbn_id(ctbn.id)
-        if cmnd:
+        if cmnd and cmnd.so_cmnd != so_cmnd:
             cmnd.so_cmnd = form['chitietbenhnhan.cmnd'].data
-        elif not cmnd:
+        elif not cmnd and form['chitietbenhnhan.cmnd'].data != '':
             cmnd = CMND(so_cmnd=form['chitietbenhnhan.cmnd'].data, chitiet_benhnhan_id=ctbn.id)
             self.session.add(cmnd)
             self.session.commit()
 
         bhyt = dao.get_bhyt_by_ctbn_id(ctbn.id)
-        if bhyt:
+        if bhyt and bhyt.so_bhyt != so_bhyt:
             bhyt.so_bhyt = form['chitietbenhnhan.bhyt'].data
-        elif not bhyt:
+        elif not bhyt and form['chitietbenhnhan.bhyt'].data != '':
             bhyt = BHYT(so_bhyt=form['chitietbenhnhan.bhyt'].data, chitiet_benhnhan_id=ctbn.id)
             self.session.add(bhyt)
             self.session.commit()
@@ -445,6 +536,8 @@ class CustomYTaBenhNhanModelView(ModelView):
         self.session.add(bn)
         self.session.add(ctbn)
         self.session.commit()
+
+        return True
 
 
 class AuthenticatedYTaBenhNhan(CustomYTaBenhNhanModelView):
