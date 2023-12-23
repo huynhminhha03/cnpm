@@ -29,7 +29,8 @@ class Manager(db.Model, UserMixin):
     sdt = Column(String(50), nullable=False, unique=True)
     ngaysinh = Column(DateTime, nullable=False)
     hinhanh = Column(String(100),
-                     default='https://res.cloudinary.com/diwxda8bi/image/upload/v1700644061/samples/smile.jpg')
+                     default='https://res.cloudinary.com/diwxda8bi/image/upload/v1703312060/Adorable-animal-cat'
+                             '-20787_ebmgss.jpg')
     diachi = Column(String(50), nullable=False)
     user_role = Column(Enum(UserRoleEnum), default=UserRoleEnum.ADMIN)
 

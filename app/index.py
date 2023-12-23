@@ -8,11 +8,11 @@ import cloudinary
 import cloudinary.uploader
 from admin import *
 
-# cloudinary.config(
-#     cloud_name="diwxda8bi",
-#     api_key="358748635141677",
-#     api_secret="QBGsplvCUjvxqZFWkpQBWKFT91I"
-# )
+cloudinary.config(
+    cloud_name="diwxda8bi",
+    api_key="358748635141677",
+    api_secret="QBGsplvCUjvxqZFWkpQBWKFT91I"
+)
 
 # key config
 patients_per_day_key = 'patients_per_day'
@@ -198,69 +198,69 @@ def unauthorized(e):
     return render_template('Authentication/authenDeny.html'), 401
 
 
-# @app.route("/admin/dkkb", methods=['GET'])
-# @login_required
-# def examination():
-#     return render_template("admin/medical_examination.html")
-#
-#
-# @app.route('/admin/dkkb', methods=['POST'])
-# def yta_examination():
-#     sdt = request.form.get('phone')
-#     date_booking = request.form.get('booking')
-#     favor = request.form.get('favor')
-#     list = dao.get_lichkham_by_ngaykham(date_booking)
-#
-#     ctbn = dao.get_chitietbenhnhan_by_sdt(sdt)
-#
-#     if not ctbn:
-#         check = 'phone_not_found'
-#         return render_template('admin/medical_examination.html', check=check, sdt=sdt)
-#
-#     bn = dao.get_benhnhan_by_id(ctbn.benhnhan_id)
-#
-#     if list:
-#         count = dao.count_danhsachkhambenh_theo_lichkham(list.id)
-#         l1 = dao.get_lichkham_by_id(list.id)
-#         config_max_patient = dao.get_value_by_key(patients_per_day_key)
-#         print(count)
-#         print(int(config_max_patient.value))
-#         if count >= int(config_max_patient.value):
-#             check = 'failed'
-#             return render_template('admin/medical_examination.html', check=check, lichkham=l1
-#                                    , id_benhnhan=bn.id, bn=bn)
-#     elif not list:
-#         list = LichKham(ngaykham=date_booking)
-#         db.session.add(list)
-#
-#     dskb = dao.get_duplicate_dangkikhambenh_by_2id(bn.id, list.id)
-#     count = dao.count_danhsachkhambenh_theo_lichkham(list.id)
-#
-#     if not dskb:
-#         stt = count + 1
-#         dskb = DanhSachKhamBenh(stt=stt, benhnhan_id=bn.id, lichkham_id=list.id)
-#         db.session.add(dskb)
-#     else:
-#         checked = 'duplicate_phone_register'
-#         return render_template('admin/medical_examination.html', check=checked, lichkham=list
-#                                , sdt=ctbn.sdt,
-#                                id_benhnhan=bn.id, bn=bn, dskb=dskb)
-#
-#     if favor:
-#         f = Favor(mongmuon=favor, chitiet_benhnhan_id=ctbn.id)
-#         db.session.add(f)
-#
-#     db.session.commit()
-#
-#     checked = 'success'
-#     return render_template('admin/medical_examination.html', check=checked, id_benhnhan=bn.id)
+@app.route("/admin/dkkb", methods=['GET'])
+@login_required
+def examination():
+    return render_template("admin/medical_examination.html")
 
 
-# @app.route('/logout_manager')
-# @login_required
-# def logout_manager():
-#     logout_user()
-#     return redirect('/admin')
+@app.route('/admin/dkkb', methods=['POST'])
+def yta_examination():
+    sdt = request.form.get('phone')
+    date_booking = request.form.get('booking')
+    favor = request.form.get('favor')
+    list = dao.get_lichkham_by_ngaykham(date_booking)
+
+    ctbn = dao.get_chitietbenhnhan_by_sdt(sdt)
+
+    if not ctbn:
+        check = 'phone_not_found'
+        return render_template('admin/medical_examination.html', check=check, sdt=sdt)
+
+    bn = dao.get_benhnhan_by_id(ctbn.benhnhan_id)
+
+    if list:
+        count = dao.count_danhsachkhambenh_theo_lichkham(list.id)
+        l1 = dao.get_lichkham_by_id(list.id)
+        config_max_patient = dao.get_value_by_key(patients_per_day_key)
+        print(count)
+        print(int(config_max_patient.value))
+        if count >= int(config_max_patient.value):
+            check = 'failed'
+            return render_template('admin/medical_examination.html', check=check, lichkham=l1
+                                   , id_benhnhan=bn.id, bn=bn)
+    elif not list:
+        list = LichKham(ngaykham=date_booking)
+        db.session.add(list)
+
+    dskb = dao.get_duplicate_dangkikhambenh_by_2id(bn.id, list.id)
+    count = dao.count_danhsachkhambenh_theo_lichkham(list.id)
+
+    if not dskb:
+        stt = count + 1
+        dskb = DanhSachKhamBenh(stt=stt, benhnhan_id=bn.id, lichkham_id=list.id)
+        db.session.add(dskb)
+    else:
+        checked = 'duplicate_phone_register'
+        return render_template('admin/medical_examination.html', check=checked, lichkham=list
+                               , sdt=ctbn.sdt,
+                               id_benhnhan=bn.id, bn=bn, dskb=dskb)
+
+    if favor:
+        f = Favor(mongmuon=favor, chitiet_benhnhan_id=ctbn.id)
+        db.session.add(f)
+
+    db.session.commit()
+
+    checked = 'success'
+    return render_template('admin/medical_examination.html', check=checked, id_benhnhan=bn.id)
+
+
+@app.route('/logout_manager')
+@login_required
+def logout_manager():
+    logout_user()
+    return redirect('/admin')
 
 
 if __name__ == '__main__':
