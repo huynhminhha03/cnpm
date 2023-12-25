@@ -14,10 +14,6 @@ required-icon {
 }
 
 
-.deleteDivButton {
-    display: inline;
-}
-
-.deleteDivButton .hide-first-icon  {
+.hide {
     display: none;
 }
