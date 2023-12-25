@@ -256,6 +256,33 @@ def yta_examination():
     return render_template('admin/medical_examination.html', check=checked, id_benhnhan=bn.id)
 
 
+@app.route("/admin/lpk", methods=['POST'])
+def bacsi_medical_report():
+    ten_benhnhan = request.form.get('name_patients')
+    sdt = request.form.get('phone')
+    ngaykham = request.form.get('booking')
+    trieuchung = request.form.get('symptom')
+    dudoanbenh = request.form.get('predict-disease-type')
+
+    today = datetime.now().strftime('%Y-%m-%d')
+
+    existing_sdt = dao.get_chitietbenhnhan_by_sdt(sdt)
+    if not existing_sdt:
+        error = "not_existing_phone"
+        return render_template("admin/medical_report.html", sdt=sdt, error=error, today=today)
+
+    ctbn = dao.get_chitietbenhnhan_by_sdt(sdt)
+    lichkham = dao.get_lichkham_by_ngaykham(ngaykham)
+    bn = dao.get_benhnhan_by_id(ctbn.benhnhan_id)
+    dskb = dao.get_danhsachkhambenh_by_lichkham_and_benhnhan(lichkham=lichkham, benhnhan=bn)
+    if not dskb:
+        error = "not_existing_dskb"
+        return render_template("admin/medical_report.html", sdt=sdt, ngaykham=ngaykham, error=error, today=today)
+
+    error = 'None'
+    return render_template("admin/medical_report.html", error=error)
+
+
 @app.route('/logout_manager')
 @login_required
 def logout_manager():

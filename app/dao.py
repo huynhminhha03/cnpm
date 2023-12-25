@@ -97,6 +97,10 @@ def get_danhsachkhambenh_theo_lichkham(ngaykham):
     return DanhSachKhamBenh.query.filter_by(lichkham_id=lk.id).all()
 
 
+def get_danhsachkhambenh_by_lichkham_and_benhnhan(lichkham, benhnhan):
+    return DanhSachKhamBenh.query.filter_by(lichkham_id=lichkham.id, benhnhan_id=benhnhan.id).all()
+
+
 def count_danhsachkhambenh_theo_lichkham(id_lichkham):
     return DanhSachKhamBenh.query.filter_by(lichkham_id=id_lichkham).count()
 
@@ -111,6 +115,14 @@ def get_duplicate_dangkikhambenh_by_2id(id_bn, id_lk):
     dangkikhambenh = DanhSachKhamBenh.query.filter_by(benhnhan_id=id_bn, lichkham_id=id_lk).first()
 
     return dangkikhambenh
+
+
+def load_loaithuoc():
+    return LoaiThuoc.query.all()
+
+
+def load_donvithuoc():
+    return DonViThuoc.query.all()
 
 
 def get_loaithuoc_by_id(id):

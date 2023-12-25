@@ -12,3 +12,12 @@ required-icon {
   width: 172px;
   height: 42px;
 }
+
+
+.deleteDivButton {
+    display: inline;
+}
+
+.deleteDivButton .hide-first-icon  {
+    display: none;
+}

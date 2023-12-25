@@ -170,7 +170,7 @@ class CustomAdminManagerModelView(ModelView):
         manager.diachi = form.diachi.data
         manager.user_role = form.user_role.data
 
-        #        self._on_model_change(form, manager, True)  # error chua fix
+        # self._on_model_change(form, manager, True)  # error chua fix
         self.session.add(manager)
         self.session.commit()
         return True
@@ -589,7 +589,10 @@ class MyThuocView(AuthenticatedBacSiLoaiThuoc):
 class CustomBacSiLPKModelView(BaseView):
     @expose('/')
     def index(self):
-        return self.render('admin/medical_report.html')
+        today = datetime.now().strftime('%Y-%m-%d')
+        loaithuoc = dao.load_loaithuoc()
+        donvithuoc = dao.load_donvithuoc()
+        return self.render('admin/medical_report.html', today=today, loaithuoc=loaithuoc, donvithuoc=donvithuoc)
 
 
 class AuthenticatedBacSiLPK(CustomBacSiLPKModelView):

@@ -170,24 +170,25 @@ class LoaiThuoc_DonViThuoc(db.Model):
     dslieuluong = db.relationship('DsLieuLuongThuoc', backref='dsLieuLuongBackrefloaithuoc_donvithuoc')
 
 
+class DsLieuLuongThuoc(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    loaithuoc_donvithuoc_id = Column(db.Integer, db.ForeignKey(LoaiThuoc_DonViThuoc.id), nullable=False)
+    soluong = db.Column(db.Integer, nullable=False)
+    cachdung = Column(String(255), nullable=False)
+
+
 class PhieuKhamBenh(db.Model):
     __tablename__ = 'phieukhambenh'
     id = Column(Integer, primary_key=True, autoincrement=True)
     ten_nguoikham = Column(String(100), nullable=False)
     sdt = Column(String(100), nullable=False)
-    lichkham_id = db.Column(Integer, ForeignKey(LichKham.id))
     lichkham = db.relationship('LichKham', backref='lichKhamBackrefPhieuKhamBenh')
     trieuchung = Column(String(255), nullable=False)
     dudoanbenh = Column(String(255), nullable=False)
     dslieuluongthuoc = db.relationship('DsLieuLuongThuoc', backref='dsLieuLuongThuocBackrefPhieuKhamBenh', lazy=True)
-
-
-class DsLieuLuongThuoc(db.Model):
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    loaithuoc_donvithuoc_id = Column(db.Integer, db.ForeignKey(LoaiThuoc_DonViThuoc.id), nullable=False)
-    phieukhambenh_id = db.Column(db.Integer, db.ForeignKey(PhieuKhamBenh.id), nullable=False)
-    soluong = db.Column(db.Integer, nullable=False)
-    cachdung = Column(String(255), nullable=False)
+    ngaylapphieukham = Column(DateTime, nullable=False)
+    lichkham_id = db.Column(Integer, ForeignKey(LichKham.id))
+    dslieuluongthuoc_id = db.Column(Integer, ForeignKey(DsLieuLuongThuoc.id), nullable=False)
 
 
 class MomoPayment(db.Model):
