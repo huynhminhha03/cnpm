@@ -171,6 +171,7 @@ class CustomAdminManagerModelView(ModelView):
         manager.user_role = form.user_role.data
 
         # self._on_model_change(form, manager, True)  # error chua fix
+
         self.session.add(manager)
         self.session.commit()
         return True
