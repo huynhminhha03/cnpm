@@ -113,6 +113,7 @@
     <div class="form-group mb-3 mt-3">
       <label for="symptom">Triệu chứng</label>
       <textarea
+        required
         class="form-control"
         id="symptom"
         rows="3"
@@ -123,6 +124,7 @@
     <div class="form-group mb-3 mt-3">
       <label for="predict-disease-type">Dự đoán loại bệnh</label>
       <textarea
+        required
         class="form-control"
         id="predict-disease-type"
         rows="3"
@@ -134,42 +136,43 @@
       <div class="row justify-content-lg-center motLoaiThuoc">
         <div class="col col-lg-3">
           <div class="form-group mt-3 mb-3">
-            <label for="medicine">Thuốc</label>
+            <label>Thuốc</label>
             <select required class="form-control" name="medicine">
               {% for lt in loaithuoc %}
-              <option value="{{ lt.ten_loaithuoc }}">{{ lt.ten_loaithuoc }}</option>
-                {% endfor %}
+                    <option value="{{ lt.ten_loaithuoc }}">{{ lt.ten_loaithuoc }}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
 
         <div class="col col-lg-2">
           <div class="form-group mt-3 mb-3">
-            <label for="unit">Đơn vị</label>
+            <label>Đơn vị</label>
             <select required class="form-control" name="unit">
                 {% for dvt in donvithuoc %}
-              <option value="{{ dvt.ten_donvithuoc }}">{{ dvt.ten_donvithuoc }}</option>
+                    <option value="{{ dvt.ten_donvithuoc }}">{{ dvt.ten_donvithuoc }}</option>
                 {% endfor %}
             </select>
           </div>
         </div>
         <div class="col col-lg-2">
           <div class="form-group mb-3 mt-3">
-            <label for="quanlity">Số lượng</label>
+            <label>Số lượng</label>
             <input
               type="number"
               min="0"
               class="form-control"
               required
-              name="quanlity"
+              name="number"
               placeholder="Nhập số lượng"
             />
           </div>
         </div>
         <div class="col col-lg-3">
           <div class="form-group mb-3 mt-3">
-            <label for="using">Cách dùng</label>
+            <label>Cách dùng</label>
             <textarea
+              required
               class="form-control"
               rows="1"
               name="using"

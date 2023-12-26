@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for
 from app import app, login_manager, db
 from twilio.rest import Client
 import dao
-from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, Favor, Address, CMND, BHYT, UserRoleEnum
+from app.models import (BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, Favor, Address, CMND, BHYT
+, UserRoleEnum, LoaiThuoc, DonViThuoc, LoaiThuoc_DonViThuoc, PhieuKhamBenh, DsLieuLuongThuoc)
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import cloudinary
 import cloudinary.uploader
@@ -258,7 +259,12 @@ def yta_examination():
 
 @app.route("/admin/lpk", methods=['POST'])
 def bacsi_medical_report():
-    ten_benhnhan = request.form.get('name_patients')
+    today = datetime.now().strftime('%Y-%m-%d')
+
+    dsloaithuoc = dao.load_loaithuoc()
+    dsdonvithuoc = dao.load_donvithuoc()
+
+    ten_nguoikham = request.form.get('name_patients')
     sdt = request.form.get('phone')
     ngaykham = request.form.get('booking')
     trieuchung = request.form.get('symptom')
@@ -267,20 +273,60 @@ def bacsi_medical_report():
     today = datetime.now().strftime('%Y-%m-%d')
 
     existing_sdt = dao.get_chitietbenhnhan_by_sdt(sdt)
+
     if not existing_sdt:
         error = "not_existing_phone"
-        return render_template("admin/medical_report.html", sdt=sdt, error=error, today=today)
+        return render_template("admin/medical_report.html", sdt=sdt, error=error, today=today
+                               , loaithuoc=dsloaithuoc, donvithuoc=dsdonvithuoc)
 
     ctbn = dao.get_chitietbenhnhan_by_sdt(sdt)
     lichkham = dao.get_lichkham_by_ngaykham(ngaykham)
     bn = dao.get_benhnhan_by_id(ctbn.benhnhan_id)
-    dskb = dao.get_danhsachkhambenh_by_lichkham_and_benhnhan(lichkham=lichkham, benhnhan=bn)
+    dskb = None
+
+    if not lichkham or not bn:
+        error = "not_existing_dskb"
+        return render_template("admin/medical_report.html", sdt=sdt, ngaykham=ngaykham, error=error, today=today,
+                               loaithuoc=dsloaithuoc, donvithuoc=dsdonvithuoc)
+    else:
+        dskb = dao.get_danhsachkhambenh_by_lichkham_and_benhnhan(lichkham=lichkham, benhnhan=bn)
+
     if not dskb:
         error = "not_existing_dskb"
         return render_template("admin/medical_report.html", sdt=sdt, ngaykham=ngaykham, error=error, today=today)
 
+    phieukhambenh = PhieuKhamBenh(ten_nguoikham=ten_nguoikham, sdt=sdt, trieuchung=trieuchung, dudoanbenh=dudoanbenh,
+                                  ngaylapphieukham=datetime.now(), lichkham_id=lichkham.id, benhnhan_id=bn.id)
+
+    db.session.add(phieukhambenh)
+    db.session.commit()
+
+    medicine = request.form.getlist('medicine')
+    unit = request.form.getlist('unit')
+    number = request.form.getlist('number')
+    using = request.form.getlist('using')
+
+    lenght = len(medicine)
+    for i in range(lenght):
+        loaithuoc = dao.get_loaithuoc_by_tenloaithuoc(medicine[i])
+        donvithuoc = dao.get_donvithuoc_by_tendonvithuoc(unit[i])
+        loaithuoc_donvithuoc = dao.get_loaithuoc_donvithuoc_by_2id(loaithuoc, donvithuoc)
+
+        if not loaithuoc_donvithuoc:
+            loaithuoc_donvithuoc = LoaiThuoc_DonViThuoc(loaithuoc_id=loaithuoc.id, donvithuoc_id=donvithuoc.id)
+            db.session.add(loaithuoc_donvithuoc)
+            db.session.commit()
+
+            # chưa xử lí lỗi loaithuoc_donvithuoc hoặc dsLieuLuongThuoc trùng lắp trong cùng 1 form
+
+        dsLieuLuongThuoc = DsLieuLuongThuoc(loaithuoc_donvithuoc_id=loaithuoc_donvithuoc.id, soluong=int(number[i])
+                                            , cachdung=using[i], phieukhambenh_id=phieukhambenh.id)
+        db.session.add(dsLieuLuongThuoc)
+        db.session.commit()
+
     error = 'None'
-    return render_template("admin/medical_report.html", error=error)
+    return render_template("admin/medical_report.html", error=error, today=today
+                           , loaithuoc=dsloaithuoc, donvithuoc=dsdonvithuoc)
 
 
 @app.route('/logout_manager')

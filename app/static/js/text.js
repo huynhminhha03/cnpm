@@ -1,4 +1,4 @@
-var createDivButton = document.getElementById("createDivButton");
+var createDivButton = document.getElementById('createDivButton');
 var dsLieuLuongThuoc = document.querySelector("#dsLieuLuongThuoc");
 var motLoaiThuoc = document.querySelector(".motLoaiThuoc");
 var array_motLoaiThuoc = document.querySelectorAll('.motLoaiThuoc')
@@ -19,7 +19,6 @@ createDivButton.addEventListener('click',function () {
 });
 
 function addMotLoaiThuoc() {
-        // Tạo một phần tử div mới
         let clonedDiv = motLoaiThuoc.cloneNode(true);
         dsLieuLuongThuoc.appendChild(clonedDiv)
         array_motLoaiThuoc = document.querySelectorAll('.motLoaiThuoc')
@@ -28,7 +27,7 @@ function addMotLoaiThuoc() {
 
         for (let i = 0 ; i < array_deleteDivButton.length ; i++){
         array_deleteDivButton[i].addEventListener('click',function () {
-             var elementToRemove = array_motLoaiThuoc[i]
+             let elementToRemove = array_motLoaiThuoc[i]
              elementToRemove.remove()
         });
    }

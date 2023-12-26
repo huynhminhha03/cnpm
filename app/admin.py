@@ -589,7 +589,7 @@ class MyThuocView(AuthenticatedBacSiLoaiThuoc):
 
 class CustomBacSiLPKModelView(BaseView):
     @expose('/')
-    def index(self):
+    def indexBacSiLPK(self):
         today = datetime.now().strftime('%Y-%m-%d')
         loaithuoc = dao.load_loaithuoc()
         donvithuoc = dao.load_donvithuoc()
