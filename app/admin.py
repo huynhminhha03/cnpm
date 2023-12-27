@@ -5,7 +5,7 @@ from app import app, db, admin, dao
 from flask_login import logout_user, current_user
 from flask import redirect, flash
 from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, Favor, Address, CMND, BHYT, UserRoleEnum, \
-    Manager, Config, LoaiThuoc, DonViThuoc
+    Manager, Config, LoaiThuoc, DonViThuoc, PhieuKhamBenh
 import os
 from datetime import datetime
 import cloudinary
@@ -13,6 +13,8 @@ from cloudinary.uploader import upload
 from wtforms.validators import InputRequired, DataRequired
 from wtforms import SelectField, PasswordField, validators, SearchField, DateField, StringField
 from sqlalchemy.exc import IntegrityError
+from wtforms.fields import SelectMultipleField
+from wtforms.widgets import Select
 
 cloudinary.config(
     cloud_name="diwxda8bi",
@@ -605,6 +607,59 @@ class MyLPKView(AuthenticatedBacSiLPK):
     pass
 
 
+class CustomBacSiTraCuuLSBenhNhanView(ModelView):
+    column_list = ['ten_nguoidangki', 'ten_nguoikham', 'lichkham.ngaykham', 'trieuchung', 'dudoanbenh'
+        , 'dslieuluongthuoc']
+
+    column_labels = {'id': 'Mã phiếu khám', 'ten_nguoidangki': 'Tên người đăng kí', 'ten_nguoikham': 'Tên người khám',
+                     'sdt': 'Số điện thoại'
+        , 'lichkham.ngaykham': 'Ngày khám', 'trieuchung': 'Triệu chứng', 'dudoanbenh': 'Dự đoán bệnh',
+                     'dslieuluongthuoc': 'Danh sách thuốc'}  # Đổi tên trường
+
+    column_searchable_list = ('ten_nguoikham', 'sdt')
+    column_filters = ['lichkham.ngaykham']
+
+    def _traCuuLSBenhNhan_benhnhan_formatter(self, context, model, name):
+        bn = dao.get_benhnhan_by_id(model.benhnhan_id)
+        return bn.ten_benhnhan if bn else 'Chưa cập nhật'
+
+    def _traCuuLSBenhNhan_lichkham_formatter(self, context, model, name):
+        return model.lichkham.ngaykham.strftime("%d/%m/%Y") if model.lichkham else 'Chưa cập nhật'
+
+    def _traCuuLSBenhNhan_dslieuluongthuoc_formatter(self, context, model, name):
+        results = []
+        dsllt = dao.get_dsLieuLuongThuoc_by_phieuKhamBenh_id(model.id)
+
+        for d in dsllt:
+            loaithuoc_donvithuoc = dao.get_loaithuoc_donvithuoc_by_id(d.loaithuoc_donvithuoc_id)
+            loaithuoc = dao.get_loaithuoc_by_id(loaithuoc_donvithuoc.loaithuoc_id)
+            donvithuoc = dao.get_donvithuoc_by_id(loaithuoc_donvithuoc.donvithuoc_id)
+            soluong = str(d.soluong)
+            motLoaiThuoc = loaithuoc.ten_loaithuoc + '(' + soluong + '/' + donvithuoc.ten_donvithuoc + ')'
+            results.append(motLoaiThuoc)
+
+        return results if dsllt else 'Chưa cập nhật'
+
+    column_formatters = {
+        'ten_nguoidangki': _traCuuLSBenhNhan_benhnhan_formatter,
+        'lichkham.ngaykham': _traCuuLSBenhNhan_lichkham_formatter,
+        'dslieuluongthuoc': _traCuuLSBenhNhan_dslieuluongthuoc_formatter,
+    }
+
+    can_edit = False
+    can_delete = False
+    can_create = False
+
+
+class AuthenticatedBacSiTraCuuLSBenhNhan(CustomBacSiTraCuuLSBenhNhanView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.BAC_SI
+
+
+class MyTraCuuLSBenhNhanView(AuthenticatedBacSiTraCuuLSBenhNhan):
+    pass
+
+
 class MyLogoutView(AuthenticatedUser):
     @expose("/")
     def index(self):
@@ -616,14 +671,15 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
 # Yta
-admin.add_view(MyDanhSachKhamBenhView(DanhSachKhamBenh, db.session))
-admin.add_view(MyBenhNhanView(BenhNhan, db.session))
-admin.add_view(MyDKKBView(name='Đăng kí lịch khám', endpoint='dkkb'))
+admin.add_view(MyDanhSachKhamBenhView(DanhSachKhamBenh, db.session, name='Danh Sách Khám Bệnh'))
+admin.add_view(MyBenhNhanView(BenhNhan, db.session, name='Tra Cứu Bệnh Nhân'))
+admin.add_view(MyDKKBView(name='Đăng Kí Lịch Khám', endpoint='dkkb'))
 # Admin
-admin.add_view(MyManagerView(Manager, db.session))
-admin.add_view(MyConfigView(Config, db.session))
+admin.add_view(MyManagerView(Manager, db.session, name='Quản Lí Nhân Sự'))
+admin.add_view(MyConfigView(Config, db.session, name='Cấu hình dữ liệu'))
 # Bac si
-admin.add_view(MyThuocView(LoaiThuoc, db.session))
-admin.add_view(MyLPKView(name='Lập phiếu khám', endpoint='lpk'))
+admin.add_view(MyThuocView(LoaiThuoc, db.session, name='Loại Thuốc'))
+admin.add_view(MyTraCuuLSBenhNhanView(PhieuKhamBenh, db.session, name='Tra Cứu Lịch Sử Bệnh Nhân'))
+admin.add_view(MyLPKView(name='Lập Phiếu Khám', endpoint='lpk'))
 # general
 admin.add_view(MyLogoutView(name='Đăng xuất'))

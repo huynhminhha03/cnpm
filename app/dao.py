@@ -1,5 +1,5 @@
 from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, Manager, Favor, CMND, BHYT, Address, \
-    UserRoleEnum, Config, LoaiThuoc, DonViThuoc, LoaiThuoc_DonViThuoc
+    UserRoleEnum, Config, LoaiThuoc, DonViThuoc, LoaiThuoc_DonViThuoc, DsLieuLuongThuoc, PhieuKhamBenh
 from app import app
 import hashlib
 
@@ -149,10 +149,22 @@ def get_donvithuoc_by_tendonvithuoc(ten_donvithuoc):
     return donvithuoc
 
 
+def get_loaithuoc_donvithuoc_by_id(id):
+    return LoaiThuoc_DonViThuoc.query.get(id)
+
+
 def get_loaithuoc_donvithuoc_by_2id(loaithuoc, donvithuoc):
     loaithuoc_donvithuoc = LoaiThuoc_DonViThuoc.query.filter_by(donvithuoc_id=donvithuoc.id,
                                                                 loaithuoc_id=loaithuoc.id).first()
     return loaithuoc_donvithuoc
+
+
+def get_dsLieuLuongThuoc_by_phieuKhamBenh_id(id):
+    dsll = DsLieuLuongThuoc.query
+    if id:
+        dsll = dsll.filter_by(phieukhambenh_id=id).all()
+
+    return dsll
 
 
 # Authenticate Manager :

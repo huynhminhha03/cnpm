@@ -15,6 +15,7 @@ class UserRoleEnum(enum.Enum):
     ADMIN = 2
     BAC_SI = 3
     Y_TA = 4
+    THU_NGAN = 5
 
 
 class Manager(db.Model, UserMixin):
@@ -79,7 +80,7 @@ class LichKham(db.Model):
     #    danhsachkhambenh = relationship('DanhSachKhamBenh', backref="lickkham", lazy=True)
 
     def __str__(self):
-        return f"LichKham(id={self.id}, benhnhan_id={self.ngaykham} , lichkham_id={self.danhsachkhambenh.id})"
+        return f"LichKham(id={self.id}, benhnhan_id={self.ngaykham})"
 
 
 class DanhSachKhamBenh(db.Model):
@@ -167,6 +168,7 @@ class LoaiThuoc_DonViThuoc(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     donvithuoc_id = db.Column(db.Integer, db.ForeignKey(DonViThuoc.id))
     loaithuoc_id = db.Column(db.Integer, db.ForeignKey(LoaiThuoc.id))
+    giatien = Column(db.Float)
     dslieuluong = db.relationship('DsLieuLuongThuoc', backref='dsLieuLuongBackrefloaithuoc_donvithuoc')
 
 
@@ -180,7 +182,7 @@ class PhieuKhamBenh(db.Model):
     trieuchung = Column(String(255), nullable=False)
     dudoanbenh = Column(String(255), nullable=False)
     ngaylapphieukham = Column(DateTime, nullable=False)
-    lichkham_id = db.Column(Integer, ForeignKey(LichKham.id),nullable=False)
+    lichkham_id = db.Column(Integer, ForeignKey(LichKham.id), nullable=False)
     benhnhan_id = db.Column(Integer, ForeignKey(BenhNhan.id), nullable=False)
 
 
@@ -228,5 +230,7 @@ if __name__ == "__main__":
                                          value='40')
         medical_expenses = Config(ten_config="Tiền khám bệnh trong 1 lần khám", key='medical_expenses', value='100000')
 
-        db.session.add_all([superadmin, medical_expenses, patients_per_day_config])
+        number_of_per_pack = Config(ten_config="Số viên thuốc của mỗi vỉ", key='number_of_per_pack',value='10')
+
+        db.session.add_all([superadmin, medical_expenses, patients_per_day_config , number_of_per_pack])
         db.session.commit()

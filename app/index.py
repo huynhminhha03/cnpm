@@ -18,6 +18,7 @@ cloudinary.config(
 # key config
 patients_per_day_key = 'patients_per_day'
 medical_expenses_key = 'medical_expenses'
+number_of_per_pack_key = 'number_of_per_pack'
 
 
 @app.route("/dat-lich-kham", methods=['GET', 'POST'])
@@ -282,6 +283,8 @@ def bacsi_medical_report():
     ctbn = dao.get_chitietbenhnhan_by_sdt(sdt)
     lichkham = dao.get_lichkham_by_ngaykham(ngaykham)
     bn = dao.get_benhnhan_by_id(ctbn.benhnhan_id)
+    config_number_of_per_pack = int(dao.get_value_by_key(number_of_per_pack_key).value)
+
     dskb = None
 
     if not lichkham or not bn:
@@ -312,12 +315,18 @@ def bacsi_medical_report():
         donvithuoc = dao.get_donvithuoc_by_tendonvithuoc(unit[i])
         loaithuoc_donvithuoc = dao.get_loaithuoc_donvithuoc_by_2id(loaithuoc, donvithuoc)
 
-        if not loaithuoc_donvithuoc:
-            loaithuoc_donvithuoc = LoaiThuoc_DonViThuoc(loaithuoc_id=loaithuoc.id, donvithuoc_id=donvithuoc.id)
+        vien = dao.get_donvithuoc_by_tendonvithuoc('Viên')
+        soTienCuaMotVien = dao.get_loaithuoc_donvithuoc_by_2id(loaithuoc, vien).giatien
+
+        if not loaithuoc_donvithuoc and unit[i] == 'Vỉ':
+            loaithuoc_donvithuoc = LoaiThuoc_DonViThuoc(loaithuoc_id=loaithuoc.id, donvithuoc_id=donvithuoc.id
+                                                        , giatien=soTienCuaMotVien * config_number_of_per_pack)
             db.session.add(loaithuoc_donvithuoc)
             db.session.commit()
-
-            # chưa xử lí lỗi loaithuoc_donvithuoc hoặc dsLieuLuongThuoc trùng lắp trong cùng 1 form
+        elif loaithuoc_donvithuoc and unit[i] == 'Vỉ':
+            loaithuoc_donvithuoc.giatien = soTienCuaMotVien * config_number_of_per_pack
+            db.session.add(loaithuoc_donvithuoc)
+            db.session.commit()
 
         dsLieuLuongThuoc = DsLieuLuongThuoc(loaithuoc_donvithuoc_id=loaithuoc_donvithuoc.id, soluong=int(number[i])
                                             , cachdung=using[i], phieukhambenh_id=phieukhambenh.id)

@@ -39,6 +39,9 @@
       <li class="nav-item">
         <a class="nav-link" href="/admin/loaithuoc">Loại thuốc</a>
       </li>
+        <li class="nav-item">
+        <a class="nav-link" href="/admin/phieukhambenh">Tra cứu lịch sử bệnh nhân</a>
+      </li>
       <li class="nav-item">
         <a class="nav-link disabled" href="#">Lập phiếu khám</a>
       </li>
@@ -69,7 +72,7 @@
 
   {% endif %}
 
-  <form method="post" action="/admin/lpk">
+  <form id="lpk_form" method="post" action="/admin/lpk">
     <div class="form-floating mb-3 mt-3">
       <input
         id="name"
@@ -137,7 +140,7 @@
         <div class="col col-lg-3">
           <div class="form-group mt-3 mb-3">
             <label>Thuốc</label>
-            <select required class="form-control" name="medicine">
+            <select required class="form-control loaithuoc" name="medicine">
               {% for lt in loaithuoc %}
                     <option value="{{ lt.ten_loaithuoc }}">{{ lt.ten_loaithuoc }}</option>
               {% endfor %}
@@ -148,7 +151,7 @@
         <div class="col col-lg-2">
           <div class="form-group mt-3 mb-3">
             <label>Đơn vị</label>
-            <select required class="form-control" name="unit">
+            <select required class="form-control donvithuoc" name="unit">
                 {% for dvt in donvithuoc %}
                     <option value="{{ dvt.ten_donvithuoc }}">{{ dvt.ten_donvithuoc }}</option>
                 {% endfor %}
