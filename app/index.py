@@ -336,6 +336,7 @@ def bacsi_medical_report():
 
     dslt = dao.get_dsLieuLuongThuoc_by_phieuKhamBenh_id(phieukhambenh.id)
     hoadonthanhtoan = HoaDonThanhToan()
+    hoadonthanhtoan.id = str(uuid.uuid4())
     hoadonthanhtoan.ngaylaphoadon = today
     tienkham = float(dao.get_value_by_key(medical_expenses_key).value)
     hoadonthanhtoan.tienkham = tienkham
@@ -374,11 +375,10 @@ def checkout_view():
         accessKey = "F8BBA842ECF85"
         secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz"
         orderInfo = "pay with MoMo"
-        redirectUrl = "http://127.0.0.1:5000/payment-success"  # Return when successfully payment
-        # http://127.0.0.1:5000/thanks
-        ipnUrl = "http://127.0.0.1:5000/payment-success"  # Return the result payment
+        redirectUrl = "http://127.0.0.1:5000/payment"
+        ipnUrl = "http://127.0.0.1:5000/payment"
         amount = str(int(hoadonthanhtoan.tongcong))
-        orderId = str(uuid.uuid4())
+        orderId = hoadonthanhtoan.id
         requestId = str(uuid.uuid4())
         requestType = "captureWallet"
         extraData = ""  # pass empty value or Encode base64 JsonString
@@ -422,20 +422,16 @@ def checkout_view():
         return redirect(response.json()['payUrl'])
 
 
-@app.route('/payment-failed', methods=['GET'])
-@login_required
-def payment_failed():
-    present_url = request.url
-    controllers.momopayment(presentUrl=present_url)
-    return render_template("payment/failed.html")
-
-
-@app.route('/payment-success', methods=['GET'])
+@app.route('/payment', methods=['GET'])
 @login_required
 def payment_success():
-    present_url = request.url
-    controllers.momopayment(presentUrl=present_url)
-    return render_template("payment/thanks.html")
+    resultCode = request.args.get('resultCode')
+    if resultCode == '0':
+         present_url = request.url
+         controllers.momopayment(presentUrl=present_url)
+         return render_template("payment/thanks.html")
+    else:
+        return render_template("payment/failed.html")
 
 
 if __name__ == '__main__':

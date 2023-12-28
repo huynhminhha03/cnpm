@@ -195,7 +195,7 @@ class DsLieuLuongThuoc(db.Model):
 
 
 class HoaDonThanhToan(db.Model):
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(String(255), primary_key=True, unique=True)
     ngaylaphoadon = Column(DateTime, nullable=False)
     tienkham = Column(Float, nullable=False)
     tienthuoc = Column(Float, nullable=False)
