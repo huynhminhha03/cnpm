@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
-from app import app, login_manager, db
+from app import app, login_manager, db, controllers
 from twilio.rest import Client
-import dao
+import json, hmac, hashlib, requests
+import uuid
 from app.models import (BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, Favor, Address, CMND, BHYT
-, UserRoleEnum, LoaiThuoc, DonViThuoc, LoaiThuoc_DonViThuoc, PhieuKhamBenh, DsLieuLuongThuoc)
+, UserRoleEnum, LoaiThuoc, DonViThuoc, LoaiThuoc_DonViThuoc, PhieuKhamBenh, DsLieuLuongThuoc, )
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import cloudinary
 import cloudinary.uploader
@@ -19,6 +20,28 @@ cloudinary.config(
 patients_per_day_key = 'patients_per_day'
 medical_expenses_key = 'medical_expenses'
 number_of_per_pack_key = 'number_of_per_pack'
+
+
+@login_manager.user_loader
+def load_manager(manager_id):
+    return dao.get_manager_by_id(manager_id)
+
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+
+@app.route('/admin/login', methods=['post'])
+def login_admin_process():
+    username = request.form.get('username')
+    password = request.form.get('password')
+
+    user = dao.auth_manager(username=username, password=password)
+    if user:
+        login_user(user=user)
+
+    return redirect('/admin')
 
 
 @app.route("/dat-lich-kham", methods=['GET', 'POST'])
@@ -173,28 +196,6 @@ def booking():
                            , first_checked=first_checked, user_checked=user_checked)
 
 
-@login_manager.user_loader
-def load_manager(manager_id):
-    return dao.get_manager_by_id(manager_id)
-
-
-@app.route("/")
-def home():
-    return render_template("index.html")
-
-
-@app.route('/admin/login', methods=['post'])
-def login_admin_process():
-    username = request.form.get('username')
-    password = request.form.get('password')
-
-    user = dao.auth_manager(username=username, password=password)
-    if user:
-        login_user(user=user)
-
-    return redirect('/admin')
-
-
 @app.errorhandler(401)
 def unauthorized(e):
     return render_template('Authentication/authenDeny.html'), 401
@@ -333,6 +334,22 @@ def bacsi_medical_report():
         db.session.add(dsLieuLuongThuoc)
         db.session.commit()
 
+    dslt = dao.get_dsLieuLuongThuoc_by_phieuKhamBenh_id(phieukhambenh.id)
+    hoadonthanhtoan = HoaDonThanhToan()
+    hoadonthanhtoan.ngaylaphoadon = today
+    tienkham = float(dao.get_value_by_key(medical_expenses_key).value)
+    hoadonthanhtoan.tienkham = tienkham
+    tienthuoc = 0
+    for d in dslt:
+        loaithuoc_donvithuoc = dao.get_loaithuoc_donvithuoc_by_id(d.loaithuoc_donvithuoc_id)
+        tienthuoc += loaithuoc_donvithuoc.giatien * d.soluong
+    hoadonthanhtoan.tienthuoc = tienthuoc
+    hoadonthanhtoan.tongcong = tienkham + tienthuoc
+    hoadonthanhtoan.benhnhan_id = bn.id
+    hoadonthanhtoan.phieukhambenh_id = phieukhambenh.id
+    db.session.add(hoadonthanhtoan)
+    db.session.commit()
+
     error = 'None'
     return render_template("admin/medical_report.html", error=error, today=today
                            , loaithuoc=dsloaithuoc, donvithuoc=dsdonvithuoc)
@@ -343,6 +360,82 @@ def bacsi_medical_report():
 def logout_manager():
     logout_user()
     return redirect('/admin')
+
+
+@app.route('/admin/hoadonthanhtoan/checkout', methods=['GET', 'POST'])
+@login_required
+def checkout_view():
+    hoadonthanhtoan = dao.get_hoadonthanhtoan_by_id(request.form.get('hoadonthanhtoan_id'))
+
+    if 'payUrl' in request.form and request.method == "POST":
+        # parameters send to MoMo get get payUrl
+        endpoint = "https://test-payment.momo.vn/v2/gateway/api/create"
+        partnerCode = "MOMO"
+        accessKey = "F8BBA842ECF85"
+        secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz"
+        orderInfo = "pay with MoMo"
+        redirectUrl = "http://127.0.0.1:5000/payment-success"  # Return when successfully payment
+        # http://127.0.0.1:5000/thanks
+        ipnUrl = "http://127.0.0.1:5000/payment-success"  # Return the result payment
+        amount = str(int(hoadonthanhtoan.tongcong))
+        orderId = str(uuid.uuid4())
+        requestId = str(uuid.uuid4())
+        requestType = "captureWallet"
+        extraData = ""  # pass empty value or Encode base64 JsonString
+
+        # before sign HMAC SHA256 with format: accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl
+        # =$ipnUrl &orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl
+        # &requestId=$requestId &requestType=$requestType
+        rawSignature = "accessKey=" + accessKey + "&amount=" + amount + "&extraData=" + extraData + "&ipnUrl=" + ipnUrl + "&orderId=" + orderId + "&orderInfo=" + orderInfo + "&partnerCode=" + partnerCode + "&redirectUrl=" + redirectUrl + "&requestId=" + requestId + "&requestType=" + requestType
+
+        # puts raw signature
+        # print("--------------------RAW SIGNATURE----------------")
+        # print(rawSignature)
+        # signature
+        h = hmac.new(bytes(secretKey, 'ascii'), bytes(rawSignature, 'ascii'), hashlib.sha256)
+        signature = h.hexdigest()
+
+        # json object send to MoMo endpoint
+
+        data = {
+            'partnerCode': partnerCode,
+            'partnerName': "Test",
+            'storeId': "MomoTestStore",
+            'requestId': requestId,
+            'amount': amount,
+            'orderId': orderId,
+            'orderInfo': orderInfo,
+            'redirectUrl': redirectUrl,
+            'ipnUrl': ipnUrl,
+            'lang': "vi",
+            'extraData': extraData,
+            'requestType': requestType,
+            'signature': signature
+        }
+
+        data = json.dumps(data)  # Convert from Dict to str
+        clen = len(data)
+
+        response = requests.post(endpoint, data=data,
+                                 headers={'Content-Type': 'application/json', 'Content-Length': str(clen)})
+
+        return redirect(response.json()['payUrl'])
+
+
+@app.route('/payment-failed', methods=['GET'])
+@login_required
+def payment_failed():
+    present_url = request.url
+    controllers.momopayment(presentUrl=present_url)
+    return render_template("payment/failed.html")
+
+
+@app.route('/payment-success', methods=['GET'])
+@login_required
+def payment_success():
+    present_url = request.url
+    controllers.momopayment(presentUrl=present_url)
+    return render_template("payment/thanks.html")
 
 
 if __name__ == '__main__':

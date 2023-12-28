@@ -17,5 +17,6 @@ app.config['TWILIO_AUTH_TOKEN'] = 'a094b61d17ea7458ff64739a35bc1411'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
 login_manager = LoginManager(app=app)
+
 db = SQLAlchemy(app=app)
 admin = Admin(app=app, name='QUẢN TRỊ DANH SÁCH KHÁM BỆNH', template_mode='bootstrap4')

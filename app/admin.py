@@ -1,20 +1,26 @@
 from flask_admin.contrib.sqla import ModelView
-from flask_admin import BaseView, expose
-from flask_admin.form.upload import ImageUploadField
-from app import app, db, admin, dao
-from flask_login import logout_user, current_user
-from flask import redirect, flash
-from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, Favor, Address, CMND, BHYT, UserRoleEnum, \
-    Manager, Config, LoaiThuoc, DonViThuoc, PhieuKhamBenh
+import hashlib
+import hmac
+import json
 import os
+import requests
+import uuid
 from datetime import datetime
+
 import cloudinary
 from cloudinary.uploader import upload
-from wtforms.validators import InputRequired, DataRequired
-from wtforms import SelectField, PasswordField, validators, SearchField, DateField, StringField
-from sqlalchemy.exc import IntegrityError
-from wtforms.fields import SelectMultipleField
-from wtforms.widgets import Select
+from flask import redirect, flash, url_for, render_template, request
+from flask_admin import BaseView, expose
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.form.upload import ImageUploadField
+from flask_login import logout_user, current_user
+from markupsafe import Markup
+from wtforms import SelectField, PasswordField, validators, DateField, StringField
+from wtforms.validators import InputRequired
+
+from app import app, db, admin, dao
+from app.models import BenhNhan, ChiTietBenhNhan, DanhSachKhamBenh, Address, CMND, BHYT, UserRoleEnum, \
+    Manager, Config, LoaiThuoc, PhieuKhamBenh, HoaDonThanhToan
 
 cloudinary.config(
     cloud_name="diwxda8bi",
@@ -72,7 +78,8 @@ class CustomAdminManagerModelView(ModelView):
                                                        validators.Regexp(r'^\d+$',
                                                                          message='Phải là những kí tự số !')]),
         'user_role': SelectField('Chức vụ',
-                                 choices=[('ADMIN', 'Người quản trị'), ('BAC_SI', 'Bác sĩ'), ('Y_TA', 'Y tá')],
+                                 choices=[('ADMIN', 'Người quản trị'), ('BAC_SI', 'Bác sĩ'), ('Y_TA', 'Y tá')
+                                     , ('THU_NGAN', 'Thu ngân')],
                                  validators=[InputRequired()]),
 
         'password': PasswordField('Mật khẩu : ', validators=[InputRequired()]),
@@ -118,7 +125,6 @@ class CustomAdminManagerModelView(ModelView):
 
     def on_form_prefill(self, form, id):
         # Lấy mô hình từ cơ sở dữ liệu
-        import hashlib
         model = self.get_one(id)
         manager = dao.get_manager_by_id(id)
 
@@ -141,7 +147,6 @@ class CustomAdminManagerModelView(ModelView):
             model.hinhanh = form.hinhanh.object_data['secure_url'] if form.hinhanh.object_data else None
 
     def update_model(self, form, model):
-        import hashlib
 
         manager = dao.get_manager_by_id(model.id)
 
@@ -390,7 +395,6 @@ class CustomYTaBenhNhanModelView(ModelView):
             return False
 
         # Tùy chỉnh xử lý trước khi lưu vào cơ sở dữ liệu
-        import hashlib
         bn = BenhNhan(ten_benhnhan=model.ten_benhnhan, user_role=UserRoleEnum.BENH_NHAN)
 
         self.session.add(bn)
@@ -660,6 +664,53 @@ class MyTraCuuLSBenhNhanView(AuthenticatedBacSiTraCuuLSBenhNhan):
     pass
 
 
+class CustomThuNganHoaDonThanhToanView(ModelView):
+    pass
+
+
+class AuthenticatedThuNganHoaDonThanhToan(CustomThuNganHoaDonThanhToanView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.THU_NGAN
+
+
+class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
+    column_list = ['id', 'phieukhambenh.sdt', 'phieukhambenh.lichkham.ngaykham', 'phieukhambenh.ten_nguoikham',
+                   'tienkham', 'tienthuoc',
+                   'tongcong', 'thanhtoan']
+
+    column_labels = {'id': 'Mã hóa đơn', 'phieukhambenh.sdt': 'Số điện thoại',
+                     'phieukhambenh.lichkham.ngaykham': 'Ngày khám',
+                     'phieukhambenh.ten_nguoikham': 'Tên người khám', 'tienkham': 'Tiền khám',
+                     'tienthuoc': 'Tiền thuốc', 'tongcong': 'Tổng cộng', 'thanhtoan': 'Thanh toán'}  # Đổi tên trường
+
+    column_filters = {'phieukhambenh.lichkham.ngaykham'}
+
+    def _format_pay_now(view, context, model, name):
+        if model.trangthai != 0:
+            return 'Đã thanh toán'
+
+        # render a form with a submit button for student, include a hidden field for the student id
+        # note how checkout_view method is exposed as a route below
+
+        _html = '''
+            <form action="/admin/hoadonthanhtoan/checkout" method="POST">
+                <input id="benhnhan_id" name="benhnhan_id"  type="hidden" value="{benhnhan_id}">
+                <input id="hoadonthanhtoan_id" name="hoadonthanhtoan_id"  type="hidden" value="{hoadonthanhtoan_id}">
+                <button style="color : white ; background-color : red ;" value="Momo" name="payUrl" type='submit'>Thanh toán
+                </button>
+            </form
+        '''.format(hoadonthanhtoan_id=model.id,benhnhan_id=model.benhnhan_id)
+        return Markup(_html)
+
+    column_formatters = {
+        'thanhtoan': _format_pay_now,
+    }
+
+    can_create = False
+    can_edit = False
+    can_delete = False
+
+
 class MyLogoutView(AuthenticatedUser):
     @expose("/")
     def index(self):
@@ -681,5 +732,7 @@ admin.add_view(MyConfigView(Config, db.session, name='Cấu hình dữ liệu'))
 admin.add_view(MyThuocView(LoaiThuoc, db.session, name='Loại Thuốc'))
 admin.add_view(MyTraCuuLSBenhNhanView(PhieuKhamBenh, db.session, name='Tra Cứu Lịch Sử Bệnh Nhân'))
 admin.add_view(MyLPKView(name='Lập Phiếu Khám', endpoint='lpk'))
+# Thu ngan
+admin.add_view(MyHoaDonThanhToanView(HoaDonThanhToan, db.session, name="Thanh Toán Hóa Đơn"))
 # general
 admin.add_view(MyLogoutView(name='Đăng xuất'))

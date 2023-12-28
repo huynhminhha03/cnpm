@@ -1,11 +1,7 @@
 from app.models import BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, Manager, Favor, CMND, BHYT, Address, \
-    UserRoleEnum, Config, LoaiThuoc, DonViThuoc, LoaiThuoc_DonViThuoc, DsLieuLuongThuoc, PhieuKhamBenh
+    UserRoleEnum, Config, LoaiThuoc, DonViThuoc, LoaiThuoc_DonViThuoc, DsLieuLuongThuoc, PhieuKhamBenh, HoaDonThanhToan
 from app import app
 import hashlib
-
-
-def get_benhnhan_by_id(id):
-    return BenhNhan.query.get(id)
 
 
 def get_chitietbenhnhan_by_benhnhan_id(benhnhan_id):
@@ -167,10 +163,18 @@ def get_dsLieuLuongThuoc_by_phieuKhamBenh_id(id):
     return dsll
 
 
+def get_hoadonthanhtoan_by_id(id):
+    return HoaDonThanhToan.query.get(id)
+
+
 # Authenticate Manager :
 
 def get_manager_by_id(id):
     return Manager.query.get(id)
+
+
+def get_benhnhan_by_id(id):
+    return BenhNhan.query.get(id)
 
 
 def auth_manager(username, password):

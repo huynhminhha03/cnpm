@@ -1,6 +1,6 @@
 from sqlalchemy.orm import relationship
 from app import db
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, DateTime, Boolean
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, DateTime, Boolean, SmallInteger
 import enum
 from datetime import datetime
 from flask_login import UserMixin
@@ -45,10 +45,10 @@ class BenhNhan(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     ten_benhnhan = Column(db.String(50), nullable=False)
     user_role = Column(Enum(UserRoleEnum), default=UserRoleEnum.BENH_NHAN)
-    chitietbenhnhan = relationship('ChiTietBenhNhan', backref="chitietbenhnhanBrbenhnhan")
+    chitietbenhnhan = relationship('ChiTietBenhNhan', backref="chitietbenhnhanBrbenhnhan", uselist=False)
     phieukhambenh = db.relationship('PhieuKhamBenh', backref='phieukhambenhBackrefbenhnhan')
 
-    #   danhsachkhambenh = relationship('DanhSachKhamBenh', backref="dskbBrbenhnhan")
+    # danhsachkhambenh = relationship('DanhSachKhamBenh', backref="dskbBrbenhnhan")
 
     def __str__(self):  # Sử dụng __str__ để in ra tên khi sử dụng đối tượng BenhNhan
         return f"BenhNhan(ten_benhnhan={self.ten_benhnhan})"
@@ -194,6 +194,19 @@ class DsLieuLuongThuoc(db.Model):
     phieukhambenh_id = db.Column(Integer, ForeignKey(PhieuKhamBenh.id), nullable=False)
 
 
+class HoaDonThanhToan(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    ngaylaphoadon = Column(DateTime, nullable=False)
+    tienkham = Column(Float, nullable=False)
+    tienthuoc = Column(Float, nullable=False)
+    tongcong = Column(Float, nullable=False)
+    trangthai = Column(db.SmallInteger, nullable=False, default=0)
+    benhnhan = db.relationship('BenhNhan', backref='benhnhanBackrefhoadonthanhtoan')
+    benhnhan_id = db.Column(Integer, ForeignKey(BenhNhan.id), nullable=False)
+    phieukhambenh = db.relationship('PhieuKhamBenh', backref='phieukhambenhBackrefhoadonthanhtoan', uselist=False)
+    phieukhambenh_id = db.Column(Integer, ForeignKey(PhieuKhamBenh.id), nullable=False)
+
+
 class MomoPayment(db.Model):
     __tablename__ = 'momopayment'
 
@@ -230,7 +243,7 @@ if __name__ == "__main__":
                                          value='40')
         medical_expenses = Config(ten_config="Tiền khám bệnh trong 1 lần khám", key='medical_expenses', value='100000')
 
-        number_of_per_pack = Config(ten_config="Số viên thuốc của mỗi vỉ", key='number_of_per_pack',value='10')
+        number_of_per_pack = Config(ten_config="Số viên thuốc của mỗi vỉ", key='number_of_per_pack', value='10')
 
-        db.session.add_all([superadmin, medical_expenses, patients_per_day_config , number_of_per_pack])
+        db.session.add_all([superadmin, medical_expenses, patients_per_day_config, number_of_per_pack])
         db.session.commit()
