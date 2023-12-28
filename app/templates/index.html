@@ -1,3 +1,170 @@
 {% extends 'layout/base.html' %} {% block content %}
-<h1>home page</h1>
-{% endblock %}
+<div class="wrapper">
+    <div class="slideshow-container">
+      <div class="slide fade">
+        <img
+          src="https://tomec.vn/wp-content/uploads/2023/09/banner-web-tomec-copy-5-3-scaled.jpg"
+          alt="Slide 1"
+        />
+      </div>
+      <div class="slide fade">
+        <img
+          src="https://tomec.vn/wp-content/uploads/2023/12/banner-web-T12.2023-copy.jpg"
+          alt="Slide 2"
+        />
+      </div>
+      <div class="slide fade">
+        <img
+          src="https://tomec.vn/wp-content/uploads/2023/09/banner-web-tomec-copy-2-2-1920x555.jpg"
+          alt="Slide 3"
+        />
+      </div>
+  
+      <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+      <a class="next" onclick="plusSlides(1)">&#10095;</a>
+    </div>
+    <div class="section-wrapper container">
+      <div class="section-content row">
+        <div class="col-inner col col-lg-4">
+          <h3 class="heading-col">GÓI KHÁM TOMEC</h3>
+          <strong><p>Danh mục khám sức khỏe tổng quát và chuyên sâu</p></strong>
+          <div class="section-btn-wrapper">
+            <a href="" class="section-button">
+              <span class="text-button">CHI TIẾT CÁC GÓI</span>
+            </a>
+          </div>
+        </div>
+        <div class="col-inner-middle text-center col col-lg-4">
+          <h3 class="heading-col">ĐẶT LỊCH</h3>
+          <strong><p>Khám sức khoẻ công nghệ cao</p></strong>
+          <div class="section-btn-wrapper">
+            <a href="" class="section-button middle">
+              <span class="text-button">ĐĂNG KÝ TẠI ĐÂY</span>
+            </a>
+          </div>
+        </div>
+        <div class="col-inner col col-lg-4">
+          <h3 class="heading-col">TIN TỨC</h3>
+          <strong><p>Tổng hợp các ưa đãi và tin tức các bệnh lý</p></strong>
+          <div class="section-btn-wrapper">
+            <a href="" class="section-button">
+              <span class="text-button">XEM NGAY</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="clinic-wrapper text-center">
+      <h2 class="title-clinic">PHÒNG KHÁM ĐA KHOA</h2>
+      <p>TRỰC THUỘC CTCP BỆNH VIỆN ĐA KHOA QUỐC TẾ TOMEC</p>
+      <div class="container clinic-image-wrapper">
+        <div class="row">
+          <div class="col col-lg-4">
+            <div class="box-image">
+              <img
+                src="https://tomec.vn/wp-content/uploads/2023/06/Clip-path-group-3.png"
+                alt="clinic-1"
+                class="clinic-image"
+              />
+              <h4 class="tittle-img">Không gian y tế đẳng cấp</h4>
+            </div>
+          </div>
+          <div class="col col-lg-4">
+            <div class="box-image">
+              <img
+                src="https://tomec.vn/wp-content/uploads/2023/06/Layer-5.png"
+                alt="clinic-1"
+                class="clinic-image"
+              />
+              <h4 class="tittle-img">
+                Hệ thống máy móc, trang thiết bị y tế công nghệ cao
+              </h4>
+            </div>
+          </div>
+          <div class="col col-lg-4">
+            <div class="box-image">
+              <img
+                src="https://tomec.vn/wp-content/uploads/2023/06/Clip-path-group-3.png"
+                alt="clinic-1"
+                class="clinic-image"
+              />
+              <span class="tittle-img"
+                >Đội ngũ Chuyên gia – Bác sĩ giàu kinh nghiệm</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="service-wrapper">
+      <h2 class="service-tittle text-center">DỊCH VỤ THẾ MẠNH</h2>
+      <div class="container">
+        <div class="row">
+          <div class="col service-col col-lg-3">
+            <img
+              src="https://tomec.vn/wp-content/uploads/2023/08/web-poster-copy-1-768x1001.jpg"
+              alt="Image-1"
+            />
+            <div class="img-service-desc">
+              <span>KHÁM SỨC KHỎE TỔNG QUÁT</span>
+            </div>
+          </div>
+          <div class="col service-col col-lg-3">
+            <img
+              src="https://tomec.vn/wp-content/uploads/2023/08/web-poster-copy-2-768x1001.jpg"
+              alt="Image-2"
+            />
+            <div class="img-service-desc">
+              <span>CHẨN ĐOÁN HÌNH ẢNH</span>
+            </div>
+          </div>
+          <div class="col service-col col-lg-3">
+            <img
+              src="https://tomec.vn/wp-content/uploads/2023/08/web-poster-copy-3-768x1001.jpg"
+              alt="Image-3"
+            />
+            <div class="img-service-desc">
+              <span>NỘI SOI TIÊU HÓA</span>
+            </div>
+          </div>
+          <div class="col service-col col-lg-3">
+            <img
+              src="https://tomec.vn/wp-content/uploads/2023/08/web-poster-copy-4-768x1001.jpg"
+              alt="Image-4"
+            />
+            <div class="img-service-desc">
+              <span>XÉT NGHIỆM</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="doctor-wrapper">
+      <h2 class="title-doctor">ĐỘI NGŨ CHUYÊN GIA – BÁC SĨ TOMEC</h2>
+      <div class="doctor-content-wrapper">
+        <div class="container">
+          <div class="row doctor-content">
+            <div class="col img-doctor col-lg-4">
+              <img
+                src="https://tomec.vn/wp-content/uploads/2023/06/bs1.png"
+                alt="doctor1"
+              />
+            </div>
+            <div class="desc-doctor col col-lg-4">
+              <h3>PGS.TS.BS HOÀNG MẠNH AN</h3>
+              <h6>GIÁM ĐỐC CHUYÊN MÔN TOMEC</h6>
+              <ul>
+                <li>Thầy thuốc Nhân dân</li>
+                <li>Nguyên Giám đốc Bệnh viện Quân y 103</li>
+                <li>Ủy viên Hội đồng Y học quân sự, Bộ Quốc phòng</li>
+                <li>Ủy viên Ban Chấp hành Tổng hội Y học Việt Nam</li>
+                <li>Ủy viên Ban Chấp hành Hội Ngoại khoa Việt Nam</li>
+                <li>Phó Chủ tịch Hội Ghép tạng Việt Nam</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button id="backToTopBtn" class="hidden">&#9650;</button>{% endblock %}

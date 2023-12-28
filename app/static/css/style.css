@@ -1,19 +1,378 @@
-required-icon {
-  color: red;
+* {
+  box-sizing: inherit;
 }
 
-.btn-wrapper {
+html {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.main {
+  width: 100%;
+  display: flex;
+}
+
+.main__input {
+  border: 2px solid #000;
+  border-radius: 4px;
+  width: 50%;
+}
+#color {
+  width: 100%;
+  height: 40px;
+  outline: none;
+  border: none;
+  font-size: 20px;
+}
+
+.main__btn {
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  margin-left: 16px;
+  border: 1px solid #ccc;
+}
+
+.hide {
+  display: none;
+}
+/* Body */
+
+/* Slide show  */
+.slideshow-container {
+  position: relative;
+  margin: auto;
+  cursor: pointer;
+}
+
+.slide {
+  display: none;
+}
+
+img {
+  width: 100%;
+}
+
+.fade {
+  animation: fade 6000ms ease-in-out infinite;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0.8;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.prev,
+.next {
+  position: absolute;
+  top: 50%;
+  width: auto;
+  padding: 16px;
+  margin-top: -22px;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 0 3px 3px 0;
+  text-align: center;
+}
+
+.prev {
+  left: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+.next {
+  right: 0;
+  border-radius: 0 3px 3px 0;
+}
+
+.prev:hover,
+.next:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Section content  */
+
+.section-wrapper {
+  height: 230px;
+  margin-bottom: 20px;
+}
+
+.section-content {
+  border: 4px solid rgb(221, 221, 221);
+  border-radius: 4px;
+}
+
+.col-inner {
+  height: 220px;
+  padding: 32px 12px 36px;
+  text-align: center;
+  color: #006ba1;
+  background-color: white;
+}
+
+.col-inner-middle {
+  height: 220px;
+  padding: 32px 12px 36px;
+  text-align: center;
+  color: white;
+  background-color: #006ba1;
+}
+/* col-inner hover  */
+.col-inner:hover {
+  background-color: #2979b4;
+  color: white;
+}
+
+.col-inner:hover .section-btn-wrapper a {
+  background-color: white;
+  color: #2979b4;
+}
+/* col-inner middle hover  */
+.col-inner-middle:hover {
+  background-color: #e6e8f0;
+}
+
+.col-inner-middle:hover h3 {
+  color: #2979b4;
+}
+
+.col-inner-middle:hover strong {
+  color: black;
+}
+
+.col-inner-middle:hover .section-btn-wrapper a {
+  background-color: #2979b4;
+  color: white;
+}
+
+.heading-col {
+  font-size: 24px;
+  margin-bottom: 14px;
+  font-weight: 900;
+  line-height: 20px;
+}
+
+.section-btn-wrapper {
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-
-.btn-icon {
+.section-button {
+  display: flex;
+  background-color: #006ba1;
+  color: white;
   width: 172px;
-  height: 42px;
+  height: 40px;
+  text-decoration: none;
+  padding: 0 16px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  margin-top: 30px;
+  cursor: pointer;
 }
 
+.section-button.middle {
+  background-color: #fff;
+  color: #666;
+}
 
-.hide {
-    display: none;
+/* Clinic */
+.clinic-wrapper {
+  font-size: 22px;
+  font-weight: 400;
+  color: white;
+  padding: 30px 15px;
+  background-image: url(https://tomec.vn/wp-content/uploads/2023/06/female-hand-digital-smart-code-lock-into-modern-apartment-4.png);
+}
+
+.title-clinic {
+  font-size: 40px;
+  font-weight: 900;
+}
+
+.box-image {
+  object-fit: cover;
+}
+
+.box-image img {
+  transition: transform 0.4s ease-in-out;
+  cursor: pointer;
+}
+
+.box-image:hover img {
+  transform: scale(1.04);
+}
+
+.tittle-img {
+  display: block;
+  padding-top: 16px;
+  margin: 2px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Service  */
+.service-wrapper {
+  margin: 20px 0;
+}
+.service-tittle {
+  font-size: 40px;
+  font-weight: 900;
+  color: #006ba1;
+}
+
+.img-service-desc {
+  background-color: #006ba1;
+  text-align: center;
+  line-height: 40px;
+  color: white;
+  font-weight: 600;
+}
+
+.service-col img {
+  transition: transform 0.4s ease-in-out;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.service-col:hover img {
+  transform: scale(1.04);
+}
+
+/* Doctor */
+
+.img-doctor {
+  width: 290px;
+  height: 218px;
+  object-fit: cover;
+}
+
+.title-doctor {
+  font-size: 40px;
+  font-weight: 900;
+  color: white;
+  background-image: url(https://tomec.vn/wp-content/uploads/2023/06/Rectangle-1285.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  text-align: center;
+  padding: 8px;
+  margin-bottom: 0;
+  margin-top: 20px;
+}
+
+.doctor-content-wrapper {
+  background-image: url(https://tomec.vn/wp-content/uploads/2023/06/Layer-54.png);
+  background-size: cover;
+}
+
+.doctor-content {
+  padding: 8px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.desc-doctor {
+  color: #0f7ab5;
+  font-weight: 600;
+}
+
+.desc-doctor h3 {
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.desc-doctor h6 {
+  font-size: 20px;
+  font-weight: 500;
+}
+/* Footer */
+.footer-wrapper {
+  background-color: #006ba1;
+  padding: 8px 0 48px;
+}
+
+.address-col {
+  font-size: 14px;
+}
+
+.badge-wrapper {
+  text-align: center;
+}
+
+.image-badge {
+  width: 320px;
+  height: 68px;
+}
+
+.title-footer {
+  font-size: 22px;
+  font-weight: 600;
+  padding: 0 0 14px;
+  margin: 10px 0;
+  border-bottom: 2px solid white;
+}
+.menu-link-footer span {
+  font-size: 20px;
+  font-weight: 500;
+  display: block;
+  height: 48px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.qr {
+  width: 180px;
+  height: 180px;
+}
+
+.copyright-footer {
+  display: flex;
+  font-size: 15px;
+  margin: 8px 0 16px;
+  justify-content: space-evenly;
+}
+
+.copyright-text {
+  color: #007cba;
+}
+
+/* button to back */
+
+#backToTopBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#backToTopBtn.hidden {
+  display: none;
+}
+
+#backToTopBtn:hover {
+  background-color: #0056b3;
 }
