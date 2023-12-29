@@ -673,6 +673,15 @@ class AuthenticatedThuNganHoaDonThanhToan(CustomThuNganHoaDonThanhToanView):
         return current_user.is_authenticated and current_user.user_role == UserRoleEnum.THU_NGAN
 
 
+def count_down_with_separator(nums, separator, step):
+    result = ""
+    for i in range(len(nums) - 1, -1, -1):
+        result = nums[i] + result
+        if (len(nums) - i) % step == 0 and i != 0:
+            result = separator + result
+    return result
+
+
 class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
     column_list = ['id', 'phieukhambenh.sdt', 'phieukhambenh.lichkham.ngaykham', 'phieukhambenh.ten_nguoikham',
                    'tienkham', 'tienthuoc',
@@ -685,6 +694,15 @@ class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
 
     column_filters = {'phieukhambenh.lichkham.ngaykham'}
     column_searchable_list = {'phieukhambenh.sdt'}
+
+    def _hoadonthanhtoan_tienkham_fommater(view, context, model, name):
+        return count_down_with_separator(str(int(model.tienkham)), ',', 3) if model.tienkham else 'Chưa cập nhật'
+
+    def _hoadonthanhtoan_tienthuoc_fommater(view, context, model, name):
+        return count_down_with_separator(str(int(model.tienthuoc)), ',', 3) if model.tienthuoc else 'Chưa cập nhật'
+
+    def _hoadonthanhtoan_tongcong_fommater(view, context, model, name):
+        return count_down_with_separator(str(int(model.tongcong)), ',', 3) if model.tongcong else 'Chưa cập nhật'
 
     def _format_pay_now(view, context, model, name):
         if model.trangthai != 0:
@@ -705,6 +723,9 @@ class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
 
     column_formatters = {
         'thanhtoan': _format_pay_now,
+        'tienkham': _hoadonthanhtoan_tienkham_fommater,
+        'tienthuoc' : _hoadonthanhtoan_tienthuoc_fommater,
+        'tongcong' :_hoadonthanhtoan_tongcong_fommater,
     }
 
     can_create = False
