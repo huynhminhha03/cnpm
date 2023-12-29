@@ -684,6 +684,7 @@ class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
                      'tienthuoc': 'Tiền thuốc', 'tongcong': 'Tổng cộng', 'thanhtoan': 'Thanh toán'}  # Đổi tên trường
 
     column_filters = {'phieukhambenh.lichkham.ngaykham'}
+    column_searchable_list = {'phieukhambenh.sdt'}
 
     def _format_pay_now(view, context, model, name):
         if model.trangthai != 0:
@@ -691,15 +692,15 @@ class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
 
         # render a form with a submit button for student, include a hidden field for the student id
         # note how checkout_view method is exposed as a route below
-
-        _html = '''
+        else:
+            _html = '''
             <form action="/admin/hoadonthanhtoan/checkout" method="POST">
                 <input id="benhnhan_id" name="benhnhan_id"  type="hidden" value="{benhnhan_id}">
                 <input id="hoadonthanhtoan_id" name="hoadonthanhtoan_id"  type="hidden" value="{hoadonthanhtoan_id}">
                 <button style="color : white ; background-color : red ;" value="Momo" name="payUrl" type='submit'>Thanh toán
                 </button>
             </form
-        '''.format(hoadonthanhtoan_id=model.id,benhnhan_id=model.benhnhan_id)
+           '''.format(hoadonthanhtoan_id=model.id, benhnhan_id=model.benhnhan_id)
         return Markup(_html)
 
     column_formatters = {
