@@ -323,8 +323,8 @@ img {
 }
 
 .image-badge {
-  width: 320px;
-  height: 68px;
+  width: 100%;
+
 }
 
 .title-footer {
@@ -344,8 +344,8 @@ img {
 }
 
 .qr {
-  width: 180px;
-  height: 180px;
+  width: 100%;
+
 }
 
 .copyright-footer {
