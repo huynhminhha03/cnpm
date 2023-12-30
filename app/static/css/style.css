@@ -382,3 +382,11 @@ img {
 #backToTopBtn:hover {
   background-color: #0056b3;
 }
+
+/* admin-login  */
+
+.card-wrapper {
+  padding: 30px 0;
+  background-image: url(https://tomec.vn/wp-content/uploads/2023/06/Layer-54.png);
+  background-size: cover;
+}
