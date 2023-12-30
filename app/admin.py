@@ -673,6 +673,15 @@ class AuthenticatedThuNganHoaDonThanhToan(CustomThuNganHoaDonThanhToanView):
         return current_user.is_authenticated and current_user.user_role == UserRoleEnum.THU_NGAN
 
 
+def count_down_with_separator(nums, separator, step):
+    result = ""
+    for i in range(len(nums) - 1, -1, -1):
+        result = nums[i] + result
+        if (len(nums) - i) % step == 0 and i != 0:
+            result = separator + result
+    return result
+
+
 class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
     column_list = ['id', 'phieukhambenh.sdt', 'phieukhambenh.lichkham.ngaykham', 'phieukhambenh.ten_nguoikham',
                    'tienkham', 'tienthuoc',
@@ -684,6 +693,16 @@ class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
                      'tienthuoc': 'Tiền thuốc', 'tongcong': 'Tổng cộng', 'thanhtoan': 'Thanh toán'}  # Đổi tên trường
 
     column_filters = {'phieukhambenh.lichkham.ngaykham'}
+    column_searchable_list = {'phieukhambenh.sdt'}
+
+    def _hoadonthanhtoan_tienkham_fommater(view, context, model, name):
+        return count_down_with_separator(str(int(model.tienkham)), ',', 3) if model.tienkham else 'Chưa cập nhật'
+
+    def _hoadonthanhtoan_tienthuoc_fommater(view, context, model, name):
+        return count_down_with_separator(str(int(model.tienthuoc)), ',', 3) if model.tienthuoc else 'Chưa cập nhật'
+
+    def _hoadonthanhtoan_tongcong_fommater(view, context, model, name):
+        return count_down_with_separator(str(int(model.tongcong)), ',', 3) if model.tongcong else 'Chưa cập nhật'
 
     def _format_pay_now(view, context, model, name):
         if model.trangthai != 0:
@@ -691,19 +710,22 @@ class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
 
         # render a form with a submit button for student, include a hidden field for the student id
         # note how checkout_view method is exposed as a route below
-
-        _html = '''
+        else:
+            _html = '''
             <form action="/admin/hoadonthanhtoan/checkout" method="POST">
                 <input id="benhnhan_id" name="benhnhan_id"  type="hidden" value="{benhnhan_id}">
                 <input id="hoadonthanhtoan_id" name="hoadonthanhtoan_id"  type="hidden" value="{hoadonthanhtoan_id}">
                 <button style="color : white ; background-color : red ;" value="Momo" name="payUrl" type='submit'>Thanh toán
                 </button>
             </form
-        '''.format(hoadonthanhtoan_id=model.id,benhnhan_id=model.benhnhan_id)
+           '''.format(hoadonthanhtoan_id=model.id, benhnhan_id=model.benhnhan_id)
         return Markup(_html)
 
     column_formatters = {
         'thanhtoan': _format_pay_now,
+        'tienkham': _hoadonthanhtoan_tienkham_fommater,
+        'tienthuoc' : _hoadonthanhtoan_tienthuoc_fommater,
+        'tongcong' :_hoadonthanhtoan_tongcong_fommater,
     }
 
     can_create = False

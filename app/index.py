@@ -426,13 +426,21 @@ def checkout_view():
 @login_required
 def payment_success():
     resultCode = request.args.get('resultCode')
+    orderId = request.args.get('orderId')
+    hoadonthanhtoan = dao.get_hoadonthanhtoan_by_id(orderId)
     if resultCode == '0':
-         present_url = request.url
-         controllers.momopayment(presentUrl=present_url)
-         return render_template("payment/thanks.html")
+        present_url = request.url
+        controllers.momopayment(presentUrl=present_url)
+        hoadonthanhtoan.trangthai = 1
+        db.session.add(hoadonthanhtoan)
+        db.session.commit()
+        return redirect('/admin/hoadonthanhtoan')
     else:
-        return render_template("payment/failed.html")
+        hoadonthanhtoan.id = str(uuid.uuid4())
+        db.session.add(hoadonthanhtoan)
+        db.session.commit()
+        return redirect('/admin/hoadonthanhtoan')
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
