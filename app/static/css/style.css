@@ -40,6 +40,12 @@ body {
   border: 1px solid #ccc;
 }
 
+.btn-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .hide {
   display: none;
 }
