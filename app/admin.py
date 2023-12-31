@@ -34,6 +34,37 @@ class AuthenticatedUser(BaseView):
         return current_user.is_authenticated
 
 
+class MyLogoutView(AuthenticatedUser):
+    @expose("/")
+    def index(self):
+        logout_user()
+        return redirect('/admin')
+
+
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
+
+
+def delete_images_in_folder(folder_path):
+    # Kiểm tra xem thư mục tồn tại hay không
+    if not os.path.exists(folder_path):
+        print(f"Thư mục {folder_path} không tồn tại.")
+        return
+
+    # Duyệt qua tất cả các tệp trong thư mục
+    for file_name in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, file_name)
+
+        # Kiểm tra xem tệp có phải là 'png' hoặc 'jpg' không
+        if file_name.lower().endswith(('.png', '.jpg')):
+            try:
+                # Xóa tệp nếu có đuôi là 'png' hoặc 'jpg'
+                os.remove(file_path)
+                print(f"Đã xóa tệp {file_name}")
+            except Exception as e:
+                print(f"Lỗi khi xóa tệp {file_name}: {e}")
+
+
 class CustomAdminManagerModelView(ModelView):
     form_create_rules = [
         'ten_quantri', 'username', 'password', 'gioitinh', 'cmnd', 'sdt', 'ngaysinh', 'hinhanh', 'diachi', 'user_role'
@@ -184,32 +215,7 @@ class CustomAdminManagerModelView(ModelView):
         return True
 
 
-def delete_images_in_folder(folder_path):
-    # Kiểm tra xem thư mục tồn tại hay không
-    if not os.path.exists(folder_path):
-        print(f"Thư mục {folder_path} không tồn tại.")
-        return
-
-    # Duyệt qua tất cả các tệp trong thư mục
-    for file_name in os.listdir(folder_path):
-        file_path = os.path.join(folder_path, file_name)
-
-        # Kiểm tra xem tệp có phải là 'png' hoặc 'jpg' không
-        if file_name.lower().endswith(('.png', '.jpg')):
-            try:
-                # Xóa tệp nếu có đuôi là 'png' hoặc 'jpg'
-                os.remove(file_path)
-                print(f"Đã xóa tệp {file_name}")
-            except Exception as e:
-                print(f"Lỗi khi xóa tệp {file_name}: {e}")
-
-
 class AuthenticatedAdminManager(CustomAdminManagerModelView):
-    def is_accessible(self):
-        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.ADMIN
-
-
-class AuthenticatedAdminConfig(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.user_role == UserRoleEnum.ADMIN
 
@@ -222,6 +228,11 @@ class MyManagerView(AuthenticatedAdminManager):
     can_create = True
     can_delete = False
     can_edit = True
+
+
+class AuthenticatedAdminConfig(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.ADMIN
 
 
 class MyConfigView(AuthenticatedAdminConfig):
@@ -733,15 +744,7 @@ class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
     can_delete = False
 
 
-class MyLogoutView(AuthenticatedUser):
-    @expose("/")
-    def index(self):
-        logout_user()
-        return redirect('/admin')
 
-
-if not os.path.exists(app.config['UPLOAD_FOLDER']):
-    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 # Yta
 admin.add_view(MyDanhSachKhamBenhView(DanhSachKhamBenh, db.session, name='Danh Sách Khám Bệnh'))
