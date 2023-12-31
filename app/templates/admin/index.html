@@ -1,7 +1,71 @@
 {% extends 'admin/master.html' %} {% block body %} {% if
 current_user.is_authenticated %}
 <h1 class="text-center text-info">CHÀO MỪNG ĐẾN TRANG QUẢN TRỊ!!!</h1>
-<h2 class="text-danger">Chào {{ current_user.name }}</h2>
+<h2 class="text-danger">Chào {{ current_user.username }}</h2>
+    <div class="row">
+        <div class="col-md-5 col-xs-12">
+            <table class="table">
+                <tr>
+                    <th>Mã thuốc</th>
+                    <th>Tên thuốc</th>
+                    <th>Số lần dùng</th>
+                </tr>
+                {% for s in stats %}
+                    <tr>
+                        <th>{{ s[0] }}</th>
+                        <th>{{ s[1] }}</th>
+                        <th>{{ s[2] }}</th>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="col-md-7 col-xs-12">
+            <div>
+                <canvas id="myChart"></canvas>
+            </div>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                let labels = [], info = [], colors = [], borderColors = [], r, g, b
+
+                {% for s in stats %}
+                    labels.push('{{ s[1] }}')
+                    info.push({{ s[2] }})
+
+                    r = Math.random()*255
+                    g = Math.random()*255
+                    b = Math.random()*255
+
+                    colors.push(`rgba(${r}, ${g}, ${b}, 0.5)`)
+                    borderColors.push(`rgba(${r}, ${g}, ${b}, 1)`)
+                {% endfor %}
+                window.onload = function () {
+                    const ctx = document.getElementById('myChart').getContext('2d')
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Thống kê tần suất sử dụng thuốc',
+                                data: info,
+                                borderWidth: 1,
+                                backgroundColor: colors,
+                                borderColors: borderColors
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                }
+            </script>
+        </div>
+    </div>
+
+
 {% else %}
 
 <section class="text-center">
@@ -65,6 +129,6 @@ current_user.is_authenticated %}
       </div>
     </div>
   </section>
-
+</div>
 
 {% endif %} {% endblock %}

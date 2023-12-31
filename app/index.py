@@ -363,7 +363,35 @@ def logout_manager():
     return redirect('/admin')
 
 
-@app.route('/admin/hoadonthanhtoan/checkout', methods=['GET', 'POST'])
+@app.route('/admin/hoadonthanhtoan/phuongthucthanhtoan', methods=['GET', 'POST'])
+@login_required
+def phuongthucthanhtoan():
+    hoadonthanhtoan = dao.get_hoadonthanhtoan_by_id(request.form.get('hoadonthanhtoan_id'))
+    bn = dao.get_benhnhan_by_id(request.form.get('benhnhan_id'))
+    ctbn = dao.get_chitietbenhnhan_by_benhnhan_id(bn.id)
+    phieukhambenh = dao.get_phieukhambenh_by_id(hoadonthanhtoan.phieukhambenh_id)
+    diachi = dao.get_diachi_by_ctbn_id(ctbn.id)
+    bhyt = dao.get_bhyt_by_ctbn_id(ctbn.id)
+    dsllt = dao.get_dsLieuLuongThuoc_by_phieuKhamBenh_id(phieukhambenh.id)
+    tienkham = float(dao.get_value_by_key(medical_expenses_key).value)
+    length = len(dsllt)
+    array_lt_dvt = []
+    array_loaithuoc = []
+    array_donvithuoc = []
+    for d in dsllt:
+        loaithuoc_donvithuoc = dao.get_loaithuoc_donvithuoc_by_id(d.loaithuoc_donvithuoc_id)
+        loaithuoc = dao.get_loaithuoc_by_id(loaithuoc_donvithuoc.loaithuoc_id)
+        donvithuoc = dao.get_donvithuoc_by_id(loaithuoc_donvithuoc.donvithuoc_id)
+        array_lt_dvt.append(loaithuoc_donvithuoc)
+        array_loaithuoc.append(loaithuoc)
+        array_donvithuoc.append(donvithuoc)
+    return render_template('admin/payment.html', hoadonthanhtoan=hoadonthanhtoan, bn=bn
+                           , ctbn=ctbn, pkb=phieukhambenh, diachi=diachi, bhyt=bhyt, dsllt=dsllt,
+                           loaithuocs=array_loaithuoc, donvithuocs=array_donvithuoc, lt_dvts=array_lt_dvt,
+                           length=length, tienkham=tienkham)
+
+
+@app.route('/admin/hoadonthanhtoan/phuongthucthanhtoan/checkout', methods=['GET', 'POST'])
 @login_required
 def checkout_view():
     hoadonthanhtoan = dao.get_hoadonthanhtoan_by_id(request.form.get('hoadonthanhtoan_id'))
@@ -420,11 +448,18 @@ def checkout_view():
                                  headers={'Content-Type': 'application/json', 'Content-Length': str(clen)})
 
         return redirect(response.json()['payUrl'])
+    elif 'tienmat' in request.form and request.method == "POST":
+        hoadonthanhtoan.trangthai = 1
+        db.session.add(hoadonthanhtoan)
+        db.session.commit()
+        return redirect('/admin/hoadonthanhtoan')
+    else:
+        return hoadonthanhtoan
 
 
 @app.route('/payment', methods=['GET'])
 @login_required
-def payment_success():
+def payment_results():
     resultCode = request.args.get('resultCode')
     orderId = request.args.get('orderId')
     hoadonthanhtoan = dao.get_hoadonthanhtoan_by_id(orderId)

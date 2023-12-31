@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment</title>
+
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!------ Include the above in your HEAD tag ---------->
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="well col-xs-10 col-sm-10 col-md-6 col-xs-offset-1 col-sm-offset-1 col-md-offset-3"
+             style="font-size: medium">
+            <div class="row">
+                <div class="col-xs-6 col-sm-6 col-md-6">
+                    <address>
+                        <strong>Bệnh viện tư nhân NASUN</strong>
+                        <br>
+                        468 Phan Văn Trị , phường 7 , Gò Vấp
+                        <br>
+                        Thành phố Hồ Chí Minh
+                        <br>
+                        <abbr title="Phone">Số điện thoại:</abbr> (+84)293819230
+                    </address>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 text-right">
+                    <p>
+                        <em>Ngày lập hóa đơn:</em>
+                        <strong>{{ hoadonthanhtoan.ngaylaphoadon.strftime("%d/%m/%Y") }}</strong>
+                    </p>
+                    <p>
+                        <em>Mã hóa đơn :</em>
+                        <strong>{{ hoadonthanhtoan.id }}</strong>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="text-center">
+                    <h1 style="color: green; margin-top: 10px">HÓA ĐƠN KHÁM BỆNH</h1>
+                </div>
+
+                <div class="container mt-5">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Thông tin bệnh nhân : </h4>
+
+                            <div class="row mb-2">
+                                <div class="col-md-3">Họ và tên:</div>
+                                <strong class="col-md-9">{{ bn.ten_benhnhan }}</strong>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-md-3">Phái:</div>
+                                <div class="col-md-9">{{ ctbn.gioitinh }}</div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-md-3">Năm sinh:</div>
+                                <div class="col-md-9">{{ ctbn.ngaysinh.strftime("%d/%m/%Y") }}</div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-md-3">Ngày khám:</div>
+                                <div class="col-md-9">{{ pkb.lichkham.ngaykham.strftime("%d/%m/%Y") }}</div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-md-3">Địa chỉ (Nếu có):</div>
+                                {% if diachi %}
+                                    <div class="col-md-9">{{ diachi.ten_diachi }}</div>
+                                {% else %}
+                                    <div class="col-md-9">Chưa cập nhật</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-md-3">Số BHYT (Nếu có):</div>
+                                {% if bhyt %}
+                                    <div class="col-md-9">{{ bhyt.so_bhyt}}</div>
+                                {% else %}
+                                    <div class="col-md-9">Chưa cập nhật</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-md-3">Triệu chứng:</div>
+                                <div class="col-md-9">{{ pkb.trieuchung }}</div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-md-3">Chẩn đoán:</div>
+                                <div class="col-md-9">{{ pkb.dudoanbenh }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Danh sách thuốc :</th>
+                        <th class="text-center">Giá tiền</th>
+                        <th class="text-center">Số lượng cấp</th>
+                        <th class="text-center">Đơn vị thuốc</th>
+                        <th class="text-center">Tổng tiền</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in range(length) %}
+                        <tr>
+
+                            <td class="col-md-9"><h4><em>{{ loaithuocs[i].ten_loaithuoc }}</em></h4>
+                                {{ dsllt[i].cachdung }}
+                            </td>
+                            <td class="col-md-1" style="text-align: center"> {{ lt_dvts[i].giatien }}</td>
+                            <td class="col-md-1 text-center">{{ dsllt[i].soluong }}</td>
+                            <td class="col-md-1 text-center">{{ donvithuocs[i].ten_donvithuoc }}</td>
+                            <td class="col-md-1 text-center">{{ lt_dvts[i].giatien * dsllt[i].soluong }}</td>
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Tiền khám :</th>
+                        <th class="text-center"></th>
+                        <th class="text-center"></th>
+                        <th class="text-center"></th>
+                        <th class="text-center">Tổng tiền</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr>
+
+                        <td class="col-md-9"><h4><em>Tiền khám cơ bản : </em></h4></td>
+                        <td>  </td>
+                        <td>  </td>
+                        <td>  </td>
+                        <td>{{ tienkham }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Số tiền cần thanh toán :</th>
+                        <th class="text-center"></th>
+                        <th class="text-center"></th>
+                        <th class="text-center"></th>
+                        <th class="text-center">Tổng tiền</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr>
+                    <td class="col-md-9"><h4><em>Tổng cộng : </em></h4></td>
+                        <td>  </td>
+                        <td>  </td>
+                        <td>  </td>
+
+                        <td class="text-center text-danger"><h4>
+                            <strong>{{ hoadonthanhtoan.tienthuoc + tienkham }}</strong></h4></td>
+                    </tr>
+                    </tbody>
+                </table>
+                </div>
+
+                <div class="container">
+                    <div class="d-flex flex-row justify-content-center">
+                        <form action="/admin/hoadonthanhtoan/phuongthucthanhtoan/checkout" method="POST">
+                        <div class="p-3">
+                            <input id="benhnhan_id" name="benhnhan_id"  type="hidden" value="{{ bn.id }}">
+                            <input id="hoadonthanhtoan_id" name="hoadonthanhtoan_id"  type="hidden" value="{{ hoadonthanhtoan.id }}">
+                            <button style="font-size: large" name="tienmat" type="submit" class="btn btn-info btn-sm btn-block">
+                                Thanh toán bằng tiền mặt<span class="glyphicon glyphicon-chevron-right"></span>
+                            </button>
+                        </div>
+                        </form>
+
+                        <form action="/admin/hoadonthanhtoan/phuongthucthanhtoan/checkout" method="POST">
+                        <div class="p-3">
+                        <input id="benhnhan_id" name="benhnhan_id"  type="hidden" value="{{ bn.id }}">
+                        <input id="hoadonthanhtoan_id" name="hoadonthanhtoan_id"  type="hidden" value="{{ hoadonthanhtoan.id }}">
+                            <button style="font-size: large" value="Momo" name="payUrl" type="submit" class="btn btn-danger btn-sm btn-block">
+                                Thanh toán bằng MOMO<span class="glyphicon glyphicon-chevron-right"></span>
+                            </button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
