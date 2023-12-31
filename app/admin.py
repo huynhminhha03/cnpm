@@ -10,7 +10,7 @@ from datetime import datetime
 import cloudinary
 from cloudinary.uploader import upload
 from flask import redirect, flash, url_for, render_template, request
-from flask_admin import BaseView, expose
+from flask_admin import BaseView, expose, Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form.upload import ImageUploadField
 from flask_login import logout_user, current_user
@@ -18,7 +18,7 @@ from markupsafe import Markup
 from wtforms import SelectField, PasswordField, validators, DateField, StringField
 from wtforms.validators import InputRequired
 
-from app import app, db, admin, dao
+from app import app, db, dao, utils
 from app.models import BenhNhan, ChiTietBenhNhan, DanhSachKhamBenh, Address, CMND, BHYT, UserRoleEnum, \
     Manager, Config, LoaiThuoc, PhieuKhamBenh, HoaDonThanhToan
 
@@ -744,6 +744,13 @@ class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
     can_delete = False
 
 
+class MyAdminIndex(AdminIndexView):
+    @expose('/')
+    def index(self):
+        return self.render('admin/index.html', stats=utils.MedicineReport())
+
+
+admin = Admin(app=app, name='QUẢN TRỊ DANH SÁCH KHÁM BỆNH', template_mode='bootstrap4', index_view=MyAdminIndex())
 # Yta
 admin.add_view(MyDanhSachKhamBenhView(DanhSachKhamBenh, db.session, name='Danh Sách Khám Bệnh'))
 admin.add_view(MyBenhNhanView(BenhNhan, db.session, name='Tra Cứu Bệnh Nhân'))
