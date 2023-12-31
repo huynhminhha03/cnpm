@@ -712,7 +712,7 @@ class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
         # note how checkout_view method is exposed as a route below
         else:
             _html = '''
-            <form action="/admin/hoadonthanhtoan/checkout" method="POST">
+            <form action="/admin/hoadonthanhtoan/phuongthucthanhtoan" method="POST">
                 <input id="benhnhan_id" name="benhnhan_id"  type="hidden" value="{benhnhan_id}">
                 <input id="hoadonthanhtoan_id" name="hoadonthanhtoan_id"  type="hidden" value="{hoadonthanhtoan_id}">
                 <button style="color : white ; background-color : red ;" value="Momo" name="payUrl" type='submit'>Thanh toán

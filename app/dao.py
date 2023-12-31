@@ -155,6 +155,10 @@ def get_loaithuoc_donvithuoc_by_2id(loaithuoc, donvithuoc):
     return loaithuoc_donvithuoc
 
 
+def get_phieukhambenh_by_id(id):
+    return PhieuKhamBenh.query.get(id)
+
+
 def get_dsLieuLuongThuoc_by_phieuKhamBenh_id(id):
     dsll = DsLieuLuongThuoc.query
     if id:
