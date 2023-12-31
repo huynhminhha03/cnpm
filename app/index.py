@@ -448,13 +448,18 @@ def checkout_view():
                                  headers={'Content-Type': 'application/json', 'Content-Length': str(clen)})
 
         return redirect(response.json()['payUrl'])
+    elif 'tienmat' in request.form and request.method == "POST":
+        hoadonthanhtoan.trangthai = 1
+        db.session.add(hoadonthanhtoan)
+        db.session.commit()
+        return redirect('/admin/hoadonthanhtoan')
     else:
         return hoadonthanhtoan
 
 
 @app.route('/payment', methods=['GET'])
 @login_required
-def payment_success():
+def payment_results():
     resultCode = request.args.get('resultCode')
     orderId = request.args.get('orderId')
     hoadonthanhtoan = dao.get_hoadonthanhtoan_by_id(orderId)
