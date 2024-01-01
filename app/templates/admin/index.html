@@ -1,9 +1,9 @@
-{% extends 'admin/master.html' %} {% block body %} {% if
-current_user.is_authenticated %}
+{% extends 'admin/master.html' %} {% block body %}
+{% if current_user.is_authenticated %}
 <h1 class="text-center text-info">CHÀO MỪNG ĐẾN TRANG QUẢN TRỊ!!!</h1>
 <h2 class="text-danger">Chào {{ current_user.username }}</h2>
     <div class="row">
-        <div class="col-md-5 col-xs-12">
+        <div class="col-md-6 col-xs-12">
             <table class="table">
                 <tr>
                     <th>Tên thuốc</th>
@@ -21,7 +21,7 @@ current_user.is_authenticated %}
                 {% endfor %}
             </table>
         </div>
-        <div class="col-md-7 col-xs-12">
+        <div class="col-md-6 col-xs-12">
             <div>
                 <canvas id="myChart"></canvas>
             </div>
@@ -30,8 +30,8 @@ current_user.is_authenticated %}
                 let labels = [], info = [], colors = [], borderColors = [], r, g, b
 
                 {% for s in stats %}
-                    labels.push('{{ s[1] }}')
-                    info.push({{ s[2] }})
+                    labels.push('{{ s[0] }}')
+                    info.push({{ s[3] }})
 
                     r = Math.random()*255
                     g = Math.random()*255
@@ -66,7 +66,6 @@ current_user.is_authenticated %}
             </script>
         </div>
     </div>
-
 
 {% else %}
 

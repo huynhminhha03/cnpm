@@ -750,18 +750,28 @@ class MyAdminIndex(AdminIndexView):
         return self.render('admin/index.html', stats=utils.MedicineReport())
 
 
+class StatsView(BaseView):
+    @expose('/')
+    def index(self):
+        return self.render('admin/stats.html')
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.ADMIN
+
+
 admin = Admin(app=app, name='QUẢN TRỊ DANH SÁCH KHÁM BỆNH', template_mode='bootstrap4', index_view=MyAdminIndex())
-# Yta
-admin.add_view(MyDanhSachKhamBenhView(DanhSachKhamBenh, db.session, name='Danh Sách Khám Bệnh'))
-admin.add_view(MyBenhNhanView(BenhNhan, db.session, name='Tra Cứu Bệnh Nhân'))
-admin.add_view(MyDKKBView(name='Đăng Kí Lịch Khám', endpoint='dkkb'))
 # Admin
 admin.add_view(MyManagerView(Manager, db.session, name='Quản Lí Nhân Sự'))
 admin.add_view(MyConfigView(Config, db.session, name='Cấu hình dữ liệu'))
+admin.add_view(StatsView(name='Stats'))
 # Bac si
 admin.add_view(MyThuocView(LoaiThuoc, db.session, name='Loại Thuốc'))
 admin.add_view(MyTraCuuLSBenhNhanView(PhieuKhamBenh, db.session, name='Tra Cứu Lịch Sử Bệnh Nhân'))
 admin.add_view(MyLPKView(name='Lập Phiếu Khám', endpoint='lpk'))
+# Yta
+admin.add_view(MyDanhSachKhamBenhView(DanhSachKhamBenh, db.session, name='Danh Sách Khám Bệnh'))
+admin.add_view(MyBenhNhanView(BenhNhan, db.session, name='Tra Cứu Bệnh Nhân'))
+admin.add_view(MyDKKBView(name='Đăng Kí Lịch Khám', endpoint='dkkb'))
 # Thu ngan
 admin.add_view(MyHoaDonThanhToanView(HoaDonThanhToan, db.session, name="Thanh Toán Hóa Đơn"))
 # general
