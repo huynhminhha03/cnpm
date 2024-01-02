@@ -21,6 +21,9 @@ patients_per_day_key = 'patients_per_day'
 medical_expenses_key = 'medical_expenses'
 number_of_per_pack_key = 'number_of_per_pack'
 
+# global variable
+today = datetime.now().strftime('%Y-%m-%d')
+
 
 @login_manager.user_loader
 def load_manager(manager_id):
@@ -272,7 +275,6 @@ def bacsi_medical_report():
     trieuchung = request.form.get('symptom')
     dudoanbenh = request.form.get('predict-disease-type')
 
-    today = datetime.now().strftime('%Y-%m-%d')
 
     existing_sdt = dao.get_chitietbenhnhan_by_sdt(sdt)
 
@@ -466,6 +468,7 @@ def payment_results():
     if resultCode == '0':
         present_url = request.url
         controllers.momopayment(presentUrl=present_url)
+        hoadonthanhtoan.ngaythanhtoanhoadon = today
         hoadonthanhtoan.trangthai = 1
         db.session.add(hoadonthanhtoan)
         db.session.commit()

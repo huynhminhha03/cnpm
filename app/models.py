@@ -204,6 +204,7 @@ class HoaDonThanhToan(db.Model):
     benhnhan = db.relationship('BenhNhan', backref='benhnhanBackrefhoadonthanhtoan')
     benhnhan_id = db.Column(Integer, ForeignKey(BenhNhan.id), nullable=False)
     phieukhambenh = db.relationship('PhieuKhamBenh', backref='phieukhambenhBackrefhoadonthanhtoan', uselist=False)
+    ngaythanhtoanhoadon = Column(DateTime, nullable=True , default=None)
     phieukhambenh_id = db.Column(Integer, ForeignKey(PhieuKhamBenh.id), nullable=False)
 
 
