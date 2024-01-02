@@ -5,17 +5,28 @@ var array_motLoaiThuoc = document.querySelectorAll('.motLoaiThuoc')
 var array_deleteDivButton = document.querySelectorAll('.deleteDivButton')
 var array_deleteDiv = document.querySelectorAll('.deleteDiv')
 
-array_deleteDiv[0].classList.add('hide')
+// array_deleteDiv[0].classList.add
+
+ document.addEventListener("DOMContentLoaded", function() {
+      for (let i = 0 ; i < array_deleteDivButton.length ; i++){
+        array_deleteDivButton[i].addEventListener('click',function () {
+             let elementToRemove = array_motLoaiThuoc[i]
+             elementToRemove.remove()
+        });
+   }
+    });
 
 createDivButton.addEventListener('click',function () {
 
-    if(array_deleteDiv.length === 1) {
-        array_deleteDiv[0].classList.remove('hide')
-        addMotLoaiThuoc()
-        array_deleteDiv[0].classList.add('hide')
-    }else {
-        addMotLoaiThuoc()
-    }
+    addMotLoaiThuoc()
+
+    // if(array_deleteDiv.length === 1) {
+    //     array_deleteDiv[0].classList.remove('hide')
+    //     addMotLoaiThuoc()
+    //     array_deleteDiv[0].classList.add('hide')
+    // }else {
+    //     addMotLoaiThuoc()
+    // }
 });
 
 function addMotLoaiThuoc() {
@@ -41,7 +52,6 @@ document.getElementById("lpk_form").addEventListener("submit", function(event) {
 
     array_loaithuoc = document.querySelectorAll('.loaithuoc')
 
-    // Lặp qua từng phần tử và lấy giá trị
     array_loaithuoc.forEach(function(element) {
         values.push(element.value);
     });
@@ -81,65 +91,65 @@ function countUniqueStrings(arr) {
     return count;
 }
 
-//slide
-let slideIndex = 0;
-showSlides();
-
-function showSlides() {
-  let i;
-  const slides = document.getElementsByClassName("slide");
-  for (i = 0; i < slides.length; i++) {
-    slides[i].style.display = "none";
-  }
-  slideIndex++;
-  if (slideIndex > slides.length) {
-    slideIndex = 1;
-  }
-  slides[slideIndex - 1].style.display = "block";
-  setTimeout(showSlides, 4000); // Thay đổi 2000 thành thời gian bạn muốn giữ mỗi slide
-}
-
-function plusSlides(n) {
-  showSlidesWithIndex(slideIndex += n);
-}
-
-function currentSlide(n) {
-  showSlidesWithIndex(slideIndex = n);
-}
-
-function showSlidesWithIndex(n) {
-  let i;
-  const slides = document.getElementsByClassName("slide");
-  if (n > slides.length) {
-    slideIndex = 1;
-  }
-  if (n < 1) {
-    slideIndex = slides.length;
-  }
-  for (i = 0; i < slides.length; i++) {
-    slides[i].style.display = "none";
-  }
-  slides[slideIndex - 1].style.display = "block";
-}
-
-//button to back
-document.addEventListener("DOMContentLoaded", function () {
-  var backToTopButton = document.getElementById("backToTopBtn");
-
-  // Show/hide button based on scroll position
-  window.addEventListener("scroll", function () {
-      if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-          backToTopButton.classList.remove("hidden");
-      } else {
-          backToTopButton.classList.add("hidden");
-      }
-  });
-
-  // Scroll to the top smoothly when the button is clicked
-  backToTopButton.addEventListener("click", function () {
-      window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-      });
-  });
-});
+// //slide
+// let slideIndex = 0;
+// showSlides();
+//
+// function showSlides() {
+//   let i;
+//   const slides = document.getElementsByClassName("slide");
+//   for (i = 0; i < slides.length; i++) {
+//     slides[i].style.display = "none";
+//   }
+//   slideIndex++;
+//   if (slideIndex > slides.length) {
+//     slideIndex = 1;
+//   }
+//   slides[slideIndex - 1].style.display = "block";
+//   setTimeout(showSlides, 4000); // Thay đổi 2000 thành thời gian bạn muốn giữ mỗi slide
+// }
+//
+// function plusSlides(n) {
+//   showSlidesWithIndex(slideIndex += n);
+// }
+//
+// function currentSlide(n) {
+//   showSlidesWithIndex(slideIndex = n);
+// }
+//
+// function showSlidesWithIndex(n) {
+//   let i;
+//   const slides = document.getElementsByClassName("slide");
+//   if (n > slides.length) {
+//     slideIndex = 1;
+//   }
+//   if (n < 1) {
+//     slideIndex = slides.length;
+//   }
+//   for (i = 0; i < slides.length; i++) {
+//     slides[i].style.display = "none";
+//   }
+//   slides[slideIndex - 1].style.display = "block";
+// }
+//
+// //button to back
+// document.addEventListener("DOMContentLoaded", function () {
+//   var backToTopButton = document.getElementById("backToTopBtn");
+//
+//   // Show/hide button based on scroll position
+//   window.addEventListener("scroll", function () {
+//       if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+//           backToTopButton.classList.remove("hidden");
+//       } else {
+//           backToTopButton.classList.add("hidden");
+//       }
+//   });
+//
+//   // Scroll to the top smoothly when the button is clicked
+//   backToTopButton.addEventListener("click", function () {
+//       window.scrollTo({
+//           top: 0,
+//           behavior: "smooth"
+//       });
+//   });
+// });
