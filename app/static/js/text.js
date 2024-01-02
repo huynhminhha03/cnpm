@@ -36,12 +36,14 @@ function addMotLoaiThuoc() {
         dsLieuLuongThuoc = document.querySelector("#dsLieuLuongThuoc")
         array_deleteDivButton = document.querySelectorAll('.deleteDivButton')
 
-        for (let i = 0 ; i < array_deleteDivButton.length ; i++){
-        array_deleteDivButton[i].addEventListener('click',function () {
-             let elementToRemove = array_motLoaiThuoc[i]
-             elementToRemove.remove()
+
+        array_deleteDivButton.forEach(function (button , index) {
+            button.addEventListener('click',function ()
+            {
+                let elementToRemove = array_motLoaiThuoc[index]
+                elementToRemove.remove()
+            });
         });
-   }
 }
 
 array_loaithuoc = document.querySelectorAll('.loaithuoc')
