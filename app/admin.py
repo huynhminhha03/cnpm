@@ -100,8 +100,7 @@ class CustomAdminManagerModelView(ModelView):
         'gioitinh': SelectField('Giới tính', choices=[('Nam', 'Nam'), ('Nữ', 'Nữ'), ('Khác', 'Khác')],
                                 validators=[InputRequired()]),
 
-        'hinhanh': ImageUploadField('Hình ảnh', base_path=app.config['UPLOAD_FOLDER'],
-                                    thumbnail_size=(100, 100, True)),
+        'hinhanh': ImageUploadField('Hình ảnh', base_path=app.config['UPLOAD_FOLDER']),
 
         'diachi': StringField('Địa chỉ', validators=[InputRequired()]),
 
@@ -109,8 +108,8 @@ class CustomAdminManagerModelView(ModelView):
                                                        validators.Regexp(r'^\d+$',
                                                                          message='Phải là những kí tự số !')]),
         'user_role': SelectField('Chức vụ',
-                                 choices=[('ADMIN', 'Người quản trị'), ('BAC_SI', 'Bác sĩ'), ('Y_TA', 'Y tá')
-                                     , ('THU_NGAN', 'Thu ngân')],
+                                 choices=[('ADMIN', 'ADMIN'), ('BAC_SI', 'BAC_SI'), ('Y_TA', 'Y_TA')
+                                     , ('THU_NGAN', 'THU_NGAN')],
                                  validators=[InputRequired()]),
 
         'password': PasswordField('Mật khẩu : ', validators=[InputRequired()]),
@@ -155,8 +154,6 @@ class CustomAdminManagerModelView(ModelView):
         return False
 
     def on_form_prefill(self, form, id):
-        # Lấy mô hình từ cơ sở dữ liệu
-        model = self.get_one(id)
         manager = dao.get_manager_by_id(id)
 
     def on_model_change(self, form, model, is_created):
@@ -208,9 +205,13 @@ class CustomAdminManagerModelView(ModelView):
         manager.diachi = form.diachi.data
         manager.user_role = form.user_role.data
 
-        # self._on_model_change(form, manager, True)  # error chua fix
+        file_storage = form.hinhanh.data
+        # Lấy tên của tệp tin
+        filename = file_storage.filename
+        manager.hinhanh = filename
 
         self.session.add(manager)
+        self._on_model_change(form, manager, True)  # error chua fix
         self.session.commit()
         return True
 
