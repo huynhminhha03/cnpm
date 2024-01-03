@@ -2,4 +2,76 @@
 
 {% block body %}
     <h1 class="text-center text-danger">THỐNG KÊ DOANH THU</h1>
+        <div class="row">
+        <div class="col-md-6 col-xs-12">
+            <table class="table">
+                <tr>
+                    <th>Ngày</th>
+                    <th>Số bệnh nhân</th>
+                    <th>Doanh thu</th>
+                    <th>Tỉ lệ</th>
+                </tr>
+                {% for s in stats %}
+                    <tr>
+                        <th>{{ s[0].strftime('%d-%m-%Y') }}</th>
+                        <th>{{ s[1] }}</th>
+                        <th>{{ "{:,.1f}".format(s[2]) }} VNĐ</th>
+                        <th>{{ s[3] }} %</th>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="col-md-6 col-xs-12">
+            <form action="">
+                <div class="form-group">
+                    <input type="month" class="form-control" name="month">
+                </div>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-info" value="Thống kê">
+                </div>
+            </form>
+            <div>
+                <canvas id="myRevenueChart"></canvas>
+            </div>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                let labels = [], info = [], colors = [], borderColors = [], r, g, b
+
+                {% for s in stats %}
+                    labels.push('{{ s[0].strftime('%d-%m-%Y') }}')
+                    info.push({{ s[2] }})
+
+                    r = Math.random()*255
+                    g = Math.random()*255
+                    b = Math.random()*255
+
+                    colors.push(`rgba(${r}, ${g}, ${b}, 0.5)`)
+                    borderColors.push(`rgba(${r}, ${g}, ${b}, 1)`)
+                {% endfor %}
+                window.onload = function () {
+                    const ctx = document.getElementById('myRevenueChart').getContext('2d')
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Doanh thu',
+                                data: info,
+                                borderWidth: 1,
+                                backgroundColor: colors,
+                                borderColors: borderColors
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                }
+            </script>
+        </div>
+    </div>
 {% endblock %}

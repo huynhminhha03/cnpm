@@ -747,16 +747,19 @@ class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
 class MyAdminIndex(AdminIndexView):
     @expose('/')
     def index(self):
-        return self.render('admin/index.html', stats=utils.MedicineReport())
+        from_date = request.args.get('from_date', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        to_date = request.args.get('to_date', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        return self.render('admin/index.html', stats=utils.medicine_report(from_date=from_date, to_date=to_date))
 
 
 class StatsView(BaseView):
-    @expose('/')
-    def index(self):
-        return self.render('admin/stats.html')
-
     def is_accessible(self):
         return current_user.is_authenticated and current_user.user_role == UserRoleEnum.ADMIN
+
+    @expose('/')
+    def index(self):
+        month = request.args.get('month', datetime.now().strftime('%Y-%m'))
+        return self.render('admin/stats.html', stats=utils.revenue_report(month=month))
 
 
 admin = Admin(app=app, name='QUẢN TRỊ DANH SÁCH KHÁM BỆNH', template_mode='bootstrap4', index_view=MyAdminIndex())
