@@ -1,3 +1,4 @@
+from flask_admin.actions import action
 from flask_admin.contrib.sqla import ModelView
 import hashlib
 import hmac
@@ -9,10 +10,11 @@ from datetime import datetime
 
 import cloudinary
 from cloudinary.uploader import upload
-from flask import redirect, flash, url_for, render_template, request
+from flask import redirect, flash, url_for, render_template, request, send_file
 from flask_admin import BaseView, expose, Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form.upload import ImageUploadField
+from flask_admin.helpers import get_url
 from flask_login import logout_user, current_user
 from markupsafe import Markup
 from wtforms import SelectField, PasswordField, validators, DateField, StringField
@@ -21,6 +23,9 @@ from wtforms.validators import InputRequired
 from app import app, db, dao, utils
 from app.models import BenhNhan, ChiTietBenhNhan, DanhSachKhamBenh, Address, CMND, BHYT, UserRoleEnum, \
     Manager, Config, LoaiThuoc, PhieuKhamBenh, HoaDonThanhToan
+import pandas as pd
+from io import BytesIO
+from flask_admin.babel import lazy_gettext
 
 cloudinary.config(
     cloud_name="diwxda8bi",
@@ -283,16 +288,36 @@ class CustomYTaDSKBModelView(ModelView):
 
     column_searchable_list = ('lichkham.ngaykham',)
     column_filters = ['lichkham.ngaykham']
+    action_disallowed_list = ['export']
 
-    # 2 hàm ghi đè này chưa đè đc ?
-    def _search_placeholder(self):
-        return "Tim kiếm ngày theo định dạng năm-tháng-ngày"
+    # @action('export', lazy_gettext('Export selected items'))
+    # def export_to_csv(self, ids):
+    #     # Lấy dữ liệu từ các ID đã chọn
+    #     queryset = self.get_query().filter(self.model.id.in_(ids))
+    #     data = pd.read_sql(queryset.statement, queryset.session.bind)
+    #
+    #     # Tạo một BytesIO để lưu trữ nội dung của file CSV
+    #     csv_output = BytesIO()
+    #
+    #     # Xuất dữ liệu vào file CSV
+    #     data.to_csv(csv_output, index=False)
+    #
+    #     # Đặt con trỏ đọc/ghi của BytesIO về đầu để chuẩn bị để đọc
+    #     csv_output.seek(0)
+    #
+    #     # Lấy đường dẫn của action export mặc định
+    #     default_export_url = get_url('/admin/danhsachkhambenh', action_name='export')
+    #
+    #     # Trả về response cho client để tải xuống file CSV
+    #     return self.response(csv_output.getvalue(),
+    #                          headers={'Content-Disposition': 'attachment; filename=data.xlsx',
+    #                                   'Content-Type': 'text/xlsx'},
+    #                          back=url_for(default_export_url))
 
-    def search(self, query, search_term):
-        # Ghi đè hàm search để tùy chỉnh quá trình tìm kiếm
-        search_term = datetime.strptime(search_term, "%Y-%m-%d")
-        lichkham = dao.get_lichkham_by_ngaykham(search_term)
-        return DanhSachKhamBenh.query.filter_by(lichkham_id=lichkham.id).all()
+    can_create = False
+    can_edit = False
+    can_delete = False
+    can_export = True
 
 
 class AuthenticatedYTaDSKB(CustomYTaDSKBModelView):
@@ -745,26 +770,48 @@ class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
     can_delete = False
 
 
-class MyAdminIndex(AdminIndexView):
-    @expose('/')
-    def index(self):
-        return self.render('admin/index.html', stats=utils.MedicineReport())
+
+class CustomAdminStatsBaseView(BaseView):
+    pass
 
 
-class StatsView(BaseView):
-    @expose('/')
-    def index(self):
-        return self.render('admin/stats.html')
-
+class AuthenticatedAdminStats(CustomAdminStatsBaseView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.user_role == UserRoleEnum.ADMIN
 
 
-admin = Admin(app=app, name='QUẢN TRỊ DANH SÁCH KHÁM BỆNH', template_mode='bootstrap4', index_view=MyAdminIndex())
+class MyStatsView(AuthenticatedAdminStats):
+    @expose('/')
+    def index(self):
+        month = request.args.get('month', datetime.now().strftime('%Y-%m'))
+        return self.render('admin/stats.html', stats=utils.revenue_report(month=month))
+
+
+class CustomAdminMedicalUsedBaseView(BaseView):
+    pass
+
+
+class AuthenticatedAdminMedicalUsed(CustomAdminMedicalUsedBaseView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.ADMIN
+
+
+class MyMedicalUsedView(AuthenticatedAdminMedicalUsed):
+    @expose('/')
+    def index(self):
+        from_date = request.args.get('from_date', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        to_date = request.args.get('to_date', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        return self.render('admin/medical_used.html', stats=utils.medicine_report(from_date=from_date, to_date=to_date))
+
+
+admin = Admin(app=app, name='QUẢN TRỊ DANH SÁCH KHÁM BỆNH', template_mode='bootstrap4')
+
 # Admin
 admin.add_view(MyManagerView(Manager, db.session, name='Quản Lí Nhân Sự'))
 admin.add_view(MyConfigView(Config, db.session, name='Cấu hình dữ liệu'))
-admin.add_view(StatsView(name='Stats'))
+admin.add_view(MyStatsView(name='Thống kê doanh thu', endpoint='stats'))
+admin.add_view(MyMedicalUsedView(name='Thống kê thuốc', endpoint='slsdt'))
+
 # Bac si
 admin.add_view(MyThuocView(LoaiThuoc, db.session, name='Loại Thuốc'))
 admin.add_view(MyTraCuuLSBenhNhanView(PhieuKhamBenh, db.session, name='Tra Cứu Lịch Sử Bệnh Nhân'))
