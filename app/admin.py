@@ -1,3 +1,5 @@
+import shutil
+
 from flask_admin.actions import action
 from flask_admin.contrib.sqla import ModelView
 import hashlib
@@ -17,6 +19,7 @@ from flask_admin.form.upload import ImageUploadField
 from flask_admin.helpers import get_url
 from flask_login import logout_user, current_user
 from markupsafe import Markup
+from werkzeug.datastructures import FileStorage
 from wtforms import SelectField, PasswordField, validators, DateField, StringField
 from wtforms.validators import InputRequired
 
@@ -105,7 +108,7 @@ class CustomAdminManagerModelView(ModelView):
         'gioitinh': SelectField('Giới tính', choices=[('Nam', 'Nam'), ('Nữ', 'Nữ'), ('Khác', 'Khác')],
                                 validators=[InputRequired()]),
 
-        'hinhanh': ImageUploadField('Hình ảnh', base_path=app.config['UPLOAD_FOLDER']),
+        'hinhanh': ImageUploadField('Hình ảnh', base_path=app.config['UPLOAD_FOLDER'], validators=[InputRequired()]),
 
         'diachi': StringField('Địa chỉ', validators=[InputRequired()]),
 
@@ -129,20 +132,13 @@ class CustomAdminManagerModelView(ModelView):
         if not (username_existed or cmnd_existed or sdt_existed):
             model = self.model()
             form.populate_obj(model)
-            # Tùy chỉnh xử lý trước khi lưu vào cơ sở dữ liệu
-            if not model.hinhanh:
-                hinhanh = ('https://res.cloudinary.com/diwxda8bi/image/upload/v1703312060/Adorable-animal-cat'
-                           '-20787_ebmgss.jpg')
-            else:
-                hinhanh = model.hinhanh
 
-            import hashlib
             manager = Manager(ten_quantri=model.ten_quantri
                               , username=model.username
                               , password=str(hashlib.md5(model.password.encode('utf-8')).hexdigest())
                               , gioitinh=model.gioitinh, cmnd=model.cmnd, sdt=model.sdt,
                               ngaysinh=datetime.strptime(str(model.ngaysinh), "%Y-%m-%d")
-                              , hinhanh=hinhanh, diachi=model.diachi, user_role=model.user_role)
+                              , hinhanh=model.hinhanh, diachi=model.diachi, user_role=model.user_role)
 
             self.session.add(manager)
             self._on_model_change(form, manager, True)
@@ -162,24 +158,32 @@ class CustomAdminManagerModelView(ModelView):
         manager = dao.get_manager_by_id(id)
 
     def on_model_change(self, form, model, is_created):
-        super().on_model_change(form, model, is_created)
-        image_path = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'], model.hinhanh)
+        if is_created:
+            print('Model: ' + model.hinhanh) #Tên hình đc chọn
+            image_path = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'], model.hinhanh)
         # Hiển thị đường dẫn của hình đã lưu vào thư mục cục bộ
-        print(image_path)
-
+            print('Path: ' + image_path)
+            print('Model: ' + model.hinhanh)  # Là tên của hình đc chọn/ đường dẫn cloudinary
+        # form.hinhanh.data: Đây là giá trị hiện tại của trường hinhanh sau khi dữ liệu được gửi từ form.
+        # form.hinhanh.object_data: Đây là giá trị trước đó của trường hinhanh trước khi dữ liệu được gửi từ form.
         # Kiểm tra xem có hình ảnh mới được tải lên hay không
-        if form.hinhanh.data:
-            # Tải hình ảnh lên Cloudinary
-            response = upload(image_path)
-            model.hinhanh = response['secure_url']
-
-            # Xóa hình ảnh cục bộ sau khi tải lên Cloudinary
-            delete_images_in_folder(app.config['UPLOAD_FOLDER'])
-        else:
-            # Nếu không có hình mới, giữ nguyên URL hiện tại của model
-            model.hinhanh = form.hinhanh.object_data['secure_url'] if form.hinhanh.object_data else None
+            print(form.hinhanh.data)
+            # Là dạng <FileStorage:>
+            if form.hinhanh.data and form.hinhanh.data != model.hinhanh:  # Create/Edit chon hinh
+                # Tải hình ảnh lên Cloudinary
+                response = upload(image_path)
+                model.hinhanh = response['secure_url']
+                print('Change: ' + model.hinhanh)
+                # Là dạng link cloudinary
+                # Xóa hình ảnh cục bộ sau khi tải lên Cloudinary
+                delete_images_in_folder(app.config['UPLOAD_FOLDER'])
 
     def update_model(self, form, model):
+        print('Update model: '+model.hinhanh)
+        # Link cloudinary hinh cu
+        # print('Form img: '+form.hinhanh.data) --> Ko thể hiển thị
+        model = self.model()
+        form.populate_obj(model)
 
         manager = dao.get_manager_by_id(model.id)
 
@@ -200,23 +204,37 @@ class CustomAdminManagerModelView(ModelView):
             self.session.rollback()
             return False
 
+        if form.hinhanh.data and isinstance(form.hinhanh.data, FileStorage):
+            if form.hinhanh.data.filename != model.hinhanh:
+                if not os.path.exists(app.config['UPLOAD_FOLDER']):
+                    os.makedirs(app.config['UPLOAD_FOLDER'])
+
+                # image_path = os.path.join(app.config['UPLOAD_FOLDER'], form.hinhanh.data.filename)
+                image_path = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'], form.hinhanh.data.filename)
+                if not os.path.exists(image_path):
+                    print(form.hinhanh.data.filename)
+                    shutil.copy(form.hinhanh.data.filename, image_path)
+                if os.path.exists(image_path):
+                    response = upload(image_path)
+                    manager.hinhanh = response['secure_url']
+                    delete_images_in_folder(app.config['UPLOAD_FOLDER'])
+                else:
+                    print(f"File not found: {image_path}")
+
         # Tùy chỉnh xử lý trước khi lưu vào cơ sở dữ liệu
         manager.ten_quantri = form.ten_quantri.data
         manager.username = form.username.data
+        manager.password = str(hashlib.md5(form.password.data.encode('utf-8')).hexdigest())
         manager.gioitinh = form.gioitinh.data
         manager.cmnd = form.cmnd.data
         manager.sdt = form.sdt.data
         manager.ngaysinh = form.ngaysinh.data
         manager.diachi = form.diachi.data
         manager.user_role = form.user_role.data
-
-        file_storage = form.hinhanh.data
-        # Lấy tên của tệp tin
-        filename = file_storage.filename
-        manager.hinhanh = filename
-
+        manager.hinhanh = form.hinhanh.data
+        # print('Update:' + model.hinhanh)
         self.session.add(manager)
-        self._on_model_change(form, manager, True)  # error chua fix
+        self._on_model_change(form, manager, False)  # error chua fix
         self.session.commit()
         return True
 
@@ -250,13 +268,6 @@ class MyConfigView(AuthenticatedAdminConfig):
 
 
 class CustomYTaDSKBModelView(ModelView):
-    column_list = ['stt', 'dskb_lichkham', 'benhnhan_name', 'chitietbenhnhan_gioitinh',
-                   'chitietbenhnhan_ngaysinh',
-                   'chitietbenhnhan_diachi']
-    column_labels = {'stt': 'Số thứ tự', 'dskb_lichkham': 'Lịch khám', 'benhnhan_name': 'Họ tên',
-                     'chitietbenhnhan_gioitinh': 'Giới tính'
-        , 'chitietbenhnhan_ngaysinh': 'Năm sinh', 'chitietbenhnhan_diachi': 'Địa chỉ'}  # Đổi tên trường
-
     def _dskb_lichkham_formatter(self, context, model, name):
         lk = dao.get_lichkham_by_id(model.lichkham_id)
         return lk.ngaykham.strftime("%d/%m/%Y") if lk else 'Chưa cập nhật'
@@ -278,17 +289,30 @@ class CustomYTaDSKBModelView(ModelView):
         diachi = dao.get_diachi_by_ctbn_id(ctbn.id)
         return diachi.ten_diachi if diachi else 'Chưa cập nhật'
 
+    def _benhnhan_sdt_formatter(self, context, model, name):
+        ctbn = dao.get_chitietbenhnhan_by_benhnhan_id(model.benhnhan_id)
+        return ctbn.sdt if ctbn else 'Chưa cập nhật'
+
     column_formatters = {
         'dskb_lichkham': _dskb_lichkham_formatter,
         'benhnhan_name': _benhnhan_ten_formatter,
+        'chitietbenhnhan.sdt': _benhnhan_sdt_formatter,
         'chitietbenhnhan_gioitinh': _chitietbenhnhan_gioiTinh_formatter,
         'chitietbenhnhan_diachi': _chitietbenhnhan_diachi_formatter,
         'chitietbenhnhan_ngaysinh': _chitietbenhnhan_ngaysinh_formatter,
     }
 
+    column_list = ['stt', 'dskb_lichkham', 'chitietbenhnhan.sdt', 'benhnhan_name', 'chitietbenhnhan_gioitinh',
+                   'chitietbenhnhan_ngaysinh',
+                   'chitietbenhnhan_diachi']
+    column_labels = {'stt': 'Số thứ tự', 'dskb_lichkham': 'Lịch khám', 'chitietbenhnhan.sdt': 'Số điện thoại',
+                     'benhnhan_name': 'Họ tên', 'chitietbenhnhan_gioitinh': 'Giới tính'
+        , 'chitietbenhnhan_ngaysinh': 'Năm sinh', 'chitietbenhnhan_diachi': 'Địa chỉ'}  # Đổi tên trường
+
     column_searchable_list = ('lichkham.ngaykham',)
     column_filters = ['lichkham.ngaykham']
     action_disallowed_list = ['export']
+
 
     # @action('export', lazy_gettext('Export selected items'))
     # def export_to_csv(self, ids):
@@ -327,7 +351,10 @@ class AuthenticatedYTaDSKB(CustomYTaDSKBModelView):
 
 class MyDanhSachKhamBenhView(AuthenticatedYTaDSKB):
     can_export = True
+    can_create = False
+    can_delete = False
     can_edit = False
+
 
 
 class CustomYTaBenhNhanModelView(ModelView):
