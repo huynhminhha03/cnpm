@@ -8,7 +8,8 @@ from app.models import (BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, F
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import cloudinary
 import cloudinary.uploader
-from admin import *
+from app.admin import *
+import warnings
 
 cloudinary.config(
     cloud_name="diwxda8bi",
