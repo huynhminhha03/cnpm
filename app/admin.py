@@ -168,25 +168,6 @@ class CustomAdminManagerModelView(ModelView):
             model.hinhanh = response['secure_url']
             delete_images_in_folder(app.config['UPLOAD_FOLDER'])
 
-        # ----- ROOT -----
-        # if is_created: #Create new
-        #     print(type(model.hinhanh))
-        #     image_path = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'], model.hinhanh)
-        #     # Hiển thị đường dẫn của hình đã lưu vào thư mục cục bộ
-        #     if form.hinhanh.data and form.hinhanh.data != model.hinhanh:
-        #         # Tải hình ảnh lên Cloudinary
-        #         response = upload(image_path)
-        #         model.hinhanh = response['secure_url']
-        #         # Xóa hình ảnh cục bộ sau khi tải lên Cloudinary
-        #         delete_images_in_folder(app.config['UPLOAD_FOLDER'])
-        # elif not is_created: #Edit
-        #     model.hinhanh = str(model.hinhanh)
-        #     image_path = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'], model.hinhanh)
-        #     if os.path.exists(image_path): #Có chọn hính
-        #         response = upload(image_path)
-        #         model.hinhanh = response['secure_url']
-        #         delete_images_in_folder(app.config['UPLOAD_FOLDER'])
-
     def update_model(self, form, model):
         print('Update model: ' + model.hinhanh)
         manager = dao.get_manager_by_id(model.id)
@@ -209,22 +190,11 @@ class CustomAdminManagerModelView(ModelView):
             return False
 
         # Tùy chỉnh xử lý trước khi lưu vào cơ sở dữ liệu
-        # manager.ten_quantri = form.ten_quantri.data
-        # manager.username = form.username.data
-        # manager.password = str(hashlib.md5(form.password.data.encode('utf-8')).hexdigest())
-        # manager.gioitinh = form.gioitinh.data
-        # manager.cmnd = form.cmnd.data
-        # manager.sdt = form.sdt.data
-        # manager.ngaysinh = form.ngaysinh.data
-        # manager.diachi = form.diachi.data
-        # manager.user_role = form.user_role.data
-        # manager.hinhanh = form.hinhanh.data
+        form.password.data = str(
+            hashlib.md5(form.password.data.encode('utf-8')).hexdigest())  # copy dữ liệu từ form sang model
         form.populate_obj(model)
         self._on_model_change(form, model, False)
         self.session.commit()
-        # self.session.add(manager)
-        # self._on_model_change(form, manager, False)  # error chua fix
-        # self.session.commit()
         return True
 
 
@@ -815,6 +785,16 @@ class MyMedicalUsedView(AuthenticatedAdminMedicalUsed):
         from_date = request.args.get('from_date', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         to_date = request.args.get('to_date', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         return self.render('admin/medical_used.html', stats=utils.medicine_report(from_date=from_date, to_date=to_date))
+
+
+class MyAdminIndex(AdminIndexView):
+    def __init__(self, *args, **kwargs):
+        self._default_view = True
+        super(MyAdminIndex, self).__init__(*args, **kwargs)
+        self.admin = Admin()
+
+    def index(self):
+        return self.render('admin/index.html', checked = 'wrong_current_pw')
 
 
 admin = Admin(app=app, name='QUẢN TRỊ DANH SÁCH KHÁM BỆNH', template_mode='bootstrap4')

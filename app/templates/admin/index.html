@@ -1,72 +1,219 @@
 {% extends 'admin/master.html' %} {% block body %}
-{% if current_user.is_authenticated %}
-<h1 class="text-center text-info">CHÀO MỪNG ĐẾN TRANG QUẢN TRỊ!!!</h1>
-<h2 class="text-danger">Chào {{ current_user.username }}</h2>
+    {% if current_user.is_authenticated %}
+        <h1 class="text-center text-white mb-5">CHÀO MỪNG ĐẾN TRANG QUẢN TRỊ!!!</h1>
 
+        {% if 'success' in request.args %}
+            <div class="alert alert-success" role="alert">
+                Đổi mật khẩu thành công !
+            </div>
+        {% elif 'failed' in request.args %}
+            <div class="alert alert-warning" role="alert">
+                Mật khẩu hiện tại không đúng !
+            </div>
 
-{% else %}
+        {% endif %}
 
-<section class="text-center">
-    <!-- Background image -->
-    <div
-      class="p-5 bg-image"
-      style="
+        <div class="container emp-profile">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="profile-img">
+                        <img style="border-radius: 100%" src="{{ current_user.hinhanh }}"
+                             alt=""/>
+                    </div>
+
+                </div>
+                <div class="col-md-6">
+                    <div class="profile-head">
+                        <h3>
+                            THÔNG TIN NGƯỜI QUẢN TRỊ :
+                        </h3>
+
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                                   aria-controls="home" aria-selected="true">Thông tin tài khoản</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                                   aria-controls="profile" aria-selected="false">Thông tin cá nhân</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="changepw-tab" data-toggle="tab" href="#changepw" role="tab"
+                                   aria-controls="changepw" aria-selected="false">Đổi mật khẩu</a>
+
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-end">
+
+                <div class="col-md-8">
+                    <div class="tab-content profile-tab" id="myTabContent">
+                        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Tên người dùng :</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>{{ current_user.username }}</p>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label> Chức vụ : </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>{{ current_user.user_role.name }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Họ và tên : </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>{{ current_user.ten_quantri }}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Giới tính : </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>{{ current_user.gioitinh }}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Ngày sinh : </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>{{ current_user.ngaysinh.strftime("%d/%m/%Y") }}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Địa chỉ : </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>{{ current_user.diachi }}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Số điện thoại : </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>{{ current_user.sdt }}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Số chứng minh nhân dân : </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>{{ current_user.cmnd }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="changepw" role="tabpanel" aria-labelledby="changepw-tab">
+
+                            <form method="POST" action="/editProfileManager">
+                                <input type="hidden" name="manager_id" value="{{ current_user.id }}">
+                                <label class="col-4 col-form-label">Nhập mật khẩu hiện tại : </label>
+                                <div class="col-12">
+                                    <input id="currentpw" name="currentpw" placeholder="Mật khẩu hiện tại"
+                                           class="form-control here " type="password">
+                                </div>
+                                <label class="col-4 col-form-label">Nhập mật khẩu mới : </label>
+                                <div class="col-12">
+                                    <input id="newpw" name="newpw" placeholder="Mật khẩu mới" class="form-control here"
+                                           type="password">
+                                </div>
+                                <div class="text-center mt-3">
+                                    <button class="btn btn-info" type="submit" value="Submit">Submit</button>
+                                </div>
+                            </form>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+
+        <section class="text-center">
+            <!-- Background image -->
+            <div
+                    class="p-5 bg-image"
+                    style="
         background-image: url('https://tomec.vn/wp-content/uploads/2023/06/Layer-54.png');
         background-size: cover;
         height: 300px;
       "
-    ></div>
-    <!-- Background image -->
-  
-    <div
-      class="card mx-4 mx-md-5 shadow-5-strong mb-5"
-      style="
+            ></div>
+            <!-- Background image -->
+
+            <div
+                    class="card mx-4 mx-md-5 shadow-5-strong mb-5"
+                    style="
         margin-top: -100px;
         background: hsla(0, 0%, 100%, 0.8);
         backdrop-filter: blur(30px);
       "
-    >
-      <div class="card-body py-5 px-md-5">
-        <div class="row d-flex justify-content-center">
-          <div class="col-lg-8">
-            <h2 class="fw-bold mb-5">Đăng nhập quản trị</h2>
-            <form method="POST" action="/admin/login">
-              <!-- 2 column grid layout with text inputs for the first and last names -->
-              <div class="form-floating mb-3 mt-3">
-                <input
-                  type="text"
-                  class="form-control"
-                  required
-                  id="username"
-                  placeholder="Nhập tên đăng nhập"
-                  name="username"
-                />
-                <label for="username">Tên đăng nhập</label>
-              </div>
-  
-              <div class="form-floating mt-3 mb-3">
-                <input
-                  type="password"
-                  class="form-control"
-                  required
-                  id="password"
-                  placeholder="Nhập mật khẩu"
-                  name="password"
-                />
-                <label for="password">Mật khẩu</label>
-              </div>
-  
-              <!-- Submit button -->
-              <div class="form-floating mt-3 mb-3">
-                <input type="submit" class="btn btn-danger" value="Đăng nhập" />
-              </div>
-              
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
+            >
+                <div class="card-body py-5 px-md-5">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-lg-8">
+                            <h2 class="fw-bold mb-5">Đăng nhập quản trị</h2>
+                            <form method="POST" action="/admin/login">
+                                <!-- 2 column grid layout with text inputs for the first and last names -->
+                                <div class="form-floating mb-3 mt-3">
+                                    <input
+                                            type="text"
+                                            class="form-control"
+                                            required
+                                            id="username"
+                                            placeholder="Nhập tên đăng nhập"
+                                            name="username"
+                                    />
+                                    <label for="username">Tên đăng nhập</label>
+                                </div>
 
-{% endif %} {% endblock %}
+                                <div class="form-floating mt-3 mb-3">
+                                    <input
+                                            type="password"
+                                            class="form-control"
+                                            required
+                                            id="password"
+                                            placeholder="Nhập mật khẩu"
+                                            name="password"
+                                    />
+                                    <label for="password">Mật khẩu</label>
+                                </div>
+
+                                <!-- Submit button -->
+                                <div class="form-floating mt-3 mb-3">
+                                    <input type="submit" class="btn btn-danger" value="Đăng nhập"/>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        </div>
+
+    {% endif %}
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="{{ url_for('static', filename='css/style2.css') }}" rel="stylesheet"/>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+{% endblock %}

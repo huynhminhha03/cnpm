@@ -9,7 +9,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 import cloudinary
 import cloudinary.uploader
 from app.admin import *
-import warnings
+
 
 cloudinary.config(
     cloud_name="diwxda8bi",
@@ -46,6 +46,31 @@ def login_admin_process():
         login_user(user=user)
 
     return redirect('/admin')
+
+
+@app.route('/editProfileManager', methods=['POST'])
+def editProfileManager():
+    currentpw = request.form.get('currentpw')
+    newpw = request.form.get('newpw')
+    manager_id = request.form.get('manager_id')
+    if currentpw and newpw:
+        manager = dao.get_manager_by_id(manager_id)
+        hashcode_currentpw = str(hashlib.md5(currentpw.strip().encode('utf-8')).hexdigest())
+        if manager.password.__eq__(hashcode_currentpw):
+            manager.password = str(hashlib.md5(newpw.encode('utf-8')).hexdigest())
+            db.session.add(manager)
+            db.session.commit()
+            return redirect(url_for('admin_index', success='success'))
+
+        else:
+            return redirect(url_for('admin_index', failed='failed'))
+
+    return redirect('/admin')
+
+
+@app.route('/admin')
+def admin_index():
+    return MyAdminIndex().render('/admin/index.html')
 
 
 @app.route("/dat-lich-kham", methods=['GET', 'POST'])
