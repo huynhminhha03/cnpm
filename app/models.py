@@ -36,7 +36,7 @@ class Manager(db.Model, UserMixin):
     user_role = Column(Enum(UserRoleEnum), default=UserRoleEnum.ADMIN)
 
     def __str__(self):
-        return self.name
+        return self.ten_quantri
 
 
 class BenhNhan(db.Model):
