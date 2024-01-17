@@ -809,8 +809,8 @@ admin = Admin(app=app, name='QUẢN TRỊ DANH SÁCH KHÁM BỆNH', template_mod
 # Admin
 admin.add_view(MyManagerView(Manager, db.session, name='Quản Lí Nhân Sự'))
 admin.add_view(MyConfigView(Config, db.session, name='Cấu hình dữ liệu'))
-admin.add_view(MyStatsView(name='Thống kê doanh thu', endpoint='stats'))
-admin.add_view(MyMedicalUsedView(name='Thống kê thuốc', endpoint='slsdt'))
+admin.add_view(MyStatsView(name='Thống Kê Doanh Thu', endpoint='stats'))
+admin.add_view(MyMedicalUsedView(name='Thống Kê Thuốc', endpoint='slsdt'))
 
 # Bac si
 admin.add_view(MyThuocView(LoaiThuoc, db.session, name='Loại Thuốc'))

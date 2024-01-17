@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
-from app import app, login_manager, db, controllers
+from app import app, login_manager, db, controllers, dao
 from twilio.rest import Client
 import json, hmac, hashlib, requests
 import uuid
@@ -274,7 +274,6 @@ def bacsi_medical_report():
     ngaykham = request.form.get('booking')
     trieuchung = request.form.get('symptom')
     dudoanbenh = request.form.get('predict-disease-type')
-
 
     existing_sdt = dao.get_chitietbenhnhan_by_sdt(sdt)
 
