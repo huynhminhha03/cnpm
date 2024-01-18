@@ -4,7 +4,7 @@ import requests
 import uuid
 from flask import render_template, url_for
 from flask_login import login_user, login_required
-from twilio.rest import Client
+# from twilio.rest import Client
 from app import login_manager, controllers
 from app.admin import *
 from app.models import (LichKham, Favor, LoaiThuoc_DonViThuoc, DsLieuLuongThuoc, )
@@ -204,7 +204,7 @@ def booking():
         db.session.commit()
 
         checked = 'success'
-        client = Client(app.config['TWILIO_ACCOUNT_SID'], app.config['TWILIO_AUTH_TOKEN'])
+        # client = Client(app.config['TWILIO_ACCOUNT_SID'], app.config['TWILIO_AUTH_TOKEN'])
 
         # message = client.messages.create(
         #     body=f'Số điện thoại {ctbn.sdt} đã đặt lịch vào ngày {list.ngaykham.strftime("%d/%m/%Y")} thành công ! ',
