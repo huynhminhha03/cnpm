@@ -155,6 +155,12 @@ def get_loaithuoc_donvithuoc_by_2id(loaithuoc, donvithuoc):
     return loaithuoc_donvithuoc
 
 
+def get_loaithuoc_donvithuoc_by_2id2(id1, id2):
+    loaithuoc_donvithuoc = LoaiThuoc_DonViThuoc.query.filter_by(donvithuoc_id=id1,
+                                                                loaithuoc_id=id2).first()
+    return loaithuoc_donvithuoc
+
+
 def get_phieukhambenh_by_id(id):
     return PhieuKhamBenh.query.get(id)
 

@@ -104,8 +104,7 @@ class Address(db.Model):
     ten_diachi = Column(String(200), nullable=False)
     chitiet_benhnhan_id = Column(Integer, ForeignKey(ChiTietBenhNhan.id))
 
-    def __str__(self):
-        return self.name
+
 
 
 class BHYT(db.Model):
@@ -115,8 +114,7 @@ class BHYT(db.Model):
     so_bhyt = Column(String(20), nullable=False, unique=True)
     chitiet_benhnhan_id = Column(Integer, ForeignKey(ChiTietBenhNhan.id), unique=True)
 
-    def __str__(self):
-        return self.name
+
 
 
 class CMND(db.Model):
@@ -126,8 +124,6 @@ class CMND(db.Model):
     so_cmnd = Column(String(20), nullable=False, unique=True)
     chitiet_benhnhan_id = Column(Integer, ForeignKey(ChiTietBenhNhan.id), unique=True)
 
-    def __str__(self):
-        return self.name
 
 
 class Favor(db.Model):
@@ -136,9 +132,6 @@ class Favor(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     mongmuon = Column(String(200), nullable=False)
     chitiet_benhnhan_id = Column(Integer, ForeignKey(ChiTietBenhNhan.id))
-
-    def __str__(self):
-        return self.name
 
 
 class Config(db.Model):
@@ -221,9 +214,6 @@ class MomoPayment(db.Model):
     transId = Column(String(50), nullable=False)
     payType = Column(String(50), nullable=False)
     signature = Column(String(150), nullable=False)
-
-    def __str__(self):
-        return self.name
 
 
 if __name__ == "__main__":

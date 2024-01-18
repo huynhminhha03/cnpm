@@ -13,7 +13,7 @@ from wtforms import SelectField, PasswordField, validators, DateField, StringFie
 from wtforms.validators import InputRequired
 from app import app, db, dao, utils
 from app.models import BenhNhan, ChiTietBenhNhan, DanhSachKhamBenh, Address, CMND, BHYT, UserRoleEnum, \
-    Manager, Config, LoaiThuoc, PhieuKhamBenh, HoaDonThanhToan
+    Manager, Config, LoaiThuoc, PhieuKhamBenh, HoaDonThanhToan, LoaiThuoc_DonViThuoc
 
 cloudinary.config(
     cloud_name="diwxda8bi",
@@ -199,6 +199,65 @@ class MyManagerView(AuthenticatedAdminManager):
     page_size = 4
 
 
+class CustomAdminMedicalPriceModelView(ModelView):
+    column_list = ['donvithuoc_id', 'loaithuoc_id', 'giatien']
+
+    column_labels = {'donvithuoc_id': 'Mã đơn vị thuốc', 'loaithuoc_id': 'Mã tên loại thuốc',
+                     'giatien': 'Giá tiền'}  # Đổi tên trường
+    form_create_rules = ['donvithuoc_id', 'loaithuoc_id', 'giatien']
+
+    form_edit_rules = ['giatien']
+
+    form_extra_fields = {
+        'donvithuoc_id': StringField('Mã đơn vị thuốc', [validators.DataRequired(),
+                                                         validators.Regexp(r'^\d+$',
+                                                                           message='Phải là những kí tự số !')]),
+        'loaithuoc_id': StringField('Mã tên loại thuốc', [validators.DataRequired(),
+                                                          validators.Regexp(r'^\d+$',
+                                                                       message='Phải là những kí tự số !')]),
+    }
+
+    def create_model(self, form):
+        model = self.model()
+        form.populate_obj(model)
+        donvithuoc_id = int(form['donvithuoc_id'].data)
+        loaithuoc_id = int(form['loaithuoc_id'].data)
+        giatien = int(model.giatien)
+        print(donvithuoc_id)
+        print(loaithuoc_id)
+        loaithuoc_donvithuoc = dao.get_loaithuoc_donvithuoc_by_2id2(donvithuoc_id,loaithuoc_id)
+        if not loaithuoc_donvithuoc:
+            loaithuoc = dao.get_loaithuoc_by_id(loaithuoc_id)
+            donvithuoc = dao.get_donvithuoc_by_id(donvithuoc_id)
+            if loaithuoc and donvithuoc:
+                loaithuoc_donvithuoc = LoaiThuoc_DonViThuoc(donvithuoc_id=donvithuoc_id
+                                                        ,loaithuoc_id=loaithuoc_id,giatien=giatien)
+                self.session.add(loaithuoc_donvithuoc)
+                self.session.commit()
+                return True
+            else:
+                form['donvithuoc_id'].errors.append('Không tồn tại mã đơn vị thuốc này !')
+                form['loaithuoc_id'].errors.append('Không tồn tại mã tên loại thuốc này !')
+                return False
+        else:
+            form['donvithuoc_id'].errors.append('Đã tồn tại bộ đôi loại thuốc và tên thuốc này!')
+            form['loaithuoc_id'].errors.append('Đã tồn tại bộ đôi loại thuốc và tên thuốc này!')
+            return False
+
+    can_delete = False
+    can_create = True
+    page_size = 7
+
+
+class AuthenticatedMedicalPriceManager(CustomAdminMedicalPriceModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.ADMIN
+
+
+class MyMedicalPriceView(AuthenticatedMedicalPriceManager):
+    pass
+
+
 class AuthenticatedAdminConfig(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.user_role == UserRoleEnum.ADMIN
@@ -257,7 +316,6 @@ class CustomYTaDSKBModelView(ModelView):
     column_searchable_list = ('lichkham.ngaykham',)
     column_filters = ['lichkham.ngaykham']
     action_disallowed_list = ['export']
-
 
     can_create = False
     can_edit = False
@@ -579,7 +637,6 @@ class MyThuocView(AuthenticatedBacSiLoaiThuoc):
     page_size = 7
 
 
-
 class CustomBacSiLPKModelView(BaseView):
     @expose('/')
     def indexBacSiLPK(self):
@@ -760,7 +817,7 @@ class MyAdminIndex(AdminIndexView):
         self.admin = Admin()
 
     def index(self):
-        return self.render('admin/index.html', checked = 'wrong_current_pw')
+        return self.render('admin/index.html', checked='wrong_current_pw')
 
 
 admin = Admin(app=app, name='QUẢN TRỊ DANH SÁCH KHÁM BỆNH', template_mode='bootstrap4')
@@ -770,7 +827,7 @@ admin.add_view(MyManagerView(Manager, db.session, name='Quản Lí Nhân Sự'))
 admin.add_view(MyConfigView(Config, db.session, name='Cấu hình dữ liệu'))
 admin.add_view(MyStatsView(name='Thống Kê Doanh Thu', endpoint='stats'))
 admin.add_view(MyMedicalUsedView(name='Thống Kê Thuốc', endpoint='slsdt'))
-
+admin.add_view(MyMedicalPriceView(LoaiThuoc_DonViThuoc, db.session, name='Giá thuốc'))
 # Bac si
 admin.add_view(MyThuocView(LoaiThuoc, db.session, name='Loại Thuốc'))
 admin.add_view(MyTraCuuLSBenhNhanView(PhieuKhamBenh, db.session, name='Tra Cứu Lịch Sử Bệnh Nhân'))

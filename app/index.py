@@ -497,7 +497,7 @@ def payment_results():
         db.session.commit()
         return redirect('/admin/hoadonthanhtoan')
     else:
-        hoadonthanhtoan.id = str(uuid.uuid4()) # cập nhật lại id tự sinh của uuid nếu thất bại
+        hoadonthanhtoan.id = str(uuid.uuid4())  # cập nhật lại id tự sinh của uuid nếu thất bại
         db.session.add(hoadonthanhtoan)
         db.session.commit()
         return redirect('/admin/hoadonthanhtoan')
