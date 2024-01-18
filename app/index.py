@@ -1,14 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for
-from app import app, login_manager, db, controllers, dao
-from twilio.rest import Client
-import json, hmac, hashlib, requests
+import hmac
+import json
+import requests
 import uuid
-from app.models import (BenhNhan, ChiTietBenhNhan, LichKham, DanhSachKhamBenh, Favor, Address, CMND, BHYT
-, UserRoleEnum, LoaiThuoc, DonViThuoc, LoaiThuoc_DonViThuoc, PhieuKhamBenh, DsLieuLuongThuoc, )
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-import cloudinary
-import cloudinary.uploader
+from flask import render_template, url_for
+from flask_login import login_user, login_required
+from twilio.rest import Client
+from app import login_manager, controllers
 from app.admin import *
+from app.models import (LichKham, Favor, LoaiThuoc_DonViThuoc, DsLieuLuongThuoc, )
 
 cloudinary.config(
     cloud_name="diwxda8bi",

@@ -1,34 +1,19 @@
-import shutil
-
-from flask_admin.actions import action
-from flask_admin.contrib.sqla import ModelView
 import hashlib
-import hmac
-import json
 import os
-import requests
-import uuid
 from datetime import datetime
-
 import cloudinary
 from cloudinary.uploader import upload
-from flask import redirect, flash, url_for, render_template, request, send_file
+from flask import redirect, flash, request
 from flask_admin import BaseView, expose, Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form.upload import ImageUploadField
-from flask_admin.helpers import get_url
 from flask_login import logout_user, current_user
 from markupsafe import Markup
-from werkzeug.datastructures import FileStorage
 from wtforms import SelectField, PasswordField, validators, DateField, StringField
 from wtforms.validators import InputRequired
-
 from app import app, db, dao, utils
 from app.models import BenhNhan, ChiTietBenhNhan, DanhSachKhamBenh, Address, CMND, BHYT, UserRoleEnum, \
     Manager, Config, LoaiThuoc, PhieuKhamBenh, HoaDonThanhToan
-import pandas as pd
-from io import BytesIO
-from flask_admin.babel import lazy_gettext
 
 cloudinary.config(
     cloud_name="diwxda8bi",

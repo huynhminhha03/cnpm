@@ -1,5 +1,4 @@
-from datetime import datetime
-from sqlalchemy import extract
+
 from app import dao, db
 from app.models import BenhNhan, ChiTietBenhNhan, DanhSachKhamBenh, Address, CMND, BHYT, UserRoleEnum, \
     Manager, Config, LoaiThuoc, DonViThuoc, PhieuKhamBenh, HoaDonThanhToan, LoaiThuoc_DonViThuoc, DsLieuLuongThuoc
