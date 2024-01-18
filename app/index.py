@@ -210,7 +210,7 @@ def booking():
 
         # message = client.messages.create(
         #     body=f'Số điện thoại {ctbn.sdt} đã đặt lịch vào ngày {list.ngaykham.strftime("%d/%m/%Y")} thành công ! ',
-        #     from_='+13302997281',
+        #     from_='(330) 299-7281',
         #     to=f'+84{ctbn.sdt[1:]}'
         # )
 

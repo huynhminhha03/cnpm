@@ -10,7 +10,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config["SQLALCHEMY_RECORD_QUERIES"] = True
 
 app.config['TWILIO_ACCOUNT_SID'] = 'ACe3829a5417371c7f1e17904b68f3f123'
-app.config['TWILIO_AUTH_TOKEN'] = 'a094b61d17ea7458ff64739a35bc1411'
+app.config['TWILIO_AUTH_TOKEN'] = 'd849186fe27b54a238de3456c53ddb15'
 
 app.config['UPLOAD_FOLDER'] = 'uploads'
 

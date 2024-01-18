@@ -4,12 +4,10 @@ content %}
   <h1 class="text-center text-success">ĐĂNG KÝ LỊCH KHÁM</h1>
 
     {% if error == 'name_phone_is_not_matched' %}
-      <p>Số điện thoại và tên người đăng kí khám trước đây không trùng khớp !</p>
+      <p class="text-danger text-center">Số điện thoại và tên người đăng kí khám trước đây không trùng khớp !</p>
     {% endif %}
 
   <form method="POST" action="/dat-lich-kham">
-
-{#      xóa 2 dòng hidden bố đánh cho hỏng người nhé #}
 
       <input type="hidden" name="user_checked" value="{{ user_checked }}">
       <input type="hidden" name="first_checked" value="{{ first_checked }}">

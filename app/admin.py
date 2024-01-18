@@ -211,6 +211,7 @@ class MyManagerView(AuthenticatedAdminManager):
     can_create = True
     can_delete = False
     can_edit = True
+    page_size = 4
 
 
 class AuthenticatedAdminConfig(ModelView):
@@ -272,34 +273,12 @@ class CustomYTaDSKBModelView(ModelView):
     column_filters = ['lichkham.ngaykham']
     action_disallowed_list = ['export']
 
-    # @action('export', lazy_gettext('Export selected items'))
-    # def export_to_csv(self, ids):
-    #     # Lấy dữ liệu từ các ID đã chọn
-    #     queryset = self.get_query().filter(self.model.id.in_(ids))
-    #     data = pd.read_sql(queryset.statement, queryset.session.bind)
-    #
-    #     # Tạo một BytesIO để lưu trữ nội dung của file CSV
-    #     csv_output = BytesIO()
-    #
-    #     # Xuất dữ liệu vào file CSV
-    #     data.to_csv(csv_output, index=False)
-    #
-    #     # Đặt con trỏ đọc/ghi của BytesIO về đầu để chuẩn bị để đọc
-    #     csv_output.seek(0)
-    #
-    #     # Lấy đường dẫn của action export mặc định
-    #     default_export_url = get_url('/admin/danhsachkhambenh', action_name='export')
-    #
-    #     # Trả về response cho client để tải xuống file CSV
-    #     return self.response(csv_output.getvalue(),
-    #                          headers={'Content-Disposition': 'attachment; filename=data.xlsx',
-    #                                   'Content-Type': 'text/xlsx'},
-    #                          back=url_for(default_export_url))
 
     can_create = False
     can_edit = False
     can_delete = False
     can_export = True
+    page_size = 5
 
 
 class AuthenticatedYTaDSKB(CustomYTaDSKBModelView):
@@ -612,6 +591,8 @@ class MyThuocView(AuthenticatedBacSiLoaiThuoc):
     can_create = False
     can_delete = False
     can_edit = False
+    page_size = 7
+
 
 
 class CustomBacSiLPKModelView(BaseView):
@@ -663,7 +644,7 @@ class CustomBacSiTraCuuLSBenhNhanView(ModelView):
             motLoaiThuoc = loaithuoc.ten_loaithuoc + '(' + soluong + '/' + donvithuoc.ten_donvithuoc + ')'
             results.append(motLoaiThuoc)
 
-        return results if dsllt else 'Chưa cập nhật'
+        return results if dsllt else 'Không cần cấp thuốc'
 
     column_formatters = {
         'ten_nguoidangki': _traCuuLSBenhNhan_benhnhan_formatter,
@@ -674,6 +655,7 @@ class CustomBacSiTraCuuLSBenhNhanView(ModelView):
     can_edit = False
     can_delete = False
     can_create = False
+    page_size = 7
 
 
 class AuthenticatedBacSiTraCuuLSBenhNhan(CustomBacSiTraCuuLSBenhNhanView):
@@ -720,7 +702,7 @@ class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
         return count_down_with_separator(str(int(model.tienkham)), ',', 3) if model.tienkham else 'Chưa cập nhật'
 
     def _hoadonthanhtoan_tienthuoc_fommater(view, context, model, name):
-        return count_down_with_separator(str(int(model.tienthuoc)), ',', 3) if model.tienthuoc else 'Chưa cập nhật'
+        return count_down_with_separator(str(int(model.tienthuoc)), ',', 3) if model.tienthuoc else '0'
 
     def _hoadonthanhtoan_tongcong_fommater(view, context, model, name):
         return count_down_with_separator(str(int(model.tongcong)), ',', 3) if model.tongcong else 'Chưa cập nhật'
@@ -752,6 +734,7 @@ class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
     can_create = False
     can_edit = False
     can_delete = False
+    page_size = 7
 
 
 class CustomAdminStatsBaseView(BaseView):
