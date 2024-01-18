@@ -6,13 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="80efd9ca-e0be-43b4-9154-4eca1c46666b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/index.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/index.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/templates/Authentication/authenUser.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/Authentication/authenUser.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/templates/admin/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/admin/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/templates/admin/medical_used.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/admin/medical_used.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/templates/layout/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/layout/header.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -140,7 +135,7 @@
       <updated>1705462895329</updated>
       <workItem from="1705462896869" duration="235000" />
       <workItem from="1705463213611" duration="17185000" />
-      <workItem from="1705544915718" duration="9730000" />
+      <workItem from="1705544915718" duration="10152000" />
     </task>
     <servers />
   </component>

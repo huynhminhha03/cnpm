@@ -10,7 +10,6 @@ import cloudinary
 import cloudinary.uploader
 from app.admin import *
 
-
 cloudinary.config(
     cloud_name="diwxda8bi",
     api_key="358748635141677",
@@ -490,7 +489,7 @@ def payment_results():
     resultCode = request.args.get('resultCode')
     orderId = request.args.get('orderId')
     hoadonthanhtoan = dao.get_hoadonthanhtoan_by_id(orderId)
-    if resultCode == '0':
+    if resultCode == '0':  # 'get para là resultCode , nếu = 0 là thành công , != là thất bại'
         present_url = request.url
         controllers.momopayment(presentUrl=present_url)
         hoadonthanhtoan.ngaythanhtoanhoadon = today
@@ -499,7 +498,7 @@ def payment_results():
         db.session.commit()
         return redirect('/admin/hoadonthanhtoan')
     else:
-        hoadonthanhtoan.id = str(uuid.uuid4())
+        hoadonthanhtoan.id = str(uuid.uuid4()) # cập nhật lại id tự sinh của uuid nếu thất bại
         db.session.add(hoadonthanhtoan)
         db.session.commit()
         return redirect('/admin/hoadonthanhtoan')

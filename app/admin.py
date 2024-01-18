@@ -711,8 +711,6 @@ class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
         if model.trangthai != 0:
             return 'Đã thanh toán'
 
-        # render a form with a submit button for student, include a hidden field for the student id
-        # note how checkout_view method is exposed as a route below
         else:
             _html = '''
             <form action="/admin/hoadonthanhtoan/phuongthucthanhtoan" method="POST">
