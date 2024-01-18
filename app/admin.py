@@ -22,6 +22,11 @@ cloudinary.config(
 )
 
 
+# ex/ Mỗi thuộc tính trong 1 role được chia làm 3 class : (Cho rõ ràng và quản lí dễ dàng)
+# class 1 : Custom... (dùng để custom các chức năng như : xem cột , create , edit , tên label , thêm các trường đặc biệt)
+# class 2 : Authen... (dùng để xác thực người dùng theo Role Enum)
+# class 3 : My...View (thừa kế lại class2 (class 2 đã thừa kế class1) để dùng admin.add_view) và chỉnh các tính năng :  can_edit , page_size, ...
+# Có những thuộc tính và chức năng đặc biệt , cần làm form custom (Lập phiếu khám , Đăng kí lịch khám tại phòng với y tá, ...) thì dùng endpoint
 class AuthenticatedUser(BaseView):
     def is_accessible(self):
         return current_user.is_authenticated
@@ -39,16 +44,16 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 
 
 def delete_images_in_folder(folder_path):
-    # Kiểm tra xem thư mục tồn tại hay không
+    # ex/ Kiểm tra xem thư mục tồn tại hay không
     if not os.path.exists(folder_path):
         print(f"Thư mục {folder_path} không tồn tại.")
         return
 
-    # Duyệt qua tất cả các tệp trong thư mục
+    # ex/ Duyệt qua tất cả các tệp trong thư mục
     for file_name in os.listdir(folder_path):
         file_path = os.path.join(folder_path, file_name)
 
-        # Kiểm tra xem tệp có phải là 'png' hoặc 'jpg' không
+        # ex/ Kiểm tra xem tệp có phải là 'png' hoặc 'jpg' không
         if file_name.lower().endswith(('.png', '.jpg')):
             try:
                 # Xóa tệp nếu có đuôi là 'png' hoặc 'jpg'
@@ -70,7 +75,7 @@ class CustomAdminManagerModelView(ModelView):
     column_labels = {'ten_quantri': 'Họ và tên', 'username': 'Tên người dùng', 'password': 'Mật khẩu',
                      'gioitinh': 'Giới tính', 'hinhanh': 'Hình ảnh',
                      'cmnd': 'Số chứng minh nhân dân', 'sdt': 'Số điện thoại',
-                     'ngaysinh': 'Ngày sinh', 'diachi': 'Địa chỉ', 'user_role': 'Chức vụ'}  # Đổi tên trường
+                     'ngaysinh': 'Ngày sinh', 'diachi': 'Địa chỉ', 'user_role': 'Chức vụ'}  # ex/ Đổi tên trường
 
     form_extra_fields = {
         'username': StringField('Tên người dùng', [validators.DataRequired(),
@@ -148,7 +153,7 @@ class CustomAdminManagerModelView(ModelView):
 
         model.hinhanh = str(model.hinhanh)
         image_path = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'], model.hinhanh)
-        if os.path.exists(image_path):  # Có chọn hính
+        if os.path.exists(image_path):  # ex/ Có chọn hình
             response = upload(image_path)
             model.hinhanh = response['secure_url']
             delete_images_in_folder(app.config['UPLOAD_FOLDER'])
@@ -176,8 +181,8 @@ class CustomAdminManagerModelView(ModelView):
 
         # Tùy chỉnh xử lý trước khi lưu vào cơ sở dữ liệu
         form.password.data = str(
-            hashlib.md5(form.password.data.encode('utf-8')).hexdigest())  # copy dữ liệu từ form sang model
-        form.populate_obj(model)
+            hashlib.md5(form.password.data.encode('utf-8')).hexdigest())
+        form.populate_obj(model)  # ex/ copy dữ liệu từ form sang model
         self._on_model_change(form, model, False)
         self.session.commit()
         return True
@@ -203,7 +208,7 @@ class CustomAdminMedicalPriceModelView(ModelView):
     column_list = ['donvithuoc_id', 'loaithuoc_id', 'giatien']
 
     column_labels = {'donvithuoc_id': 'Mã đơn vị thuốc', 'loaithuoc_id': 'Mã tên loại thuốc',
-                     'giatien': 'Giá tiền'}  # Đổi tên trường
+                     'giatien': 'Giá tiền'}
     form_create_rules = ['donvithuoc_id', 'loaithuoc_id', 'giatien']
 
     form_edit_rules = ['giatien']
@@ -214,7 +219,7 @@ class CustomAdminMedicalPriceModelView(ModelView):
                                                                            message='Phải là những kí tự số !')]),
         'loaithuoc_id': StringField('Mã tên loại thuốc', [validators.DataRequired(),
                                                           validators.Regexp(r'^\d+$',
-                                                                       message='Phải là những kí tự số !')]),
+                                                                            message='Phải là những kí tự số !')]),
     }
 
     def create_model(self, form):
@@ -225,13 +230,13 @@ class CustomAdminMedicalPriceModelView(ModelView):
         giatien = int(model.giatien)
         print(donvithuoc_id)
         print(loaithuoc_id)
-        loaithuoc_donvithuoc = dao.get_loaithuoc_donvithuoc_by_2id2(donvithuoc_id,loaithuoc_id)
+        loaithuoc_donvithuoc = dao.get_loaithuoc_donvithuoc_by_2id2(donvithuoc_id, loaithuoc_id)
         if not loaithuoc_donvithuoc:
             loaithuoc = dao.get_loaithuoc_by_id(loaithuoc_id)
             donvithuoc = dao.get_donvithuoc_by_id(donvithuoc_id)
             if loaithuoc and donvithuoc:
                 loaithuoc_donvithuoc = LoaiThuoc_DonViThuoc(donvithuoc_id=donvithuoc_id
-                                                        ,loaithuoc_id=loaithuoc_id,giatien=giatien)
+                                                            , loaithuoc_id=loaithuoc_id, giatien=giatien)
                 self.session.add(loaithuoc_donvithuoc)
                 self.session.commit()
                 return True
@@ -311,7 +316,7 @@ class CustomYTaDSKBModelView(ModelView):
                    'chitietbenhnhan_diachi']
     column_labels = {'stt': 'Số thứ tự', 'dskb_lichkham': 'Lịch khám', 'chitietbenhnhan.sdt': 'Số điện thoại',
                      'benhnhan_name': 'Họ tên', 'chitietbenhnhan_gioitinh': 'Giới tính'
-        , 'chitietbenhnhan_ngaysinh': 'Năm sinh', 'chitietbenhnhan_diachi': 'Địa chỉ'}  # Đổi tên trường
+        , 'chitietbenhnhan_ngaysinh': 'Năm sinh', 'chitietbenhnhan_diachi': 'Địa chỉ'}  # ex/ Đổi tên trường
 
     column_searchable_list = ('lichkham.ngaykham',)
     column_filters = ['lichkham.ngaykham']
@@ -337,8 +342,6 @@ class MyDanhSachKhamBenhView(AuthenticatedYTaDSKB):
 
 
 class CustomYTaBenhNhanModelView(ModelView):
-    # custom show information detail
-
     column_list = ['id', 'ten_benhnhan', 'chitietbenhnhan.gioitinh', 'chitietbenhnhan.sdt',
                    'chitietbenhnhan.ngaysinh',
                    'chitietbenhnhan.diachi', 'chitietbenhnhan.cmnd', 'chitietbenhnhan.bhyt']
@@ -351,6 +354,8 @@ class CustomYTaBenhNhanModelView(ModelView):
 
     column_searchable_list = ('chitietbenhnhan.sdt',)
     column_filters = ['chitietbenhnhan.sdt']
+
+    # ex/ viết các hàm và dùng column_formater để render ra dữ liệu mong muốn
 
     def _benhnhan_gioitinh_formatter(self, context, model, name):
         ctbn = dao.get_chitietbenhnhan_by_benhnhan_id(model.id)
@@ -398,7 +403,7 @@ class CustomYTaBenhNhanModelView(ModelView):
 
     }
 
-    # custom create Benh Nhan
+    # ex/ custom create Benh Nhan
 
     form_create_rules = [
         'ten_benhnhan', 'chitietbenhnhan.gioitinh', 'chitietbenhnhan.sdt', 'chitietbenhnhan.ngaysinh',
@@ -437,7 +442,6 @@ class CustomYTaBenhNhanModelView(ModelView):
             form['chitietbenhnhan.sdt'].errors.append('Số điện thoại này đã được đăng kí !')
             return False
 
-        # Tùy chỉnh xử lý trước khi lưu vào cơ sở dữ liệu
         bn = BenhNhan(ten_benhnhan=model.ten_benhnhan, user_role=UserRoleEnum.BENH_NHAN)
 
         self.session.add(bn)
@@ -481,7 +485,7 @@ class CustomYTaBenhNhanModelView(ModelView):
 
         return True
 
-    # custom edit BenhNhan
+    # ex/ custom edit BenhNhan
 
     form_edit_rules = [
         'ten_benhnhan', 'chitietbenhnhan', 'benhnhanBackrefDanhSachKhamBenhs', 'chitietbenhnhan.gioitinh',
@@ -492,18 +496,17 @@ class CustomYTaBenhNhanModelView(ModelView):
         'chitietbenhnhan.bhyt',
     ]
 
-    # hidden foreign key input
-    def on_form_prefill(self, form, id):
-        # Lấy mô hình từ cơ sở dữ liệu
+    def on_form_prefill(self, form, id):  # ex/ Đưa dữ liệu lên form edit (prefill)
+        # ex/ Lấy mô hình từ cơ sở dữ liệu
         model = self.get_one(id)
 
         if model:
-            # Ẩn trường 'chitietbenhnhan' va truong backref trong biểu mẫu chỉnh sửa
+            # ex/ Ẩn trường 'chitietbenhnhan' va truong backref trong biểu mẫu chỉnh sửa
             form.chitietbenhnhan.render_kw = {'style': 'display:none;'}
             form.chitietbenhnhan.label.text = ''  # Ẩn nhãn
             form.benhnhanBackrefDanhSachKhamBenhs.render_kw = {'style': 'display:none;'}
             form.benhnhanBackrefDanhSachKhamBenhs.label.text = ''  # Ẩn nhãn
-            # Tự điền dữ liệu đã có sẵn :
+            # ex/ Tự điền dữ liệu đã có sẵn :
             bn = dao.get_benhnhan_by_id(id)
             ctbn = dao.get_chitietbenhnhan_by_benhnhan_id(bn.id)
             form['chitietbenhnhan.sdt'].data = ctbn.sdt
@@ -518,8 +521,7 @@ class CustomYTaBenhNhanModelView(ModelView):
             if bhyt:
                 form['chitietbenhnhan.bhyt'].data = bhyt.so_bhyt
 
-    # custom edit
-    def update_model(self, form, model):
+    def update_model(self, form, model):  # ex/ custom edit bệnh nhân
 
         bn = dao.get_benhnhan_by_id(model.id)
         if bn:
@@ -553,7 +555,7 @@ class CustomYTaBenhNhanModelView(ModelView):
             form['chitietbenhnhan.bhyt'].errors.append('Số BHYT này đã được đăng kí !')
             return False
 
-        # Thực hiện xử lý sau khi mô hình được thay đổi
+        # ex/ Thực hiện xử lý sau khi mô hình được thay đổi
         bn.ten_benhnhan = form['ten_benhnhan'].data
         ctbn.ngaysinh = form['chitietbenhnhan.ngaysinh'].data
         ctbn.gioitinh = form['chitietbenhnhan.gioitinh'].data
@@ -718,7 +720,7 @@ class AuthenticatedThuNganHoaDonThanhToan(CustomThuNganHoaDonThanhToanView):
         return current_user.is_authenticated and current_user.user_role == UserRoleEnum.THU_NGAN
 
 
-def count_down_with_separator(nums, separator, step):
+def count_down_with_separator(nums, separator, step): # ex/ hàm chia dấu , sau 3 hàng đơn vị
     result = ""
     for i in range(len(nums) - 1, -1, -1):
         result = nums[i] + result
@@ -750,10 +752,10 @@ class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
         return count_down_with_separator(str(int(model.tongcong)), ',', 3) if model.tongcong else 'Chưa cập nhật'
 
     def _format_pay_now(view, context, model, name):
-        if model.trangthai != 0:
+        if model.trangthai != 0:  # ex/ nếu hóa đơn đã thanh toán rùi
             return 'Đã thanh toán'
 
-        else:
+        else:  # ex/ hiển thị nút thanh toán , truyền các dữ liệu bằng phương pháp các thẻ input ẩn
             _html = '''
             <form action="/admin/hoadonthanhtoan/phuongthucthanhtoan" method="POST">
                 <input id="benhnhan_id" name="benhnhan_id"  type="hidden" value="{benhnhan_id}">
@@ -762,7 +764,7 @@ class MyHoaDonThanhToanView(AuthenticatedThuNganHoaDonThanhToan):
                 </button>
             </form
            '''.format(hoadonthanhtoan_id=model.id, benhnhan_id=model.benhnhan_id)
-        return Markup(_html)
+        return Markup(_html)  # /ex dùng thư viện markupsafe import Markup để tạo 1 buttons
 
     column_formatters = {
         'thanhtoan': _format_pay_now,

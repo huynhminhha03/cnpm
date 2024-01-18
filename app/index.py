@@ -15,7 +15,7 @@ cloudinary.config(
     api_secret="QBGsplvCUjvxqZFWkpQBWKFT91I"
 )
 
-# key config
+# ex/ key config (những quy định đề ra)
 patients_per_day_key = 'patients_per_day'
 medical_expenses_key = 'medical_expenses'
 number_of_per_pack_key = 'number_of_per_pack'
@@ -46,31 +46,6 @@ def login_admin_process():
     return redirect('/admin')
 
 
-@app.route('/editProfileManager', methods=['POST'])
-def editProfileManager():
-    currentpw = request.form.get('currentpw')
-    newpw = request.form.get('newpw')
-    manager_id = request.form.get('manager_id')
-    if currentpw and newpw:
-        manager = dao.get_manager_by_id(manager_id)
-        hashcode_currentpw = str(hashlib.md5(currentpw.strip().encode('utf-8')).hexdigest())
-        if manager.password.__eq__(hashcode_currentpw):
-            manager.password = str(hashlib.md5(newpw.encode('utf-8')).hexdigest())
-            db.session.add(manager)
-            db.session.commit()
-            return redirect(url_for('admin_index', success='success'))
-
-        else:
-            return redirect(url_for('admin_index', failed='failed'))
-
-    return redirect('/admin')
-
-
-@app.route('/admin')
-def admin_index():
-    return MyAdminIndex().render('/admin/index.html')
-
-
 @app.route("/dat-lich-kham", methods=['GET', 'POST'])
 def booking():
     user_checked = request.form.get('user_checked')
@@ -84,7 +59,7 @@ def booking():
         return render_template("Authentication/authenUser.html"
                                , user_checked=user_checked, first_checked=first_checked
                                )
-    elif request.method == "POST" and first_checked == 'False' and user_checked == 'False':
+    elif request.method == "POST" and first_checked == 'False' and user_checked == 'False':  # ex/ đưa dữ liệu qua đường Post lần đầu
 
         first_checked = 'True'
         name_auth = request.form.get('name_patients_auth')
@@ -96,13 +71,13 @@ def booking():
             return render_template("User/registerUserForm.html"
                                    , first_checked=first_checked, user_checked=user_checked, phone=phone_auth,
                                    name=name_auth)
-        elif phone_auth and ctbn:
+        elif phone_auth and ctbn:  # ex/ Đăng nhập thành công
             bn = dao.get_benhnhan_by_id(ctbn.id)
             if bn.ten_benhnhan == name_auth and ctbn.sdt == phone_auth:
                 user_checked = 'True'
                 return render_template("User/booking.html",
                                        first_checked=first_checked, user_checked=user_checked, id_benhnhan=bn.id, bn=bn)
-            else:
+            else:  # ex/ Đăng nhập số điện thoại đã đăng kí trước đó nhưng sai tên
                 first_checked = 'False'
                 user_checked = 'False'
                 error = 'name_phone_is_not_matched'
@@ -110,7 +85,7 @@ def booking():
                                        , user_checked=user_checked, first_checked=first_checked, error=error
                                        )
 
-    elif request.method == "POST" and first_checked == 'True' and user_checked == 'False':
+    elif request.method == "POST" and first_checked == 'True' and user_checked == 'False':  # ex/ đưa người dùng đến bước đăng kí
 
         name = request.form.get('name_patients')
         birthday = request.form.get('birthday')
@@ -159,7 +134,7 @@ def booking():
         return render_template("User/Booking.html"
                                , first_checked=first_checked, user_checked=user_checked, id_benhnhan=bn.id, bn=bn)
 
-    elif request.method == "POST" and first_checked == 'True' and user_checked == 'True':
+    elif request.method == "POST" and first_checked == 'True' and user_checked == 'True':  # ex/ đăng kí lịch khám
 
         favor = request.form.get('favor')
         date_booking = request.form.get('booking')
@@ -255,7 +230,7 @@ def yta_examination():
         config_max_patient = dao.get_value_by_key(patients_per_day_key)
         print(count)
         print(int(config_max_patient.value))
-        if count >= int(config_max_patient.value):
+        if count >= int(config_max_patient.value):  # ex/ check điều kiện theo quy định tối đa 40 người/1 ngày
             check = 'failed'
             return render_template('admin/medical_examination.html', check=check, lichkham=l1
                                    , id_benhnhan=bn.id, bn=bn)
@@ -309,18 +284,19 @@ def bacsi_medical_report():
     ctbn = dao.get_chitietbenhnhan_by_sdt(sdt)
     lichkham = dao.get_lichkham_by_ngaykham(ngaykham)
     bn = dao.get_benhnhan_by_id(ctbn.benhnhan_id)
-    config_number_of_per_pack = int(dao.get_value_by_key(number_of_per_pack_key).value)
+    config_number_of_per_pack = int(
+        dao.get_value_by_key(number_of_per_pack_key).value)  # ex/ lấy số lượng viên / 1 vỉ theo quy định
 
-    dskb = None
+    # dskb = None
 
-    if not lichkham or not bn:
+    if not lichkham or not bn:  # ex/ chưa đăng kí khám với ngày naày với bệnh nhân này chưa đc đăng kí trước đó
         error = "not_existing_dskb"
         return render_template("admin/medical_report.html", sdt=sdt, ngaykham=ngaykham, error=error, today=today,
                                loaithuoc=dsloaithuoc, donvithuoc=dsdonvithuoc)
     else:
         dskb = dao.get_danhsachkhambenh_by_lichkham_and_benhnhan(lichkham=lichkham, benhnhan=bn)
 
-    if not dskb:
+    if not dskb:  # ex/ số điện thoại này chưa đăng kí vào ngày này
         error = "not_existing_dskb"
         return render_template("admin/medical_report.html", sdt=sdt, ngaykham=ngaykham, error=error, today=today)
 
@@ -330,13 +306,13 @@ def bacsi_medical_report():
     db.session.add(phieukhambenh)
     db.session.commit()
 
-    medicine = request.form.getlist('medicine')
+    medicine = request.form.getlist('medicine')  # ex/ getlist để lấy giá trị từ nhiều name giống nhau thành mảng
     unit = request.form.getlist('unit')
     number = request.form.getlist('number')
     using = request.form.getlist('using')
 
     lenght = len(medicine)
-    for i in range(lenght):
+    for i in range(lenght):  # ex/ Chạy vòng lặp để xử lí dữ liệu từng dòng thuốc
         loaithuoc = dao.get_loaithuoc_by_tenloaithuoc(medicine[i])
         donvithuoc = dao.get_donvithuoc_by_tendonvithuoc(unit[i])
         loaithuoc_donvithuoc = dao.get_loaithuoc_donvithuoc_by_2id(loaithuoc, donvithuoc)
@@ -361,12 +337,12 @@ def bacsi_medical_report():
 
     dslt = dao.get_dsLieuLuongThuoc_by_phieuKhamBenh_id(phieukhambenh.id)
     hoadonthanhtoan = HoaDonThanhToan()
-    hoadonthanhtoan.id = str(uuid.uuid4())
+    hoadonthanhtoan.id = str(uuid.uuid4())  # ex/ sinh tự động mã hóa đơn với uuid (Universally Unique Identifier)
     hoadonthanhtoan.ngaylaphoadon = today
     tienkham = float(dao.get_value_by_key(medical_expenses_key).value)
     hoadonthanhtoan.tienkham = tienkham
     tienthuoc = 0
-    for d in dslt:
+    for d in dslt:  # ex/ vòng lặp để tính tiền thuốc và tạo phiếu thanh toán
         loaithuoc_donvithuoc = dao.get_loaithuoc_donvithuoc_by_id(d.loaithuoc_donvithuoc_id)
         tienthuoc += loaithuoc_donvithuoc.giatien * d.soluong
     hoadonthanhtoan.tienthuoc = tienthuoc
@@ -388,7 +364,8 @@ def logout_manager():
     return redirect('/admin')
 
 
-@app.route('/admin/hoadonthanhtoan/phuongthucthanhtoan', methods=['GET', 'POST'])
+@app.route('/admin/hoadonthanhtoan/phuongthucthanhtoan',
+           methods=['GET', 'POST'])  # ex/ Get đến form hóa đơn thanh toán và lựa chọn phương thức thanh toán
 @login_required
 def phuongthucthanhtoan():
     hoadonthanhtoan = dao.get_hoadonthanhtoan_by_id(request.form.get('hoadonthanhtoan_id'))
@@ -403,7 +380,7 @@ def phuongthucthanhtoan():
     array_lt_dvt = []
     array_loaithuoc = []
     array_donvithuoc = []
-    for d in dsllt:
+    for d in dsllt:  # ex/ dùng vòng lặp để get dữ liệu từ mảng dsLieuLuongThuoc và truyền vào hóa đơn thanh toán
         loaithuoc_donvithuoc = dao.get_loaithuoc_donvithuoc_by_id(d.loaithuoc_donvithuoc_id)
         loaithuoc = dao.get_loaithuoc_by_id(loaithuoc_donvithuoc.loaithuoc_id)
         donvithuoc = dao.get_donvithuoc_by_id(loaithuoc_donvithuoc.donvithuoc_id)
@@ -421,14 +398,14 @@ def phuongthucthanhtoan():
 def checkout_view():
     hoadonthanhtoan = dao.get_hoadonthanhtoan_by_id(request.form.get('hoadonthanhtoan_id'))
 
-    if 'payUrl' in request.form and request.method == "POST":
+    if 'payUrl' in request.form and request.method == "POST":  # ex/ kiểm tra nếu submit lên có thuộc tính name là payUrl
         # parameters send to MoMo get get payUrl
         endpoint = "https://test-payment.momo.vn/v2/gateway/api/create"
         partnerCode = "MOMO"
         accessKey = "F8BBA842ECF85"
         secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz"
         orderInfo = "pay with MoMo"
-        redirectUrl = "http://127.0.0.1:5000/payment"
+        redirectUrl = "http://127.0.0.1:5000/payment"  # ex/ chuyển hướng người dùng về đường url này
         ipnUrl = "http://127.0.0.1:5000/payment"
         amount = str(int(hoadonthanhtoan.tongcong))
         orderId = hoadonthanhtoan.id
@@ -473,7 +450,7 @@ def checkout_view():
                                  headers={'Content-Type': 'application/json', 'Content-Length': str(clen)})
 
         return redirect(response.json()['payUrl'])
-    elif 'tienmat' in request.form and request.method == "POST":
+    elif 'tienmat' in request.form and request.method == "POST":  # ex/ kiểm tra nếu submit form lên có thuộc tính name là tienmat
         hoadonthanhtoan.trangthai = 1
         db.session.add(hoadonthanhtoan)
         db.session.commit()
@@ -482,25 +459,51 @@ def checkout_view():
         return hoadonthanhtoan
 
 
-@app.route('/payment', methods=['GET'])
+@app.route('/payment', methods=['GET'])  # ex/ Sau khi thanh toán , sẽ trả dữ liệu kết quả các para về đường get này
 @login_required
 def payment_results():
     resultCode = request.args.get('resultCode')
     orderId = request.args.get('orderId')
     hoadonthanhtoan = dao.get_hoadonthanhtoan_by_id(orderId)
-    if resultCode == '0':  # 'get para là resultCode , nếu = 0 là thành công , != là thất bại'
+    if resultCode == '0':  # ex/ 'get para là resultCode , nếu = 0 là thành công , != là thất bại'
         present_url = request.url
         controllers.momopayment(presentUrl=present_url)
         hoadonthanhtoan.ngaythanhtoanhoadon = today
-        hoadonthanhtoan.trangthai = 1
+        hoadonthanhtoan.trangthai = 1  # ex/ chỉnh trạng thái về 1 là đã thanh toán
         db.session.add(hoadonthanhtoan)
         db.session.commit()
         return redirect('/admin/hoadonthanhtoan')
     else:
-        hoadonthanhtoan.id = str(uuid.uuid4())  # cập nhật lại id tự sinh của uuid nếu thất bại
+        hoadonthanhtoan.id = str(uuid.uuid4())  # ex/ cập nhật lại id tự sinh của uuid nếu thất bại
         db.session.add(hoadonthanhtoan)
         db.session.commit()
         return redirect('/admin/hoadonthanhtoan')
+
+
+@app.route('/editProfileManager', methods=['POST'])
+def editProfileManager():
+    currentpw = request.form.get('currentpw')
+    newpw = request.form.get('newpw')
+    manager_id = request.form.get('manager_id')
+    if currentpw and newpw:
+        manager = dao.get_manager_by_id(manager_id)
+        hashcode_currentpw = str(hashlib.md5(currentpw.strip().encode('utf-8')).hexdigest())
+        if manager.password.__eq__(
+                hashcode_currentpw):  # ex/ kiểm tra hashcode của currentpw hiện tại có giống với hashcode vs mật khẩu hiện tại không
+            manager.password = str(hashlib.md5(newpw.encode('utf-8')).hexdigest())
+            db.session.add(manager)
+            db.session.commit()
+            return redirect(url_for('admin_index', success='success'))
+
+        else:
+            return redirect(url_for('admin_index', failed='failed'))
+
+    return redirect('/admin')
+
+
+@app.route('/admin')
+def admin_index():
+    return MyAdminIndex().render('/admin/index.html')
 
 
 if __name__ == '__main__':
