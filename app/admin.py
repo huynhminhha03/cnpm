@@ -69,7 +69,7 @@ class CustomAdminManagerModelView(ModelView):
     ]
 
     form_edit_rules = [
-        'ten_quantri', 'username', 'password', 'gioitinh', 'cmnd', 'sdt', 'ngaysinh', 'hinhanh', 'diachi', 'user_role'
+        'ten_quantri', 'username', 'gioitinh', 'cmnd', 'sdt', 'ngaysinh', 'hinhanh', 'diachi', 'user_role'
     ]
 
     column_labels = {'ten_quantri': 'Họ và tên', 'username': 'Tên người dùng', 'password': 'Mật khẩu',
@@ -180,8 +180,7 @@ class CustomAdminManagerModelView(ModelView):
             return False
 
         # Tùy chỉnh xử lý trước khi lưu vào cơ sở dữ liệu
-        form.password.data = str(
-            hashlib.md5(form.password.data.encode('utf-8')).hexdigest())
+
         form.populate_obj(model)  # ex/ copy dữ liệu từ form sang model
         self._on_model_change(form, model, False)
         self.session.commit()

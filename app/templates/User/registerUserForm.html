@@ -1,121 +1,125 @@
 {% extends 'layout/base.html' %} {% block title %}Booking{% endblock %} {% block
 content %}
-<div>
-  <h1 class="text-center text-success">ĐĂNG KÝ BỆNH NHÂN</h1>
-    <div class="alert alert-info" role="alert"> Đối với các khách hàng lần đầu đến khám và sử dụng dịch vụ tại Hệ thống Bệnh viện Đa khoa, xin vui lòng cung cấp đầy đủ các thông tin của người đến khám theo mẫu bên dưới. Việc cung cấp đầy đủ thông tin sẽ giúp Quý khách tiết kiệm được thời gian làm hồ sơ khách hàng tại bệnh viện.</div>
-    <div class="alert alert-info" role="alert"> Quý khách hãy kiểm tra kĩ thông tin trước khi đăng kí</div>
+    <div>
+        <h1 class="text-center text-success">ĐĂNG KÝ BỆNH NHÂN</h1>
+        <div class="alert alert-info" role="alert"> Đối với các khách hàng lần đầu đến khám và sử dụng dịch vụ tại Hệ
+            thống Bệnh viện Đa khoa, xin vui lòng cung cấp đầy đủ các thông tin của người đến khám theo mẫu bên dưới.
+            Việc cung cấp đầy đủ thông tin sẽ giúp Quý khách tiết kiệm được thời gian làm hồ sơ khách hàng tại bệnh
+            viện.
+        </div>
+        <div class="alert alert-info" role="alert"> Quý khách hãy kiểm tra kĩ thông tin trước khi đăng kí</div>
 
-  {% if error == 'dup_cmnd' %}
-        <div class="alert alert-danger" role="alert" >Số CMND : {{ cmnd }} này đã được đăng kí !</div>
-  {% elif error == 'dup_bhyt' %}
-     <div class="alert alert-danger" role="alert" >Số Bhyt : {{ bhyt }} này đã được đăng kí !</div>
-  {% endif %}
+        {% if error == 'dup_cmnd' %}
+            <div class="alert alert-danger" role="alert">Số CMND : {{ cmnd }} này đã được đăng kí !</div>
+        {% elif error == 'dup_bhyt' %}
+            <div class="alert alert-danger" role="alert">Số Bhyt : {{ bhyt }} này đã được đăng kí !</div>
+        {% endif %}
 
-<form method="POST" action="/dat-lich-kham">
-      <div class="container">
-        <div class="row justify-content-lg-center">
-          <div class="col col-lg-4">
-            <div class="form-floating mb-3 mt-3">
+        <form method="POST" action="/dat-lich-kham">
+            <div class="container">
+                <div class="row justify-content-lg-center">
+                    <div class="col col-lg-4">
+                        <div class="form-floating mb-3 mt-3">
 
-           {#      xóa những dòng hidden bố đánh cho hỏng người nhé #}
-                <input type="hidden" name="user_checked" value="{{ user_checked }}">
-                <input type="hidden" name="first_checked" value="{{ first_checked }}">
+                            <input type="hidden" name="user_checked" value="{{ user_checked }}">
+                            <input type="hidden" name="first_checked" value="{{ first_checked }}">
 
 
-              <input
-                readonly
-                id="name"
-                class="form-control"
-                name="name_patients"
-                value="{{ name }}"
-              />
-              <label for="name"
-                >Họ tên<span class="required-icon">(*)</span></label
-              >
+                            <input
+                                    readonly
+                                    id="name"
+                                    class="form-control"
+                                    name="name_patients"
+                                    value="{{ name }}"
+                            />
+                            <label for="name"
+                            >Họ tên<span class="required-icon">(*)</span></label
+                            >
+                        </div>
+                        <div class="form-floating mb-3 mt-3">
+                            <input
+                                    required
+                                    type="date"
+                                    id="date"
+                                    class="form-control"
+                                    name="birthday"
+                                    min="1910-01-01"
+                                    max="{{ today }}"
+                            />
+                            <label for="date"
+                            >Ngày sinh<span class="required-icon">(*)</span></label
+                            >
+                        </div>
+
+
+                        <div class="form-floating mb-3 mt-3">
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    name="cmnd"
+                                    id="cmnd"
+                                    placeholder="Nhập số CCCD"
+                            />
+                            <label for="cmnd">CMND</label>
+                        </div>
+
+                    </div>
+
+                    <div class="col col-lg-4">
+                        <div class="form-floating mt-3 mb-3">
+                            <input
+                                    id="phone"
+                                    readonly
+                                    class="form-control"
+                                    name="phone"
+                                    value="{{ phone }}"
+                            />
+                            <label for="phone"
+                            >Số điện thoại<span class="required-icon">(*)</span></label
+                            >
+                        </div>
+                        <div class="form-floating mt-3 mb-3">
+                            <select required class="form-control" name="gender" id="gender" placeholder="Chon">
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                            <label for="gender"
+                            >Giới tính<span class="required-icon">(*)</span></label
+                            >
+                        </div>
+                        <div class="form-floating mb-3 mt-3">
+                            <input
+                                    id="bhyt"
+                                    type="text"
+                                    class="form-control"
+                                    name="bhyt"
+                                    placeholder="Nhập số BHYT"
+                            />
+                            <label for="bhyt">Số BHYT</label>
+                        </div>
+
+                        <div class="form-floating mt-3 mb-3">
+                            <input
+                                    id="address"
+                                    type="text"
+                                    class="form-control"
+                                    name="address"
+                                    placeholder="Nhập địa chỉ"
+                            />
+                            <label for="address">Địa chỉ</label>
+                        </div>
+
+                    </div>
+
+
+                </div>
             </div>
-            <div class="form-floating mb-3 mt-3">
-              <input
-                required
-                type="date"
-                id="date"
-                class="form-control"
-                name="birthday"
-              />
-              <label for="date"
-                >Ngày sinh<span class="required-icon">(*)</span></label
-              >
+
+            <div class="form-floating mt-3 mb-3 btn-wrapper">
+                <input type="submit" class="btn btn-danger btn-icon" value="Đặt lịch"/>
             </div>
+        </form>
 
-
-            <div class="form-floating mb-3 mt-3">
-              <input
-                type="text"
-                class="form-control"
-                name="cmnd"
-                id="cmnd"
-                placeholder="Nhập số CCCD"
-              />
-              <label for="cmnd">CMND</label>
-            </div>
-
-          </div>
-
-          <div class="col col-lg-4">
-            <div class="form-floating mt-3 mb-3">
-              <input
-                id="phone"
-                readonly
-                class="form-control"
-                name="phone"
-                value="{{ phone }}"
-              />
-              <label for="phone"
-                >Số điện thoại<span class="required-icon">(*)</span></label
-              >
-            </div>
-            <div class="form-floating mt-3 mb-3">
-              <select required class="form-control" name="gender" id="gender" placeholder="Chon">
-                <option value="Nam">Nam</option>
-                <option value="Nữ">Nữ</option>
-                <option value="Khác">Khác</option>
-              </select>
-              <label for="gender"
-                >Giới tính<span class="required-icon">(*)</span></label
-              >
-            </div>
-            <div class="form-floating mb-3 mt-3">
-              <input
-                id="bhyt"
-                type="text"
-                class="form-control"
-                name="bhyt"
-                placeholder="Nhập số BHYT"
-              />
-              <label for="bhyt">Số BHYT</label>
-            </div>
-
-              <div class="form-floating mt-3 mb-3">
-              <input
-                id="address"
-                type="text"
-                class="form-control"
-                name="address"
-                placeholder="Nhập địa chỉ"
-              />
-              <label for="address">Địa chỉ</label>
-            </div>
-
-          </div>
-
-
-
-          </div>
-          </div>
-
-      <div class="form-floating mt-3 mb-3 btn-wrapper">
-        <input type="submit" class="btn btn-danger btn-icon" value="Đặt lịch" />
-      </div>
-    </form>
-
-</div>
+    </div>
 {% endblock %}

@@ -4,7 +4,7 @@ import requests
 import uuid
 from flask import render_template, url_for
 from flask_login import login_user, login_required
-# from twilio.rest import Client
+from twilio.rest import Client
 from app import login_manager, controllers
 from app.admin import *
 from app.models import (LichKham, Favor, LoaiThuoc_DonViThuoc, DsLieuLuongThuoc, )
@@ -70,7 +70,7 @@ def booking():
         if phone_auth and not ctbn:
             return render_template("User/registerUserForm.html"
                                    , first_checked=first_checked, user_checked=user_checked, phone=phone_auth,
-                                   name=name_auth)
+                                   name=name_auth, today=today)
         elif phone_auth and ctbn:  # ex/ Đăng nhập thành công
             bn = dao.get_benhnhan_by_id(ctbn.id)
             if bn.ten_benhnhan == name_auth and ctbn.sdt == phone_auth:
@@ -100,14 +100,14 @@ def booking():
             error = 'dup_cmnd'
             return render_template("User/registerUserForm.html"
                                    , first_checked=first_checked, user_checked=user_checked, phone=phone, name=name,
-                                   birthday=birthday, error=error, cmnd=cmnd)
+                                   birthday=birthday, error=error, cmnd=cmnd, today=today)
 
         if bhyt and dao.get_bhyt_by_soBHYT(bhyt):
             user_checked = 'False'
             error = 'dup_bhyt'
             return render_template("User/registerUserForm.html"
                                    , first_checked=first_checked, user_checked=user_checked, phone=phone, name=name,
-                                   birthday=birthday, error=error, bhyt=bhyt)
+                                   birthday=birthday, error=error, bhyt=bhyt, today=today)
 
         bn = BenhNhan(ten_benhnhan=name, user_role=UserRoleEnum.BENH_NHAN)
         db.session.add(bn)
@@ -179,13 +179,16 @@ def booking():
         db.session.commit()
 
         checked = 'success'
-        # client = Client(app.config['TWILIO_ACCOUNT_SID'], app.config['TWILIO_AUTH_TOKEN'])
+        client = Client(app.config['TWILIO_ACCOUNT_SID'], app.config['TWILIO_AUTH_TOKEN'])
 
-        # message = client.messages.create(
-        #     body=f'Số điện thoại {ctbn.sdt} đã đặt lịch vào ngày {list.ngaykham.strftime("%d/%m/%Y")} thành công ! ',
-        #     from_='(330) 299-7281',
-        #     to=f'+84{ctbn.sdt[1:]}'
-        # )
+        message = client.messages.create(
+            body=f'Số điện thoại :  {ctbn.sdt} \n'
+                 f'Tên : {bn.ten_benhnhan} \n'
+                 f'đã đặt lịch vào ngày {list.ngaykham.strftime("%d/%m/%Y")} , có số thứ tự khám là : {stt} \n'
+                 f'Cám ơn quý khách đã đăng kí tại phòng khám của chúng tôi , vui lòng đưa tin nhắn này cho y tá khi đến khám',
+            from_='+15865224820',
+            to=f'+84{ctbn.sdt[1:]}'
+        )
 
         return render_template('User/booking.html', check=checked, lichkham=list
                                , first_checked=first_checked, user_checked=user_checked, sdt=ctbn.sdt,
@@ -225,7 +228,7 @@ def yta_examination():
     bn = dao.get_benhnhan_by_id(ctbn.benhnhan_id)
 
     if list:
-        count = dao.count_danhsachkhambenh_theo_lichkham(list.id)
+        count = dao.count_danhsachkhambenh_theo_lichkham(list.id)  # ex/ đếm số lượng danh sách khám bệnh theo lịch khám
         l1 = dao.get_lichkham_by_id(list.id)
         config_max_patient = dao.get_value_by_key(patients_per_day_key)
         print(count)
@@ -474,7 +477,7 @@ def payment_results():
         db.session.commit()
         return redirect('/admin/hoadonthanhtoan')
     else:
-        hoadonthanhtoan.id = str(uuid.uuid4())  # ex/ cập nhật lại id tự sinh của uuid nếu thất bại
+        hoadonthanhtoan.id = str(uuid.uuid4())  # ex/ cập nhật lại id tự sinh của uuid nếu thanh toán thất bại
         db.session.add(hoadonthanhtoan)
         db.session.commit()
         return redirect('/admin/hoadonthanhtoan')

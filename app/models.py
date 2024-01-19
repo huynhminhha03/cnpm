@@ -6,8 +6,8 @@ from datetime import datetime
 from flask_login import UserMixin
 
 
-# Ten reference : ten entity
-# backref : ten bien backref nam ben entity so huu , khi khai bao entity bi so huu , se dung backref
+# ex/ Ten reference : ten entity
+# ex/ backref : ten bien backref nam ben entity so huu , khi khai bao entity bi so huu , se dung backref
 
 
 class UserRoleEnum(enum.Enum):
@@ -105,8 +105,6 @@ class Address(db.Model):
     chitiet_benhnhan_id = Column(Integer, ForeignKey(ChiTietBenhNhan.id))
 
 
-
-
 class BHYT(db.Model):
     __tablename__ = 'bhyt'
 
@@ -115,15 +113,12 @@ class BHYT(db.Model):
     chitiet_benhnhan_id = Column(Integer, ForeignKey(ChiTietBenhNhan.id), unique=True)
 
 
-
-
 class CMND(db.Model):
     __tablename__ = 'cmnd'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     so_cmnd = Column(String(20), nullable=False, unique=True)
     chitiet_benhnhan_id = Column(Integer, ForeignKey(ChiTietBenhNhan.id), unique=True)
-
 
 
 class Favor(db.Model):
@@ -197,7 +192,7 @@ class HoaDonThanhToan(db.Model):
     benhnhan = db.relationship('BenhNhan', backref='benhnhanBackrefhoadonthanhtoan')
     benhnhan_id = db.Column(Integer, ForeignKey(BenhNhan.id), nullable=False)
     phieukhambenh = db.relationship('PhieuKhamBenh', backref='phieukhambenhBackrefhoadonthanhtoan', uselist=False)
-    ngaythanhtoanhoadon = Column(DateTime, nullable=True , default=None)
+    ngaythanhtoanhoadon = Column(DateTime, nullable=True, default=None)
     phieukhambenh_id = db.Column(Integer, ForeignKey(PhieuKhamBenh.id), nullable=False)
 
 

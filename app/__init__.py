@@ -9,8 +9,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://springstudent:springstu
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config["SQLALCHEMY_RECORD_QUERIES"] = True
 
-app.config['TWILIO_ACCOUNT_SID'] = 'ACe3829a5417371c7f1e17904b68f3f123'
-app.config['TWILIO_AUTH_TOKEN'] = 'd849186fe27b54a238de3456c53ddb15'
+app.config['TWILIO_ACCOUNT_SID'] = 'ACbee941cb5fdc77889d61aba072b973ed'
+app.config['TWILIO_AUTH_TOKEN'] = '7ca517166d39f896d9f5ea6e49621617'
+
 
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
