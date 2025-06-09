@@ -6,13 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="80efd9ca-e0be-43b4-9154-4eca1c46666b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/index.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/index.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/templates/User/registerUserForm.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/User/registerUserForm.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/admin/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/admin/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/admin/payment.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/admin/payment.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,11 +30,24 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;darklord0710&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/minhha2k3/cnpm.git&quot;,
+    &quot;accountId&quot;: &quot;ac048449-f779-42a1-b5fc-f8be2f750546&quot;
+  }
+}</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/app/__init__.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/app/admin.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/app/controllers.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/app/dao.py" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/app/index.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/app/index.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/app/models.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/app/utils.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/requirements.txt" root0="SKIP_INSPECTION" />
@@ -50,24 +60,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ADMIN/Desktop/Clone app/cnpm - Copy&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.cnpm - Copy.executor": "Run",
+    "Python.index.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "D:/Clone app/cnpm",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.intellij.pycharm.community.ide.impl.configuration.PythonContentEntriesConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
-  <component name="RunManager" selected="Python.index">
+}]]></component>
+  <component name="RunManager" selected="Python.cnpm - Copy">
     <configuration name="cnpm - Copy" type="PythonConfigurationType" factoryName="Python">
       <module name="cnpm - Copy" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -90,6 +104,7 @@
     </configuration>
     <configuration name="index" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="cnpm - Copy" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -112,6 +127,7 @@
     </configuration>
     <configuration name="models" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="cnpm - Copy" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -139,6 +155,14 @@
       </list>
     </recent_temporary>
   </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-74d2a5396914-JavaScript-PY-241.14494.241" />
+        <option value="bundled-python-sdk-0509580d9d50-28c9f5db9ffe-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.14494.241" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -153,7 +177,26 @@
       <workItem from="1705561881302" duration="1101000" />
       <workItem from="1705563026242" duration="13987000" />
       <workItem from="1705594665167" duration="4277000" />
-      <workItem from="1705632428650" duration="6286000" />
+      <workItem from="1705632428650" duration="7590000" />
+      <workItem from="1705640190277" duration="2255000" />
+      <workItem from="1705642754553" duration="1088000" />
+      <workItem from="1705645728791" duration="3578000" />
+      <workItem from="1706151067521" duration="382000" />
+      <workItem from="1708005346841" duration="5369000" />
+      <workItem from="1712675278222" duration="1751000" />
+      <workItem from="1712827683995" duration="93000" />
+      <workItem from="1715589445668" duration="641000" />
+      <workItem from="1715762191477" duration="736000" />
+      <workItem from="1722999584336" duration="6177000" />
+      <workItem from="1723012837280" duration="4226000" />
+      <workItem from="1723131604187" duration="983000" />
+      <workItem from="1724058422902" duration="4750000" />
+      <workItem from="1725002978360" duration="7644000" />
+      <workItem from="1725027159147" duration="2403000" />
+      <workItem from="1725071604819" duration="16000" />
+      <workItem from="1725091685046" duration="20000" />
+      <workItem from="1725358211849" duration="783000" />
+      <workItem from="1726471333292" duration="13763000" />
     </task>
     <servers />
   </component>
@@ -161,9 +204,9 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/cnpm$index.coverage" NAME="index Coverage Results" MODIFIED="1705637863614" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
+    <SUITE FILE_PATH="coverage/cnpm$index.coverage" NAME="index Coverage Results" MODIFIED="1708007077918" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
     <SUITE FILE_PATH="coverage/cnpm___Copy$cnpm___Copy.coverage" NAME="cnpm - Copy Coverage Results" MODIFIED="1705462985272" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/cnpm$models.coverage" NAME="models Coverage Results" MODIFIED="1705637090193" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
+    <SUITE FILE_PATH="coverage/cnpm$models.coverage" NAME="models Coverage Results" MODIFIED="1705643782388" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
     <SUITE FILE_PATH="coverage/cnpm___Copy$index.coverage" NAME="index Coverage Results" MODIFIED="1705463008413" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
   </component>
 </project>

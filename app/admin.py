@@ -441,6 +441,18 @@ class CustomYTaBenhNhanModelView(ModelView):
             form['chitietbenhnhan.sdt'].errors.append('Số điện thoại này đã được đăng kí !')
             return False
 
+        if so_cmnd:
+            if existing_cmnd:
+                db.session.rollback()
+                form['chitietbenhnhan.cmnd'].errors.append('Số CMND này đã được đăng kí !')
+                return False
+
+        if so_bhyt:
+            if existing_bhyt:
+                db.session.rollback()
+                form['chitietbenhnhan.bhyt'].errors.append('Số BHYT này đã được đăng kí !')
+                return False
+
         bn = BenhNhan(ten_benhnhan=model.ten_benhnhan, user_role=UserRoleEnum.BENH_NHAN)
 
         self.session.add(bn)
@@ -462,25 +474,15 @@ class CustomYTaBenhNhanModelView(ModelView):
             self._on_model_change(form, diachi, True)
             self.session.commit()
 
-        if so_cmnd:
-            if existing_cmnd:
-                db.session.rollback()
-                form['chitietbenhnhan.cmnd'].errors.append('Số CMND này đã được đăng kí !')
-                return False
-            cmnd = CMND(so_cmnd=so_cmnd, chitiet_benhnhan_id=ctbn.id)
-            self.session.add(cmnd)
-            self._on_model_change(form, cmnd, True)
-            self.session.commit()
+        cmnd = CMND(so_cmnd=so_cmnd, chitiet_benhnhan_id=ctbn.id)
+        self.session.add(cmnd)
+        self._on_model_change(form, cmnd, True)
+        self.session.commit()
 
-        if so_bhyt:
-            if existing_bhyt:
-                db.session.rollback()
-                form['chitietbenhnhan.bhyt'].errors.append('Số BHYT này đã được đăng kí !')
-                return False
-            bhyt = BHYT(so_bhyt=so_bhyt, chitiet_benhnhan_id=ctbn.id)
-            self.session.add(bhyt)
-            self._on_model_change(form, bhyt, True)
-            self.session.commit()
+        bhyt = BHYT(so_bhyt=so_bhyt, chitiet_benhnhan_id=ctbn.id)
+        self.session.add(bhyt)
+        self._on_model_change(form, bhyt, True)
+        self.session.commit()
 
         return True
 
@@ -544,15 +546,31 @@ class CustomYTaBenhNhanModelView(ModelView):
             form['chitietbenhnhan.sdt'].errors.append('Số điện thoại này đã được đăng kí !')
             return False
 
-        if existing_cmnd and existing_cmnd.so_cmnd != dao.get_cmnd_by_ctbn_id(ctbn.id).so_cmnd:
-            db.session.rollback()
-            form['chitietbenhnhan.cmnd'].errors.append('Số CMND này đã được đăng kí !')
-            return False
+        cmnd_is_created = dao.get_cmnd_by_ctbn_id(ctbn.id)
 
-        if existing_bhyt and existing_bhyt.so_bhyt != dao.get_bhyt_by_ctbn_id(ctbn.id).so_bhyt:
-            db.session.rollback()
-            form['chitietbenhnhan.bhyt'].errors.append('Số BHYT này đã được đăng kí !')
-            return False
+        if cmnd_is_created:
+            if existing_cmnd and existing_cmnd.so_cmnd != dao.get_cmnd_by_ctbn_id(ctbn.id).so_cmnd:
+                db.session.rollback()
+                form['chitietbenhnhan.cmnd'].errors.append('Số CMND này đã được đăng kí !')
+                return False
+        else:
+            if existing_cmnd:
+                db.session.rollback()
+                form['chitietbenhnhan.cmnd'].errors.append('Số CMND này đã được đăng kí !')
+                return False
+
+        bhyt_is_created = dao.get_bhyt_by_ctbn_id(ctbn.id)
+
+        if bhyt_is_created:
+            if existing_bhyt and existing_bhyt.so_bhyt != dao.get_bhyt_by_ctbn_id(ctbn.id).so_bhyt:
+                db.session.rollback()
+                form['chitietbenhnhan.bhyt'].errors.append('Số BHYT này đã được đăng kí !')
+                return False
+        else:
+            if existing_bhyt:
+                db.session.rollback()
+                form['chitietbenhnhan.bhyt'].errors.append('Số BHYT này đã được đăng kí !')
+                return False
 
         # ex/ Thực hiện xử lý sau khi mô hình được thay đổi
         bn.ten_benhnhan = form['ten_benhnhan'].data
@@ -719,7 +737,7 @@ class AuthenticatedThuNganHoaDonThanhToan(CustomThuNganHoaDonThanhToanView):
         return current_user.is_authenticated and current_user.user_role == UserRoleEnum.THU_NGAN
 
 
-def count_down_with_separator(nums, separator, step): # ex/ hàm chia dấu , sau 3 hàng đơn vị
+def count_down_with_separator(nums, separator, step):  # ex/ hàm chia dấu , sau 3 hàng đơn vị
     result = ""
     for i in range(len(nums) - 1, -1, -1):
         result = nums[i] + result

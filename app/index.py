@@ -419,7 +419,10 @@ def checkout_view():
         # before sign HMAC SHA256 with format: accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl
         # =$ipnUrl &orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl
         # &requestId=$requestId &requestType=$requestType
-        rawSignature = "accessKey=" + accessKey + "&amount=" + amount + "&extraData=" + extraData + "&ipnUrl=" + ipnUrl + "&orderId=" + orderId + "&orderInfo=" + orderInfo + "&partnerCode=" + partnerCode + "&redirectUrl=" + redirectUrl + "&requestId=" + requestId + "&requestType=" + requestType
+        rawSignature = ("accessKey=" + accessKey + "&amount=" + amount + "&extraData=" + extraData
+                        + "&ipnUrl=" + ipnUrl + "&orderId=" + orderId + "&orderInfo="
+                        + orderInfo + "&partnerCode=" + partnerCode + "&redirectUrl=" + redirectUrl
+                        + "&requestId=" + requestId + "&requestType=" + requestType)
 
         # puts raw signature
         # print("--------------------RAW SIGNATURE----------------")
@@ -445,14 +448,15 @@ def checkout_view():
             'requestType': requestType,
             'signature': signature
         }
-
-        data = json.dumps(data)  # Convert from Dict to str
+        data = json.dumps(data)
         clen = len(data)
 
         response = requests.post(endpoint, data=data,
                                  headers={'Content-Type': 'application/json', 'Content-Length': str(clen)})
-
+        print(data)
+        print( response.json())
         return redirect(response.json()['payUrl'])
+        # return redirect('/admin/hoadonthanhtoan')
     elif 'tienmat' in request.form and request.method == "POST":  # ex/ kiểm tra nếu submit form lên có thuộc tính name là tienmat
         hoadonthanhtoan.trangthai = 1
         db.session.add(hoadonthanhtoan)
